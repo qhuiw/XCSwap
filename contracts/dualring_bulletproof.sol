@@ -4,7 +4,7 @@ pragma solidity >=0.7.0 <0.9.0;
 import "./alt_bn128.sol";
 import "./nisa.sol";
 
-contract DualRingBulletproof is NISA {
+contract DualRingBulletproof is NISA{
 
     using alt_bn128 for uint256;
 	using alt_bn128 for alt_bn128.G1Point;
