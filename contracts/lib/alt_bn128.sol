@@ -1,10 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.4.0 <0.9.0;
 
+/**
+ * @dev arithmetic operations over elliptic curve alt_bn128
+ */
 library alt_bn128 {
 
-    uint256 public constant q = 21888242871839275222246405745257275088548364400416034343698204186575808495617; // curve order
-    uint256 public constant n = 21888242871839275222246405745257275088696311157297823662689037894645226208583; // prime field order
+    /// @dev curve order (prime)
+    uint256 public constant q = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+    /// @dev field order (prime)
+    uint256 public constant n = 21888242871839275222246405745257275088696311157297823662689037894645226208583;
     uint256 public constant b = 3;
 
     // uint256 constant public ECSignMask = 0x8000000000000000000000000000000000000000000000000000000000000000;
@@ -15,6 +20,10 @@ library alt_bn128 {
         uint256 Y;
     }
 
+    /// @dev addition of 2 EC points
+    /// @param p1 a EC point
+    /// @param p2 a EC point
+    /// @return r sum of p1+p2
     function add(G1Point memory p1, G1Point memory p2) internal view returns (G1Point memory r) {
         uint256[4] memory input;
         input[0] = p1.X;
@@ -53,6 +62,10 @@ library alt_bn128 {
     //     }
     // }
 
+    /// @dev scalar multiply an EC point
+    /// @param p EC point
+    /// @param s the scalar
+    /// @return r multipled EC point
     function mul(G1Point memory p, uint256 s) internal view returns (G1Point memory r) {
         if (s == 1) {
             return p;
@@ -165,7 +178,20 @@ library alt_bn128 {
         return G1Point(seed, y);
     }
 
-    function serialize(G1Point memory p) public pure returns (bytes32){
-      return bytes32(abi.encodePacked(p.X, p.Y));
+    /** @dev pack and encode a G1Point */
+    function pack(G1Point memory p) public pure returns (bytes memory){
+      return bytes(abi.encodePacked(p.X, p.Y));
     }
+
+    function random() public view returns(uint256){
+        return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender))) % q;
+    }
+
+    // function random() internal view returns (uint256) {
+    //     return uint256(keccak256(abi.encodePacked(
+    //     tx.origin,
+    //     blockhash(block.number - 1),
+    //     block.timestamp
+    //     )));
+    // }
 }

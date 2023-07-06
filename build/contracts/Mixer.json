@@ -1,0 +1,93 @@
+{
+  "contractName": "Mixer",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Mixer.sol\":\"Mixer\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/Mixer.sol\":{\"keccak256\":\"0xbb6531198a706f72442f31abe6e9829ce2f96293eceeff4d46971558cbd68fe7\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://5c4f22ead3d323566ec3f25248e9eaff4f41fcfe43b5f3ab5865f6dcea720ff5\",\"dweb:/ipfs/Qmdwb2X51NYf9PcLusVqtAFLXPXdXPMp4ucT1YjEcB4Esq\"]},\"project:/contracts/Token.sol\":{\"keccak256\":\"0x0c9988b0520b741c80013967263004ba1372eca8dd43a732a3768f8d5fea03cd\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://8926e838df99401aeac0e059e3211dbffa9059e1325b5e3bc282e50fb3af1a6e\",\"dweb:/ipfs/QmfC9ZrDdRNTGzfqLcJot8vynfekWaexRQt6MhbJHzEDwF\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea264697066735822122045873c7c92ec7aa337373533df09300736c91d1c84c3045004acea80d742322e64736f6c63430008130033",
+  "deployedBytecode": "0x6080604052600080fdfea264697066735822122045873c7c92ec7aa337373533df09300736c91d1c84c3045004acea80d742322e64736f6c63430008130033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "92:22:0:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "92:22:0:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: GPL-3.0\npragma solidity >=0.4.0 <0.9.0;\n\nimport \"./Token.sol\";\n\ncontract Mixer {\n  \n\n}",
+  "sourcePath": "/Users/qian/Desktop/Y4/COMP4550/project/XCSwap/contracts/Mixer.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/Mixer.sol",
+    "exportedSymbols": {
+      "Mixer": [
+        3
+      ],
+      "Token": [
+        23
+      ]
+    },
+    "id": 4,
+    "license": "GPL-3.0",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".0",
+          "<",
+          "0.9",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "36:31:0"
+      },
+      {
+        "absolutePath": "project:/contracts/Token.sol",
+        "file": "./Token.sol",
+        "id": 2,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4,
+        "sourceUnit": 24,
+        "src": "69:21:0",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "Mixer",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 3,
+        "linearizedBaseContracts": [
+          3
+        ],
+        "name": "Mixer",
+        "nameLocation": "101:5:0",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 4,
+        "src": "92:22:0",
+        "usedErrors": []
+      }
+    ],
+    "src": "36:78:0"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.19+commit.7dd6d404.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.13",
+  "updatedAt": "2023-07-04T06:23:20.957Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0 <0.9.0;
 
-import "./alt_bn128.sol";
-import "./nisa.sol";
+import "../lib/alt_bn128.sol";
+import "./NISA.sol";
 
-contract DualRingBulletproof is NISA{
+contract DualRingEC {
 
     using alt_bn128 for uint256;
 	using alt_bn128 for alt_bn128.G1Point;
+
+    NISA public nisa;
     
     struct Response{
         uint256[] c;
@@ -18,19 +20,13 @@ contract DualRingBulletproof is NISA{
 
     struct Signature{
         uint256 z;
-        Proof pi;
-        Param pa;
+        NISA.Sig pi;
+        NISA.Param pp;
     }
 
-    alt_bn128.G1Point g; // group generator
-
-    alt_bn128.G1Point[] pks; //publicKeys for alt_bn128 point
-
+    alt_bn128.G1Point g;
     uint256[] public sks; // private keys
-
-
-    // uint256[2]  S ;
-    constructor() NISA() {}
+    alt_bn128.G1Point[] pks; // over EC
 
     // Function to generate a new private key
     function generateKeys(uint _ring_size) public {
@@ -59,7 +55,7 @@ contract DualRingBulletproof is NISA{
 
 
     // Function to sign a message using a private key
-    function basic_sign(string memory _message, uint _privateKeyIndex)  public view returns (Response memory) {
+    function basic_sign(string memory _message, uint _privateKeyIndex) public view returns (Response memory) {
         require(_privateKeyIndex < sks.length, "DualRing: Invalid private key index");
 
 
@@ -68,7 +64,7 @@ contract DualRingBulletproof is NISA{
         // emit LogVariable(r);
         
         // commitment point R 
-        alt_bn128.G1Point memory R = alt_bn128.mul(g,r); 
+        alt_bn128.G1Point memory R = g.mul(r); 
        
         uint256[] memory cArray = new uint256[](pks.length);
 
@@ -80,14 +76,13 @@ contract DualRingBulletproof is NISA{
                 cArray[i] = (uint256(keccak256(abi.encodePacked(block.timestamp,i)))>>10)% alt_bn128.q;
                 sumExceptJ = sumExceptJ +  cArray[i];
 
-                alt_bn128.G1Point memory temp = alt_bn128.mul(pks[i],cArray[i]);
-                R = alt_bn128.add (R,temp);
-
+                alt_bn128.G1Point memory temp = pks[i].mul(cArray[i]);
+                R = R.add(temp);
             }
         }
 
 
-        bytes32 messageHash =  keccak256(bytes(_message));
+        bytes32 messageHash = keccak256(bytes(_message));
         uint256 c = (uint256(bytes32(keccak256(abi.encodePacked(messageHash, packArray(pks),R.X, R.Y)))));
 
         cArray[_privateKeyIndex] = alt_bn128.add(c, alt_bn128.neg(sumExceptJ ));
@@ -139,18 +134,19 @@ contract DualRingBulletproof is NISA{
         Response memory re = basic_sign(_message, _privateKeyIndex);
         alt_bn128.G1Point memory temp =  alt_bn128.neg(alt_bn128.mul(g,re.z));
 
-        Param memory param =Param({
+        NISA.Param memory param = NISA.Param({
             Gs : pks,
             P : alt_bn128.add(temp,re.R),
+            u : g,
             c : re.sum  
         });
 
-        Proof memory p = prove(param, re.c);// use bulletproof to reduce the signature size;
+        NISA.Sig memory p = nisa.prove(param, re.c); // reduce signature size
 
         Signature memory sig = Signature({
             z : re.z,
             pi : p,
-            pa : param
+            pp : param
         });
 
         return sig;
@@ -171,9 +167,9 @@ contract DualRingBulletproof is NISA{
     function get_para(Signature memory sig) public pure returns (Args memory args){
         args = Args({
             z: sig.z,
-            Gs: sig.pa.Gs,
-            P: sig.pa.P,
-            c: sig.pa.c,
+            Gs: sig.pp.Gs,
+            P: sig.pp.P,
+            c: sig.pp.c,
             Ls: sig.pi.Ls,
             Rs: sig.pi.Rs,
             a: sig.pi.a,
@@ -183,39 +179,39 @@ contract DualRingBulletproof is NISA{
 
 
     // verify the message and proof generated from the full_sign funnction
-    function full_verify(string memory _message, Signature memory sig )  public view returns (bool ) {
+    function full_verify(string memory _message, Signature memory sig )  public view returns (bool) {
+        require (nisa.verify(sig.pp, sig.pi));
 
-        if (verify(sig.pa, sig.pi) == false){
+        if (! nisa.verify(sig.pp, sig.pi)){
             return false;
         }
 
-        alt_bn128.G1Point memory R =  alt_bn128.add(alt_bn128.mul(g,sig.z),sig.pa.P);
+        alt_bn128.G1Point memory R =  alt_bn128.add(alt_bn128.mul(g,sig.z),sig.pp.P);
 
         // alt_bn128.G1Point memory R = response.s.R;
         bytes32 messageHash =  keccak256(bytes(_message));
         uint256 c = (uint256(bytes32(keccak256(abi.encodePacked(messageHash, packArray(pks),R.X, R.Y)))));
 
-        return c== sig.pa.c;
+        return c== sig.pp.c;
 
     }
 
 
     function from_external_verify(string memory _message, Args memory sig)  public view returns (bool) {
-        Param memory pa =Param({
+        NISA.Param memory pp = NISA.Param({
             Gs : sig.Gs,
-            P: sig.P,
+            P : sig.P,
+            u : g,
             c: sig.c
-            });
-        Proof memory pi =Proof({
+        });
+        NISA.Sig memory pi = NISA.Sig({
             Ls: sig.Ls,
             Rs: sig.Rs,
             a: sig.a,
             b: sig.b  
-            });
-            
-        if (verify(pa, pi) == false){
-            return false;
-        }
+        });
+
+        assert(nisa.verify(pp, pi));
 
         alt_bn128.G1Point memory R =  alt_bn128.add(alt_bn128.mul(g,sig.z),sig.P);
 

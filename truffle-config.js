@@ -1,9 +1,10 @@
 module.exports = {
   networks: {
-    loc_development_development: {
+    development: {
       network_id: "*",
-      port: 7545,
-      host: "127.0.0.1"
+      port: 8545,
+      host: "127.0.0.1",
+      websockets: true
     }
   },
   mocha: {},
