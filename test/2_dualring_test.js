@@ -1,19 +1,27 @@
 const DualRing = artifacts.require("DualRing");
 const assert = require("assert");
 
-contract("DualRing", () => {
+contract("DualRing", async () => {
     const m = "message";
     const skj = [3,1];
     const size = [4,8,16,32,64];
+    
+
+    // beforeEach(async () => {
+        
+    // })
 
     for (let i = 0; i < size.length; i++){
-        it("test with size ", async () =>  {
-            let dr = await DualRing.deployed();
+        it("test with size " + size[i], async () =>  {
+            const dr = await DualRing.deployed();
+            // const dr = await DualRing.new();
+            // console.log(dr.address);
             const pp = await dr.setup(size[i], skj);
-            const sig = await dr.basic_sign.call(m, 0);
-            assert(nisa.verify.call(pp, m, sig), true, "DualRing is incorrect");
-            const gasUsage1 = await dr.basic_verify.estimateGas("1", sig);
-            console.log("size 8 basic verify used ", gasUsage1);
+            const {sig, _} = await dr.sign.call(pp, m, skj);
+            const b = await dr.verify.call(pp, m, sig);
+            assert(b, true, "DualRing is incorrect");
+            // const gasUsage1 = await dr.basic_verify.estimateGas("1", sig);
+            // console.log("size 8 basic verify used ", gasUsage1);
         });
     }   
 });

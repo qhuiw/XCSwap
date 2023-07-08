@@ -1,13 +1,14 @@
 const lib = artifacts.require("alt_bn128");
-const NISA = artifacts.require("NISA");
+const nisa = artifacts.require("NISA");
 const DualRingEC = artifacts.require("DualRingEC");
 
-module.exports = function (deployer) {
-  deployer.deploy(lib); 
-  deployer.link(lib, NISA);
+module.exports = async function (deployer) {
+  await deployer.deploy(lib); 
+  await deployer.link(lib, [nisa, DualRingEC]);
 
-  deployer.deploy(NISA);
-  deployer.link(lib, DualRingEC);
-  deployer.link(NISA,DualRingEC);
-  deployer.deploy(DualRingEC);
+  await deployer.deploy(nisa);
+  const _nisa = await nisa.deployed();
+
+  await deployer.deploy(DualRingEC, _nisa.address);
+  console.log("successful deploy DualRingEC")
 };

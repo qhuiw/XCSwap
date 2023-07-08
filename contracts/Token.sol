@@ -10,9 +10,9 @@ contract Token {
   // token id => (owner => balance)
   mapping(uint256 => mapping(address => uint256)) internal balances;
 
-  function approve(uint256 tokentype, address owner) public returns (bool) {
-    // allowed[msg.sender][delegate] = numTokens;
-    return true;
-  }
+  // function approve(uint256 tokentype, address owner) public returns (bool) {
+  //   // allowed[msg.sender][delegate] = numTokens;
+  //   return true;
+  // }
 
 }

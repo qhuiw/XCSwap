@@ -183,6 +183,13 @@ library alt_bn128 {
       return bytes(abi.encodePacked(p.X, p.Y));
     }
 
+    function packArray(alt_bn128.G1Point[] memory a) public pure returns (bytes memory packed) {
+        packed = pack(a[0]);
+        for (uint256 i = 1; i < a.length; i++) {
+            packed = abi.encodePacked(packed, pack(a[i]));
+        }
+    }
+
     function random() public view returns(uint256){
         return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender))) % q;
     }

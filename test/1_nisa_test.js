@@ -5,6 +5,7 @@ contract("NISA", async () => {
   let size = [4,8,16,32,64];
   var idx = 0;
   var a, nisa, pp, sig, usage;
+
   beforeEach(async () => {
     a = new Array(size[idx]);
     console.log("vector length " + size[idx]);
@@ -15,6 +16,7 @@ contract("NISA", async () => {
     pp = await nisa.setup.call(a);
     sig = await nisa.prove.call(pp, a);
   })
+  
   afterEach(async () => {
     usage = await nisa.verify.estimateGas(pp, sig);
     console.log("gas usage: ", usage);
