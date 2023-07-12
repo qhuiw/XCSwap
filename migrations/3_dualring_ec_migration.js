@@ -7,8 +7,7 @@ module.exports = async function (deployer) {
   await deployer.link(lib, [nisa, DualRingEC]);
 
   await deployer.deploy(nisa);
-  const _nisa = await nisa.deployed();
 
-  await deployer.deploy(DualRingEC, _nisa.address);
-  console.log("successful deploy DualRingEC")
+  await deployer.deploy(DualRingEC, nisa.address);
+  // console.log("Migration: deploy DualRingEC");
 };

@@ -1,15 +1,39 @@
 const DualRingEC = artifacts.require("DualRingEC");
-const assert = require("assert");;
+const assert = require("assert");
+const nisa = artifacts.require("NISA");
+const lib = artifacts.require("alt_bn128");
 
-contract("DualRingEC", () => {
+contract("DualRingEC", async () => {
     const m = "message";
     const skj = [3,1];
     const size = [4,8,16,32,64];
+    var n, drEC;
+
+    // before(async () => {
+
+        // await deployer.deploy(lib); 
+        // await deployer.link(lib, [nisa, DualRingEC]);
+
+        // n = await deployer.deploy(nisa);
+
+        // n = await deployer.deploy(DualRingEC, nisa.address);
+        // console.log("Migration: deploy DualRingEC");
+        
+    // })
+
+    // beforeEach(async() => {
+    //     drEC = await DualRingEC.new(n.address);
+    // })
     
     for (let i = 0; i < size.length; i++){
         it("tests with size " + size[i], async () =>  {
 
             let drEC = await DualRingEC.deployed();
+            // const l = await lib.deployed();
+            // nisa.link(l);
+            // DualRingEC.link(l);
+            // const n = await nisa.deployed();
+            // let drEC = await DualRingEC.new(n.address);
 
             const pp = await drEC.setupEC(size[i], skj);
 
@@ -31,58 +55,3 @@ contract("DualRingEC", () => {
         });
     }
 });
-    // contract("DualRingEC", () => {
-    //     it("tests with size 16", async () =>  {
-    
-    //         let dualRingBulletproof = await DualRingEC.deployed();
-    
-    //         await dualRingBulletproof.generateKeys(16);
-    
-    //         const proof = await dualRingBulletproof.full_sign.call("1", 0);
-    
-    //         // Get the transaction receipt using web3
-    //         const gasUsage = await dualRingBulletproof.full_verify.estimateGas("1",proof);
-    
-    //         // Log the gas usage
-    //         console.log("size 16 bullet-proof used ", gasUsage);
-    //     });
-    // });
-
-    //     it("tests with size 32", async () =>  {
-    
-    //         let dualRingBulletproof = await DualRingEC.deployed();
-    
-    //         await dualRingBulletproof.generateKeys(32);
-    
-    //         const proof = await dualRingBulletproof.full_sign.call("1", 0);
-    
-    //         // Get the transaction receipt using web3
-    //         const gasUsage = await dualRingBulletproof.full_verify.estimateGas("1",proof);
-    
-    //         // Log the gas usage
-    //         console.log("size 32 bullet-proof used ", gasUsage);
-    
-    
-    //     });
-
-    //     it("tests with size 64", async () => {
-    
-    //         let dualRingBulletproof = await DualRingEC.deployed();
-    
-    //         await dualRingBulletproof.generateKeys(64);
-    
-    //         const proof = await dualRingBulletproof.full_sign.call("1", 0);
-    
-    //         // Get the transaction receipt using web3
-    //         const gasUsage = await dualRingBulletproof.full_verify.estimateGas("1",proof);
-    
-    //         // Log the gas usage
-    //         console.log("size 64 bullet-proof used ", gasUsage);
-    //     });
- 
-
-
-
-
-
-

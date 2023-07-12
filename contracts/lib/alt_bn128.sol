@@ -37,31 +37,6 @@ library alt_bn128 {
         }
     }
 
-    // function add(uint256[2] p1, uint256[2] p2) internal view returns (uint256[2] r) {
-    //     uint256[4] memory input;
-    //     input[0] = p1[0];
-    //     input[1] = p1[1];
-    //     input[2] = p2[0];
-    //     input[3] = p2[1];
-    //     assembly {
-    //         if iszero(staticcall(not(0), 6, input, 0x80, r, 0x40)) {
-    //             revert(0, 0)
-    //         }
-    //     }
-    // }
-
-    // function mul(uint256[2] P, uint256 s) internal view returns (uint256[2] R) {
-    //     uint256[3] memory input;
-    //     input[0] = P[0];
-    //     input[1] = P[1];
-    //     input[2] = s;
-    //     assembly {
-    //         if iszero(staticcall(not(0), 7, input, 0x60, R, 0x40)) {
-    //             revert(0, 0)
-    //         }
-    //     }
-    // }
-
     /// @dev scalar multiply an EC point
     /// @param p EC point
     /// @param s the scalar
@@ -106,26 +81,6 @@ library alt_bn128 {
     function inv(uint256 x) internal view returns (uint256) {
         return modExp(x, q - 2, q);
     }
-
-    // function inv(uint256 x) internal pure returns (uint) {
-    //     uint256 a = x;
-    //     if (a == 0)
-    //         return 0;
-    //     if (a > q)
-    //         a = a % q;
-    //     int t1;
-    //     int t2 = 1;
-    //     uint r1 = q;
-    //     uint r2 = a;
-    //     uint p;
-    //     while (r2 != 0) {
-    //         p = r1 / r2;
-    //         (t1, t2, r1, r2) = (t2, t1 - int(p) * t2, r2, r1 - p * r2);
-    //     }
-    //     if (t1 < 0)
-    //         return (q - uint(-t1));
-    //     return uint(t1);
-    // }
 
     function mod(uint256 x) internal pure returns (uint256) {
         return x % q;
@@ -180,7 +135,7 @@ library alt_bn128 {
 
     /** @dev pack and encode a G1Point */
     function pack(G1Point memory p) public pure returns (bytes memory){
-      return bytes(abi.encodePacked(p.X, p.Y));
+      return abi.encodePacked(p.X, p.Y);
     }
 
     function packArray(alt_bn128.G1Point[] memory a) public pure returns (bytes memory packed) {
