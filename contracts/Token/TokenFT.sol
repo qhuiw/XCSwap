@@ -17,7 +17,7 @@ contract TokenFT is Token {
   /// @dev approve spender to spend token on behave of owner
   /// @param spender authorised spender
   /// @param value authorised amount
-  function approve(address spender, uint256 value) public returns (bool) {
+  function approve(address spender, uint256 value) public override returns (bool) {
     if (spender == address(0)) revert ("Invalid Spender");
     
     address owner = msg.sender;
@@ -32,7 +32,7 @@ contract TokenFT is Token {
   /// @param from owner address
   /// @param to destination address
   /// @param value transfer amount
-  function transfer(address from, address to, uint256 value) public returns (bool) {
+  function transfer(address from, address to, uint256 value) public override returns (bool) {
     if (balanceOf(from) < value) revert ("Insufficient balance");
 
     address spender = msg.sender;
@@ -49,7 +49,7 @@ contract TokenFT is Token {
     return true;
   }
 
-  function mint(address account, uint256 value) public {
+  function mint(address account, uint256 value) public override {
     if (account == address(0)) revert("Mint: Invalid receiver address");
     _balances[account] += value;
   }

@@ -105,7 +105,7 @@ contract NISA {
             );
 
             // half size
-            (Gs, a, b) = nextIter(Gs, a, b, x);
+            (Gs, a, b) = halve(Gs, a, b, x);
         }
         p.a = a[0];
         p.b = b[0];
@@ -138,17 +138,16 @@ contract NISA {
         }
     }
 
-    function nextIter(
+    function halve(
         alt_bn128.G1Point[] memory Gs,
         uint256[] memory a,
         uint256[] memory b,
         uint256 x
     ) private view returns (
-            alt_bn128.G1Point[] memory Gs_new,
-            uint256[] memory a_new,
-            uint256[] memory b_new
-        )
-    {
+        alt_bn128.G1Point[] memory Gs_new,
+        uint256[] memory a_new,
+        uint256[] memory b_new
+    ){
         uint n = a.length / 2;
 
         uint256 x_inv = alt_bn128.inv(x);

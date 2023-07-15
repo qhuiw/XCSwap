@@ -8,11 +8,15 @@ contract DualRing {
     using alt_bn128 for alt_bn128.G1Point; 
     using alt_bn128 for alt_bn128.G1Point[];
 
+    /// @param cs challenges
+    /// @param z response
     struct Sig {
         uint256[] cs;
         uint256 z;
     }
 
+    /// @param g random gen
+    /// @param pks accs
     struct Param {
         alt_bn128.G1Point g;
         alt_bn128.G1Point[] pks;
@@ -40,7 +44,7 @@ contract DualRing {
      * @return c sum_i c_i := H(m, pks, R) 
      * @return R g^r * prod_{i != j} pk_i^{c_i} 
      */
-    function sign(Param memory pp, string memory m, uint256[2] memory skj) 
+    function sign(Param memory pp, bytes memory m, uint256[2] memory skj) 
     public view returns (Sig memory sig, uint256 c, alt_bn128.G1Point memory R) {
         require(skj[1] < pp.pks.length, "DualRing: secret key invalid index");
         uint256[] memory cs = new uint256[](pp.pks.length);
@@ -67,7 +71,7 @@ contract DualRing {
         });
     }
 
-    function verify(Param memory pp, string memory m, Sig memory sig) public view returns (bool) {
+    function verify(Param memory pp, bytes memory m, Sig memory sig) public view returns (bool) {
         alt_bn128.G1Point memory R = alt_bn128.mul(pp.g, sig.z);
         uint256 c = 0;
 
@@ -79,7 +83,7 @@ contract DualRing {
         return c == H(m, pp.pks, R);
     }
 
-    function H(string memory m, alt_bn128.G1Point[] memory pks, alt_bn128.G1Point memory R) internal pure 
+    function H(bytes memory m, alt_bn128.G1Point[] memory pks, alt_bn128.G1Point memory R) internal pure 
     returns (uint256) {
         return uint256(keccak256(abi.encodePacked(m, pks.packArray(), R.X, R.Y))) % alt_bn128.q;
     }

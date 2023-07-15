@@ -19,16 +19,24 @@ contract TokenNFT is Token {
 
   constructor (string memory _name, string memory _symbol) Token(_name, _symbol) {}
 
-  function approve(address to, uint256 tokenId) public returns (bool) {
+  // error InvalidOperator (address op);
+
+  function approve(address to, uint256 tokenId) public override returns (bool) {
     address owner = ownerOf(tokenId);
-    if (to == owner) revert ("Invalid Operator");
-    if (msg.sender != owner) revert("Invalid Approver");
+    if (to == owner)  revert ("TokenNFT.approve: Invalid Operator");
+    // revert InvalidOperator (to);
+    /// @dev call chain
+    if (tx.origin != owner) revert("TokenNFT.approve: Invalid Approver");
 
     _tokenApproval[tokenId] = to;
     return true;
   }
 
-  function transfer(address from, address to, uint256 tokenId) public returns (bool) {
+  // function isApproved(address account, uint256 tokenId) public returns (bool) {
+
+  // }
+
+  function transfer(address from, address to, uint256 tokenId) public override returns (bool) {
     address owner = ownerOf(tokenId);
     if (owner != from) revert ("Incorrect Owner");
     if (to == address(0)) revert ("Invalid Receiver");
@@ -43,14 +51,13 @@ contract TokenNFT is Token {
       _owners[tokenId] = to;
       return true;
     }
-
     return false;
   }
 
   /// @dev create a token for address to
   /// @param to account address
   /// @param tokenId token ID
-  function mint(address to, uint256 tokenId) public {
+  function mint(address to, uint256 tokenId) public override {
     if (_exists(tokenId)) revert("Mint: Token ID exists");
     if (to == address(0)) revert("Mint: Invalid receiver address");
     _balances[to] += 1;
