@@ -47,7 +47,7 @@ contract DualRing {
     function sign(Param memory pp, bytes memory m, uint256[2] memory skj) 
     public view returns (Sig memory sig, uint256 c, alt_bn128.G1Point memory R) {
         require(skj[1] < pp.pks.length, "DualRing: secret key invalid index");
-        uint256[] memory cs = new uint256[](pp.pks.length);
+        uint256[] memory cs = new uint256[](pp.pks.length); // challenges
         uint256 r = alt_bn128.random();
         R = alt_bn128.mul(pp.g, r);
         uint256 sum_i = 0;

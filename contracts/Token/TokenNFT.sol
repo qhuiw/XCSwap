@@ -32,22 +32,23 @@ contract TokenNFT is Token {
     return true;
   }
 
-  // function isApproved(address account, uint256 tokenId) public returns (bool) {
-
-  // }
-
   function transfer(address from, address to, uint256 tokenId) public override returns (bool) {
+    address operator = msg.sender;
     address owner = ownerOf(tokenId);
-    if (owner != from) revert ("Incorrect Owner");
+    if (owner != from || operator != _tokenApproval[tokenId]) 
+      revert ("Incorrect From Address");
     if (to == address(0)) revert ("Invalid Receiver");
+
     /// @dev could extend to _operatorApproval
-    if (msg.sender == owner || msg.sender == _tokenApproval[tokenId]) {
-      // Clear approvals from the previous owner
+    if (operator == owner || operator == _tokenApproval[tokenId]) {
+      /// @dev Clear approvals from the previous owner
       delete _tokenApproval[tokenId];
-      // transfer 
+
+      /// @dev update balance
       _balances[from] -= 1;
       _balances[to] += 1;
 
+      /// @dev transfer
       _owners[tokenId] = to;
       return true;
     }

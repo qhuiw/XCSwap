@@ -7,7 +7,7 @@ contract PubParam {
   using alt_bn128 for uint256;
   using alt_bn128 for alt_bn128.G1Point;
 
-  /// @dev g_ty, g_val, g_tbeg, g_tend, g_sk, g_opn, g_ok;
+  /// @dev [g_ty, g_val, ... , g_tbeg, g_tend, g_sk, g_opn, g_ok]
   alt_bn128.G1Point[] _gs;
 
   alt_bn128.G1Point _g_pk; /// @dev TagKGen
@@ -38,12 +38,12 @@ contract PubParam {
     }
   }
 
-  /// @dev generate public key
+  /// @dev pk = g_pk^sk
   function TagKGen(uint256 sk) public view returns (alt_bn128.G1Point memory pk) {
     pk = _g_pk.mul(sk);
   }
 
-  /// @dev generate tag
+  /// @dev tag = g_tag^sk
   function TagEval(uint256 sk) public view returns (alt_bn128.G1Point memory tag) {
     tag = _g_tag.mul(sk);
   }
@@ -89,6 +89,10 @@ contract PubParam {
 
   function g_pk() public view returns (alt_bn128.G1Point memory) {
     return _g_pk;
+  }
+
+  function g_ok() public view returns (alt_bn128.G1Point memory) {
+    return _gs[n_attr-1];
   }
 
   function h() public view returns (alt_bn128.G1Point memory) {

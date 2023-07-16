@@ -5,7 +5,7 @@ const assert = require("assert");
 
 contract("PartialEquality", async () => {
   var pp, pe, lib;
-  const n_attr = 1;
+  const n_ty = 1;
   const x = [1,2,3,4,5,6,7];
   const y = [1,2,3,4,0,0,0];
   const i_ne = [4,5,6];
@@ -14,7 +14,7 @@ contract("PartialEquality", async () => {
     lib = await alt_bn128.deployed();
     await PubParam.link(lib);
     await PartialEquality.link(lib);
-    pp = await PubParam.new(n_attr);
+    pp = await PubParam.new(n_ty);
     pe = await PartialEquality.new();
   })
 
@@ -27,7 +27,7 @@ contract("PartialEquality", async () => {
     assert (b, true, "PE failed");
   })
 
-  it ("tests partial", async () => {
+  it ("tests revised pe", async () => {
     var gs = await pp.gs();
     const sig = await pe.sign(gs.slice(4), x.slice(4), y.slice(4));
     const Cx = await pp.Com(x);

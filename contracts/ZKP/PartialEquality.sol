@@ -101,7 +101,9 @@ contract PartialEquality {
     uint256 e = uint256(keccak256(abi.encode(c)));
 
     for (uint i = 0; i < l; i++) {
-      rs[i] = rs[i].add(alt_bn128.sub(x[idx_ne[i]], y[idx_ne[i]]).mul(e));
+      rs[i] = rs[i].add(
+        alt_bn128.sub(x[idx_ne[i]], y[idx_ne[i]]).mul(e)
+      );
     }
 
     sig = Sig({
