@@ -35,5 +35,6 @@ abstract contract Token {
   function approve(address to, uint256 val) public virtual returns (bool);
   function transfer(address from, address to, uint256 val) public virtual returns (bool);
   function mint(address to, uint256 val) public virtual;
+  // function ownerOf(uint256 val) public virtual returns (address);
 
 }

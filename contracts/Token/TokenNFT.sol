@@ -24,7 +24,6 @@ contract TokenNFT is Token {
   function approve(address to, uint256 tokenId) public override returns (bool) {
     address owner = ownerOf(tokenId);
     if (to == owner)  revert ("TokenNFT.approve: Invalid Operator");
-    // revert InvalidOperator (to);
     /// @dev call chain
     if (tx.origin != owner) revert("TokenNFT.approve: Invalid Approver");
 
@@ -35,8 +34,9 @@ contract TokenNFT is Token {
   function transfer(address from, address to, uint256 tokenId) public override returns (bool) {
     address operator = msg.sender;
     address owner = ownerOf(tokenId);
-    if (owner != from || operator != _tokenApproval[tokenId]) 
-      revert ("Incorrect From Address");
+    if (to == owner) revert("Problem");
+    if (owner != from) revert ("Incorrect From");
+    // if (owner != from || operator != _tokenApproval[tokenId]) revert ("Incorrect From Address");
     if (to == address(0)) revert ("Invalid Receiver");
 
     /// @dev could extend to _operatorApproval

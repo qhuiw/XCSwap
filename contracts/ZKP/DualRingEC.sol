@@ -81,6 +81,7 @@ contract DualRingEC is DualRing {
         });
         /// @dev reduce signature size by NISA (bulletproof)
         NISA.Sig memory nisa_sig = nisa.prove(nisa_pp, dr_sig.cs); 
+        // NISA.Sig memory nisa_sig = NISA.prove(nisa_pp, dr_sig.cs); 
 
         sig = SigEC({
             z : dr_sig.z,
@@ -104,6 +105,7 @@ contract DualRingEC is DualRing {
             c : c
         });
         require(nisa.verify(nisa_pp, sig.nisa_sig), "DualRingEC failed");
+        // require(NISA.verify(nisa_pp, sig.nisa_sig), "DualRingEC failed");
 
         return true;
     }

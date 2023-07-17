@@ -3,16 +3,18 @@ const alt_bn128 = artifacts.require("alt_bn128");
 const Mixer = artifacts.require("Mixer");
 const TokenRegistrar = artifacts.require("TokenRegistrar");
 const TokenNFT = artifacts.require("TokenNFT");
-// const PE = artifacts.require("PartialEquality");
+const PartialEquality = artifacts.require("PartialEquality");
+const SoKwd = artifacts.require("SoKwd");
 const PubParam = artifacts.require("PubParam");
 const BN = require("bn.js")
 
 contract("Token", async (accounts) => {
-  var lib, reg, x, pp, mixer;
+  var lib, reg, x, pp, mixer, pe , R;
   const max = 2**53-1;
   const A = accounts[0];
+  const B = accounts[1];
   const Aval = 1;
-  var AattrP;
+  var AattrP, sk;
   
   before (async () => {
     reg = await TokenRegistrar.new();
@@ -22,8 +24,25 @@ contract("Token", async (accounts) => {
     lib = await alt_bn128.new();
     await Mixer.link(lib);
     await PubParam.link(lib);
+    await SoKwd.link(lib);
+    await PartialEquality.link(lib);
+
     pp = await PubParam.new(1); // max_ty
-    mixer = await Mixer.new(reg.address, pp.address);
+
+    sok = await SoKwd.new(pp.address);
+    await Mixer.link(sok);
+
+    pe = await PartialEquality.new();
+
+    mixer = await Mixer.new(reg.address, pp.address, pe.address, sok.address, { gas: 5000000 });
+
+
+
+    const ring_size = 16;
+    R = new Array(ring_size);
+    for (var i = 0; i < ring_size; i++) {
+      R[i] = await pp.randomAcc();
+    }
   })
 
   it ("tests deposit", async () => {
@@ -31,6 +50,7 @@ contract("Token", async (accounts) => {
     const ty = await reg.getTy(x.address);
     // new BN(RandomUint(max))
     AattrP = [ty, Aval, 0, new BN(max), new BN(RandomUint(max)), new BN(RandomUint(max)), new BN(RandomUint(max))];
+    sk = AattrP[4];
 
     const onetacc = await pp.onetAcc(AattrP);
     
@@ -38,16 +58,33 @@ contract("Token", async (accounts) => {
     // deposit
     const sig = await mixer.deposit.call(tx_dp, AattrP.slice(4), {from : A}); 
 
-    const b = await mixer.process_dp(tx_dp, sig);
-    // const b = await mixer.test(sig);
-    assert (b, true, "Deposit failed");
+    await mixer.deposit(tx_dp, AattrP.slice(4), {from : A});
+
+    const b = await mixer.process_dp.call(tx_dp, sig, {from : A});
+
+    await mixer.process_dp.sendTransaction(tx_dp, sig, {from : A});
+
+    assert.equal(b, true, "Deposit failed");
   })
 
-  it ("tests withdraw", async () => {
-    const ring_size = 16;
-    const skj = [AattrP[4], 8]; // (sk, theta)
 
+  it ("tests withdraw, idx = 4", async () => {
 
+    const acc = await pp.Com(AattrP);
+
+    R[4] = acc;
+
+    const tag = await pp.TagEval(sk);
+
+    const tx_wd = [R, tag, AattrP.slice(0, 4), A];
+
+    const wit = [4].concat(AattrP.slice(4));
+
+    const sig = await mixer.withdraw.call(tx_wd, wit);
+
+    const b = await mixer.process_wd.call(tx_wd, sig);
+
+    assert.equal(b, true, "Withdraw failed");
   })
 
 

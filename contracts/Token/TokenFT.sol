@@ -61,4 +61,8 @@ contract TokenFT is Token {
   function balanceOf(address account) public view returns (uint256) {
     return _balances[account];
   }
+
+  // function ownerOf(uint256 val) public override returns (address) {
+  //   return address(0);
+  // }
 }

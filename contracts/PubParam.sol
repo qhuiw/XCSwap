@@ -103,4 +103,8 @@ contract PubParam {
     return n_attr;
   }
 
+  function randomAcc() public view returns (alt_bn128.G1Point memory) {
+    return alt_bn128.random().uintToCurvePoint();
+  }
+
 }

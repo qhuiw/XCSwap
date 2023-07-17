@@ -27,7 +27,7 @@ contract("DiffGenEqual", async () => {
     const Cx = await pp.TagEval(y[4]);
     const Cy = await pp.Com(y);
     const b = await dg.verify(gx, gys, 4, Cx, Cy, sig);
-    assert (b, true, "PE failed");
+    assert (b == true, "DG failed");
   })
 
 

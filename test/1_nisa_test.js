@@ -29,6 +29,7 @@ contract("NISA", async () => {
       // let nisa = await NISA.deployed();
       // const pp = await nisa.setup.call(a);
       // const sig = await nisa.prove.call(pp, a);
+      // console.log(sig);
       const b = await nisa.verify.call(pp, sig);
       assert(b, true, "NISA is incorrect");
       // console.log("gas usage: ", usage);
