@@ -16,6 +16,7 @@ contract PubParam {
   alt_bn128.G1Point _h;
 
   uint n_attr;
+  uint n_ty;
 
   struct Acc {
     alt_bn128.G1Point pk;
@@ -25,6 +26,7 @@ contract PubParam {
   
   constructor (uint max_ty) {
     n_attr = 2*max_ty + 5;
+    n_ty = 2*max_ty;
     init(n_attr);
   }
 
@@ -101,6 +103,10 @@ contract PubParam {
 
   function n() public view returns (uint) {
     return n_attr;
+  }
+  
+  function sk_pos() public view returns (uint) {
+    return n_ty;
   }
 
   function randomAcc() public view returns (alt_bn128.G1Point memory) {

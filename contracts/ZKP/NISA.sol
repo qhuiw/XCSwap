@@ -3,7 +3,6 @@ pragma solidity >=0.4.0 <0.9.0;
 
 import "../lib/alt_bn128.sol";
 
-// proof using iteration
 contract NISA {
     using alt_bn128 for uint256;
     using alt_bn128 for alt_bn128.G1Point;
@@ -35,9 +34,9 @@ contract NISA {
         return verify(param, p);
     }
 
-    /** 
-     * @dev setup public parameters
-	 */
+     
+    /// @dev setup public parameters
+    /// @param a witness vector
     function setup(uint256[] memory a) public view returns (Param memory param) {
         require(
             a.length & (a.length - 1) == 0,
@@ -56,6 +55,8 @@ contract NISA {
         }
     }
 
+    /// @param param pp (Gs, u, P, c)
+    /// @param a witness vector
     function prove(Param memory param, uint256[] memory a) public view returns (Sig memory p) {
         require(
             a.length & (a.length - 1) == 0,
@@ -88,7 +89,7 @@ contract NISA {
         alt_bn128.G1Point memory R;
         uint256 x;
 
-        // O(logn) loop
+        /// @dev O(logn) iteration
         for (uint idx = 0; idx < length; idx++) {
             // L && R
             (L, R) = LR(Gs, a, b, u_prime);
@@ -104,13 +105,14 @@ contract NISA {
                 )
             );
 
-            // half size
+            // halve size
             (Gs, a, b) = halve(Gs, a, b, x);
         }
         p.a = a[0];
         p.b = b[0];
     }
 
+    /// @dev compute one round L, R commitments
     function LR(
         alt_bn128.G1Point[] memory Gs,
         uint256[] memory a,
@@ -138,6 +140,7 @@ contract NISA {
         }
     }
 
+    /// @dev halve Gs, a, b sizes
     function halve(
         alt_bn128.G1Point[] memory Gs,
         uint256[] memory a,

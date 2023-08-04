@@ -1,29 +1,29 @@
 {
   "contractName": "Utils",
   "abi": [],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"details\":\"math util functions\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/lib/Utils.sol\":\"Utils\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/lib/Utils.sol\":{\"keccak256\":\"0x8f833f47c7973fe485f976e69c9d3f0b4a700cc71f7e6db9ab5b8fd53cda01f2\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://5146d9091344b67240e050acf59a189a6cea8d38dd1b4a53cb2d1a308dd805a8\",\"dweb:/ipfs/QmcEsUfb1f4j1MrwuqRM3xdxrRhmw43ADtJHD23m3EvbwV\"]}},\"version\":1}",
-  "bytecode": "0x60566050600b82828239805160001a6073146043577f4e487b7100000000000000000000000000000000000000000000000000000000600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122032e95818bfdcec7445371e2e8393c3470ba3db21b23ce6824cecbec478c9525364736f6c63430008130033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122032e95818bfdcec7445371e2e8393c3470ba3db21b23ce6824cecbec478c9525364736f6c63430008130033",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"details\":\"math util functions\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/lib/Utils.sol\":\"Utils\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1},\"remappings\":[]},\"sources\":{\"project:/contracts/lib/Utils.sol\":{\"keccak256\":\"0x8f833f47c7973fe485f976e69c9d3f0b4a700cc71f7e6db9ab5b8fd53cda01f2\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://5146d9091344b67240e050acf59a189a6cea8d38dd1b4a53cb2d1a308dd805a8\",\"dweb:/ipfs/QmcEsUfb1f4j1MrwuqRM3xdxrRhmw43ADtJHD23m3EvbwV\"]}},\"version\":1}",
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220e7cd9a01de0a52ebcfb9be62bb755ea3eee9392cec50108c961fb2de9228a28764736f6c63430008130033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220e7cd9a01de0a52ebcfb9be62bb755ea3eee9392cec50108c961fb2de9228a28764736f6c63430008130033",
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
-  "sourceMap": "105:20:12:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-  "deployedSourceMap": "105:20:12:-:0;;;;;;;;",
+  "sourceMap": "105:20:13:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;105:20:13;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "105:20:13:-:0;;;;;;;;",
   "source": "// SPDX-License-Identifier: GPL-3.0\npragma solidity >=0.4.0 <0.9.0;\n\n/**\n * @dev math util functions\n */\nlibrary Utils {\n\n\n\n}",
   "sourcePath": "/Users/qian/Desktop/Y4/COMP4550/project/XCSwap/contracts/lib/Utils.sol",
   "ast": {
     "absolutePath": "project:/contracts/lib/Utils.sol",
     "exportedSymbols": {
       "Utils": [
-        2968
+        5293
       ]
     },
-    "id": 2969,
+    "id": 5294,
     "license": "GPL-3.0",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 2966,
+        "id": 5291,
         "literals": [
           "solidity",
           ">=",
@@ -34,7 +34,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "36:31:12"
+        "src": "36:31:13"
       },
       {
         "abstract": false,
@@ -43,26 +43,26 @@
         "contractDependencies": [],
         "contractKind": "library",
         "documentation": {
-          "id": 2967,
+          "id": 5292,
           "nodeType": "StructuredDocumentation",
-          "src": "69:35:12",
+          "src": "69:35:13",
           "text": " @dev math util functions"
         },
         "fullyImplemented": true,
-        "id": 2968,
+        "id": 5293,
         "linearizedBaseContracts": [
-          2968
+          5293
         ],
         "name": "Utils",
-        "nameLocation": "113:5:12",
+        "nameLocation": "113:5:13",
         "nodeType": "ContractDefinition",
         "nodes": [],
-        "scope": 2969,
-        "src": "105:20:12",
+        "scope": 5294,
+        "src": "105:20:13",
         "usedErrors": []
       }
     ],
-    "src": "36:89:12"
+    "src": "36:89:13"
   },
   "compiler": {
     "name": "solc",
@@ -70,7 +70,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-07-13T08:51:17.583Z",
+  "updatedAt": "2023-07-18T03:55:31.075Z",
   "devdoc": {
     "details": "math util functions",
     "kind": "dev",

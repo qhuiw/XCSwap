@@ -16,14 +16,14 @@ contract SoKwd {
   /// @param tag tag = g_tag^sk
   /// @param attrS (ty, val, t_beg, t_end)
   /// @param u_rcpt receipt address
-  struct TX_wd {
+  struct TX {
     alt_bn128.G1Point[] R; 
     alt_bn128.G1Point tag;
     uint256[] attrS;
     address u_rcpt;
   }
 
-  struct Sig_wd {
+  struct Sig {
     alt_bn128.G1Point acc_d;
     DR.SigEC dr_sig;
     DG.Sig dg_sig;
@@ -35,14 +35,21 @@ contract SoKwd {
   DR dr;
   DG dg;
 
+  // constructor (address pp_addr, address pe_addr, address dr_addr, address dg_addr) {
+  //   pe = PE(pe_addr);
+  //   dr = DR(dr_addr);
+  //   dg = DG(dg_addr);
+  //   pp = PubParam(pp_addr);
+  // }
+
   constructor (address pp_addr) {
+    pp = PubParam(pp_addr);
     pe = new PE();
     dr = new DR();
     dg = new DG();
-    pp = PubParam(pp_addr);
   }
 
-  function sign(TX_wd memory tx_wd, uint256[4] memory wit) public view returns (Sig_wd memory sig){
+  function sign(TX memory tx_wd, uint256[4] memory wit) public view returns (Sig memory sig){
     require (tx_wd.tag.eq(pp.TagEval(wit[1])), "Tag matches");
 
     uint n = pp.n();
@@ -82,14 +89,15 @@ contract SoKwd {
     sig.dr_sig = dr.signEC(dr_pp, m, skj);
 
     /// @dev Diff Gen Equal signature (tag vs acc_d)
-    sig.dg_sig = dg.sign(pp.g_tag(), pp.gs(), 4, acc_d_attr);
+    sig.dg_sig = dg.sign(pp.g_tag(), pp.gs(), pp.sk_pos(), acc_d_attr);
 
     /// @dev Partial Equality signature (acc_d vs pub)
     sig.pe_sig = pe.sign(pp.gs(), acc_d_attr, y, i_ne);
 
   }
 
-  function verify_wd_sigs(TX_wd memory tx_wd, Sig_wd memory sig) public view returns (bool) {
+  
+  function verify(TX memory tx_wd, Sig memory sig) public view returns (bool) {
     DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_wd.R, pp.h());
     bytes memory m = abi.encode(tx_wd.u_rcpt);
 
@@ -98,7 +106,7 @@ contract SoKwd {
     require (b_dr, "Ring signature does not pass");
 
     /// @dev verify Diff Gen Equal signature
-    bool b_dg = dg.verify(pp.g_tag(), pp.gs(), 4, tx_wd.tag, sig.acc_d, sig.dg_sig);
+    bool b_dg = dg.verify(pp.g_tag(), pp.gs(), pp.sk_pos(), tx_wd.tag, sig.acc_d, sig.dg_sig);
     require (b_dg, "Diff Gen Equal signature does not pass");
 
     uint256[] memory y = new uint256[](pp.n());

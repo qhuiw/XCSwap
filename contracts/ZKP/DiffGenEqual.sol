@@ -14,6 +14,7 @@ contract DiffGenEqual {
     uint256[] zs;
   }
   
+  /// @dev different generator
   /// @param gx single generator
   /// @param gys multi generator
   /// @param x_idx index of witness x in y
@@ -51,7 +52,10 @@ contract DiffGenEqual {
     });
   }
 
-
+  /// @param gx single generator
+  /// @param gys multi generator
+  /// @param x_idx index of witness x in y
+  /// @param Cx single gen commitment
   function verify(
     alt_bn128.G1Point memory gx, 
     alt_bn128.G1Point[] memory gys, 

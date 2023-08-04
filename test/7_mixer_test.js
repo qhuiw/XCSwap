@@ -4,7 +4,11 @@ const Mixer = artifacts.require("Mixer");
 const TokenRegistrar = artifacts.require("TokenRegistrar");
 const TokenNFT = artifacts.require("TokenNFT");
 const PartialEquality = artifacts.require("PartialEquality");
+const DualRing = artifacts.require("DualRingEC");
+const DiffGenEqual = artifacts.require("DiffGenEqual");
+
 const SoKwd = artifacts.require("SoKwd");
+const SoKsp = artifacts.require("SoKsp");
 const PubParam = artifacts.require("PubParam");
 const BN = require("bn.js")
 
@@ -25,7 +29,10 @@ contract("Token", async (accounts) => {
     await Mixer.link(lib);
     await PubParam.link(lib);
     await SoKwd.link(lib);
+    await SoKsp.link(lib);
     await PartialEquality.link(lib);
+    await DualRing.link(lib);
+    await DiffGenEqual.link(lib);
 
     pp = await PubParam.new(1); // max_ty
 
@@ -33,10 +40,12 @@ contract("Token", async (accounts) => {
     await Mixer.link(sok);
 
     pe = await PartialEquality.new();
+    dr = await DualRing.new();
+    dg = await DiffGenEqual.new();
 
-    mixer = await Mixer.new(reg.address, pp.address, pe.address, sok.address, { gas: 5000000 });
+    // mixer = await Mixer.new(reg.address, pp.address, pe.address, sok.address, { gas: 5000000 });
 
-
+    mixer = await Mixer.new(reg.address, pp.address, pe.address, dr.address, dg.address, sok.address, {gas : 5000000});
 
     const ring_size = 16;
     R = new Array(ring_size);

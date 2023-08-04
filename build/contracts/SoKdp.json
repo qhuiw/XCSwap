@@ -1,0 +1,201 @@
+{
+  "contractName": "SoKdp",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/TX/SoKdp.sol\":\"SoKdp\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1},\"remappings\":[]},\"sources\":{\"project:/contracts/PubParam.sol\":{\"keccak256\":\"0x3ef144d11559c6225c5fc351579f363dbbc1ca13f57d3fa6342923f5e711d6c0\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://10df6377b36b767bb349063d20cceacfdea1c52bef09c6b939345456ea860aa1\",\"dweb:/ipfs/QmdRDX7vhNTzxBYUW4K1VyPay2RdrS7NCAz6b3jY9VCku5\"]},\"project:/contracts/TX/SoKdp.sol\":{\"keccak256\":\"0xa6bc6044565e4343a826e8a7ca272e41ae2161da7d443b2f6b5b101bf8e8c460\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://5524f611c091516c89e57f14fe4c96213d137cf8754f726ba0577f06b3961777\",\"dweb:/ipfs/QmNNtyEydXuh1pj8zgbdBg9F2NeQZMetD6y92imruCt8Qs\"]},\"project:/contracts/ZKP/PartialEquality.sol\":{\"keccak256\":\"0x102636b4111de74e324640c8b1438b7ba30397df873f5b36c4ed771a6b4ab04c\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://59246e59b31aee4258e0554d00a87130638c297328084cb1f0f3b4eb0743286e\",\"dweb:/ipfs/QmVSbEK6jCyvwoUAscvj2PLtrzVpb1AjrXb9hD8rSRTFLC\"]},\"project:/contracts/lib/alt_bn128.sol\":{\"keccak256\":\"0xa67da76ed8af8ae22991337c9b757ad7c1c8552f555fcaa16ce9c010f70e9024\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://5200de5bb8d6c5057d2c33aa6cdccf716ecdc75dd77f921e72c7d197f800b2bd\",\"dweb:/ipfs/QmWYmFhzRRXL871tpZk3MpZkTRSuxmySUuUfmGZgnEHybs\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea264697066735822122006b2a77280d1d2bdf8721d54e0f7aefb761a2d304393f38d190d869d5eb1158064736f6c63430008130033",
+  "deployedBytecode": "0x6080604052600080fdfea264697066735822122006b2a77280d1d2bdf8721d54e0f7aefb761a2d304393f38d190d869d5eb1158064736f6c63430008130033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "193:97:2:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "193:97:2:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: GPL-3.0\npragma solidity >=0.4.0 <0.9.0;\n\nimport \"../lib/alt_bn128.sol\";\nimport \"../PubParam.sol\";\nimport {PartialEquality as PE} from \"../ZKP/PartialEquality.sol\";\n\ncontract SoKdp {\n  using alt_bn128 for uint256;\n  using alt_bn128 for alt_bn128.G1Point;\n\n  \n\n\n\n}",
+  "sourcePath": "/Users/qian/Desktop/Y4/COMP4550/project/XCSwap/contracts/TX/SoKdp.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/TX/SoKdp.sol",
+    "exportedSymbols": {
+      "PE": [
+        5289
+      ],
+      "PubParam": [
+        1558
+      ],
+      "SoKdp": [
+        1572
+      ],
+      "alt_bn128": [
+        5828
+      ]
+    },
+    "id": 1573,
+    "license": "GPL-3.0",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1560,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".0",
+          "<",
+          "0.9",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "36:31:2"
+      },
+      {
+        "absolutePath": "project:/contracts/lib/alt_bn128.sol",
+        "file": "../lib/alt_bn128.sol",
+        "id": 1561,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 1573,
+        "sourceUnit": 5829,
+        "src": "69:30:2",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "project:/contracts/PubParam.sol",
+        "file": "../PubParam.sol",
+        "id": 1562,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 1573,
+        "sourceUnit": 1559,
+        "src": "100:25:2",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "project:/contracts/ZKP/PartialEquality.sol",
+        "file": "../ZKP/PartialEquality.sol",
+        "id": 1564,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 1573,
+        "sourceUnit": 5290,
+        "src": "126:65:2",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 1563,
+              "name": "PartialEquality",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 5289,
+              "src": "134:15:2",
+              "typeDescriptions": {}
+            },
+            "local": "PE",
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "SoKdp",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 1572,
+        "linearizedBaseContracts": [
+          1572
+        ],
+        "name": "SoKdp",
+        "nameLocation": "202:5:2",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "global": false,
+            "id": 1567,
+            "libraryName": {
+              "id": 1565,
+              "name": "alt_bn128",
+              "nameLocations": [
+                "218:9:2"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 5828,
+              "src": "218:9:2"
+            },
+            "nodeType": "UsingForDirective",
+            "src": "212:28:2",
+            "typeName": {
+              "id": 1566,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "232:7:2",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            }
+          },
+          {
+            "global": false,
+            "id": 1571,
+            "libraryName": {
+              "id": 1568,
+              "name": "alt_bn128",
+              "nameLocations": [
+                "249:9:2"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 5828,
+              "src": "249:9:2"
+            },
+            "nodeType": "UsingForDirective",
+            "src": "243:38:2",
+            "typeName": {
+              "id": 1570,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 1569,
+                "name": "alt_bn128.G1Point",
+                "nameLocations": [
+                  "263:9:2",
+                  "273:7:2"
+                ],
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 5312,
+                "src": "263:17:2"
+              },
+              "referencedDeclaration": 5312,
+              "src": "263:17:2",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_G1Point_$5312_storage_ptr",
+                "typeString": "struct alt_bn128.G1Point"
+              }
+            }
+          }
+        ],
+        "scope": 1573,
+        "src": "193:97:2",
+        "usedErrors": []
+      }
+    ],
+    "src": "36:254:2"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.19+commit.7dd6d404.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.13",
+  "updatedAt": "2023-07-18T03:55:30.977Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

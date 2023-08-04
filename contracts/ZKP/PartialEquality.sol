@@ -21,63 +21,63 @@ contract PartialEquality {
     uint256[] zs;
   }
 
-  // /// @param gs unequal
-  // /// @param x partial unequal witness
-  // /// @param y partial uneuqal witness
-  // function sign(
-  //   alt_bn128.G1Point[] memory gs, 
-  //   uint256[] memory x, 
-  //   uint256[] memory y
-  // ) public view returns (Sig memory sig) {
-  //   require(x.length == y.length && gs.length == x.length, "PartialEqualtiy: witness unequal length");
+  /// @param gs unequal
+  /// @param x unequal witness
+  /// @param y uneuqal witness
+  function sign(
+    alt_bn128.G1Point[] memory gs, 
+    uint256[] memory x, 
+    uint256[] memory y
+  ) public view returns (Sig memory sig) {
+    require(x.length == y.length && gs.length == x.length, "PartialEqualtiy: witness unequal length");
 
-  //   uint256[] memory rs = new uint256[](x.length);
-  //   alt_bn128.G1Point memory c = alt_bn128.G1Point(0, 0);
+    uint256[] memory rs = new uint256[](x.length);
+    alt_bn128.G1Point memory c = alt_bn128.G1Point(0, 0);
 
-  //   for (uint i = 0; i < rs.length; i++) {
-  //     rs[i] = alt_bn128.random();
-  //     c = c.add(gs[i].mul(rs[i]));
-  //   }
-  //   /// @dev Fiat-Shamir 
-  //   uint256 e = uint256(keccak256(abi.encode(c)));
+    for (uint i = 0; i < rs.length; i++) {
+      rs[i] = alt_bn128.random();
+      c = c.add(gs[i].mul(rs[i]));
+    }
+    /// @dev Fiat-Shamir 
+    uint256 e = uint256(keccak256(abi.encode(c)));
 
-  //   for (uint i = 0; i < rs.length; i++) {
-  //     rs[i] = rs[i].add(alt_bn128.sub(x[i], y[i]).mul(e));
-  //   }
+    for (uint i = 0; i < rs.length; i++) {
+      rs[i] = rs[i].add(alt_bn128.sub(x[i], y[i]).mul(e));
+    }
 
-  //   sig = Sig({
-  //     c : c,
-  //     zs : rs
-  //   });
-  // }
+    sig = Sig({
+      c : c,
+      zs : rs
+    });
+  }
 
-  // /// @param gs unequal 
-  // /// @param Cx commitment of witness x
-  // /// @param Cy commitment of witness y
-  // function verify (
-  //   alt_bn128.G1Point[] memory gs, 
-  //   alt_bn128.G1Point memory Cx,
-  //   alt_bn128.G1Point memory Cy,
-  //   Sig memory sig
-  // ) public view returns (bool) {
-  //   require (gs.length == sig.zs.length, "PartialEquality: verify unequal length");
+  /// @param gs unequal 
+  /// @param Cx commitment of witness x
+  /// @param Cy commitment of witness y
+  function verify (
+    alt_bn128.G1Point[] memory gs, 
+    alt_bn128.G1Point memory Cx,
+    alt_bn128.G1Point memory Cy,
+    Sig memory sig
+  ) public view returns (bool) {
+    require (gs.length == sig.zs.length, "PartialEquality: verify unequal length");
 
-  //   alt_bn128.G1Point memory L = alt_bn128.G1Point(0, 0);
-  //   for (uint i = 0; i < gs.length; i++) {
-  //     L = L.add(gs[i].mul(sig.zs[i]));
-  //   }
+    alt_bn128.G1Point memory L = alt_bn128.G1Point(0, 0);
+    for (uint i = 0; i < gs.length; i++) {
+      L = L.add(gs[i].mul(sig.zs[i]));
+    }
 
-  //   /// @dev Fiat-Shamir 
-  //   uint256 e = uint256(keccak256(abi.encode(sig.c)));
+    /// @dev Fiat-Shamir 
+    uint256 e = uint256(keccak256(abi.encode(sig.c)));
 
-  //   alt_bn128.G1Point memory R = alt_bn128.add(sig.c, alt_bn128.add(Cx, Cy.neg()).mul(e));
+    alt_bn128.G1Point memory R = alt_bn128.add(sig.c, alt_bn128.add(Cx, Cy.neg()).mul(e));
 
-  //   return alt_bn128.eq(L, R);
-  // }
+    return alt_bn128.eq(L, R);
+  }
 
 
-  /// @param x witness
-  /// @param y witness
+  /// @param x full witness
+  /// @param y full witness
   /// @param idx_ne unequal indices
   function sign(
     alt_bn128.G1Point[] memory gs, 
@@ -112,6 +112,9 @@ contract PartialEquality {
     });
   }
 
+  /// @param Cx commitment of witness x
+  /// @param Cy commitment of witness y
+  /// @param sig partial equality signature
   function verify (
     alt_bn128.G1Point[] memory gs, 
     uint256[] memory idx_ne, 
