@@ -7,71 +7,69 @@ const PartialEquality = artifacts.require("PartialEquality");
 const DualRing = artifacts.require("DualRingEC");
 const DiffGenEqual = artifacts.require("DiffGenEqual");
 
+const SoKdp = artifacts.require("SoKdp");
 const SoKwd = artifacts.require("SoKwd");
 const SoKsp = artifacts.require("SoKsp");
 const PubParam = artifacts.require("PubParam");
 const BN = require("bn.js")
 
 contract("Mixer Deposit & Withdraw", async (accounts) => {
-  var lib, reg, x, pp, mixer, pe, wd, sp;
+  var lib, pp, mixer, pe, dp, wd, sp;
+  var rg, x;
   const max = 2**53-1;
   const A = accounts[0];
   const Aval = 1;
   const theta = 4;
   const ring_size = 16;
-  var R, ty, AattrP, sk, tag, sk_pos;
+  var R, ty, AattrP;
   
   before (async () => {
-    // initiate and register a NFT "x"
-    reg = await TokenRegistrar.new();
-    x = await TokenNFT.new("x", "x");
-    await reg.register(x.address);
-
     lib = await alt_bn128.new();
     await Mixer.link(lib);
     await PubParam.link(lib);
+    await SoKdp.link(lib);
     await SoKwd.link(lib);
     await SoKsp.link(lib);
     await PartialEquality.link(lib);
     await DualRing.link(lib);
     await DiffGenEqual.link(lib);
 
-    // 1 traded token
+    /* 1 traded token */
     pp = await PubParam.new(1); 
     pe = await PartialEquality.new();
     dr = await DualRing.new();
     dg = await DiffGenEqual.new();
 
+    dp = await SoKdp.new(pp.address, pe.address);
     wd = await SoKwd.new(pp.address, pe.address, dr.address, dg.address);
     sp = await SoKsp.new(pp.address, pe.address, dr.address, dg.address);
 
-    mixer = await Mixer.new(reg.address, pp.address, pe.address, dr.address, dg.address, wd.address, sp.address);
+    rg = await TokenRegistrar.new();
 
-    // intialise variables
-    sk_pos = await pp.sk_pos();
+    mixer = await Mixer.new(rg.address, pp.address, dp.address, wd.address, sp.address);
 
+    /*  initiate and register a NFT "x" */
+    x = await TokenNFT.new("x", "x");
+    await rg.register(x.address);
+
+    /*  assign Aval to acc A */
+    await x.mint(A, Aval);
+    ty = await rg.getTy(x.address);
+
+    /* intialise R */
     R = new Array(ring_size);
     for (var i = 0; i < ring_size; i++) {
       R[i] = await pp.randomAcc();
     }
 
-    // assign Aval to user A
-    await x.mint(A, Aval);
-    ty = await reg.getTy(x.address);
-
     AattrP = [ty, Aval, 0, new BN(max), new BN(RandomUint(max)), new BN(RandomUint(max)), new BN(RandomUint(max))];
-    T_beg = AattrP[2];
-    T_end = AattrP[3];
-    sk = AattrP[4];
-    opn = AattrP[5];
-    ok = AattrP[6];
   })
 
   it ("tests deposit", async () => {
     const onetacc = await pp.onetAcc(AattrP);
     
     const tx_dp = [onetacc, AattrP.slice(0, 4)];
-    // deposit
+
     const sig = await mixer.deposit.call(tx_dp, AattrP.slice(4), {from : A}); 
 
     await mixer.deposit(tx_dp, AattrP.slice(4), {from : A});
@@ -89,7 +87,10 @@ contract("Mixer Deposit & Withdraw", async (accounts) => {
 
     R[theta] = acc;
 
-    tag = await pp.TagEval(sk);
+    const sk_pos = await pp.sk_pos();
+    const sk = AattrP[sk_pos];
+
+    const tag = await pp.TagEval(sk);
 
     const tx_wd = [R, tag, AattrP.slice(0, sk_pos), A];
 
@@ -105,49 +106,53 @@ contract("Mixer Deposit & Withdraw", async (accounts) => {
 
 
 contract("Mixer Spend", async (accounts) => {
-  var lib, reg, x, pp, mixer, pe, wd, sp;
+  var lib, pp, mixer, pe, wd, sp;
+  var rg, x;
   const max = 2**53-1;
   const A = accounts[0];
   const Aval = 1;
   const theta = 4;
   const ring_size = 16;
-  var R, ty, AattrP, sk, tag, opn, T_beg, T_end, ok;
+  var R, ty, AattrP, T_beg, T_end, sk, opn, ok;
   
   before (async () => {
-    // initiate and register a NFT "x"
-    reg = await TokenRegistrar.new();
-    x = await TokenNFT.new("x", "x");
-    await reg.register(x.address);
-
     lib = await alt_bn128.new();
     await Mixer.link(lib);
     await PubParam.link(lib);
+    await SoKdp.link(lib);
     await SoKwd.link(lib);
     await SoKsp.link(lib);
     await PartialEquality.link(lib);
     await DualRing.link(lib);
     await DiffGenEqual.link(lib);
 
-    // 1 traded token
+    /* 1 traded token */
     pp = await PubParam.new(1); 
     pe = await PartialEquality.new();
     dr = await DualRing.new();
     dg = await DiffGenEqual.new();
 
+    dp = await SoKdp.new(pp.address, pe.address);
     wd = await SoKwd.new(pp.address, pe.address, dr.address, dg.address);
     sp = await SoKsp.new(pp.address, pe.address, dr.address, dg.address);
 
-    mixer = await Mixer.new(reg.address, pp.address, pe.address, dr.address, dg.address, wd.address, sp.address);
+    rg = await TokenRegistrar.new();
 
-    // intialise variables
+    mixer = await Mixer.new(rg.address, pp.address, dp.address, wd.address, sp.address);
+
+    /*  initiate and register a NFT "x" */
+    x = await TokenNFT.new("x", "x");
+    await rg.register(x.address);
+
+    /*  assign Aval to acc A */
+    await x.mint(A, Aval);
+    ty = await rg.getTy(x.address);
+
+    /* intialise R */
     R = new Array(ring_size);
     for (var i = 0; i < ring_size; i++) {
       R[i] = await pp.randomAcc();
     }
-
-    // assign Aval to user A
-    await x.mint(A, Aval);
-    ty = await reg.getTy(x.address);
 
     AattrP = [ty, Aval, 0, new BN(max), new BN(RandomUint(max)), new BN(RandomUint(max)), new BN(RandomUint(max))];
     T_beg = AattrP[2];
@@ -161,7 +166,7 @@ contract("Mixer Spend", async (accounts) => {
     const acc = await pp.Com(AattrP);
     R[theta] = acc;
 
-    tag = await pp.TagEval(sk);
+    const tag = await pp.TagEval(sk);
 
     // used for testing correctness
     const skT = sk;

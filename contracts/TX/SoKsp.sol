@@ -17,7 +17,12 @@ contract SoKsp {
   DG dg;
   uint n;
 
-  constructor (address pp_addr, address pe_addr, address dr_addr, address dg_addr) {
+  constructor (
+    address pp_addr, 
+    address pe_addr, 
+    address dr_addr, 
+    address dg_addr
+  ) {
     pp = PubParam(pp_addr);
     pe = PE(pe_addr);
     dr = DR(dr_addr);
