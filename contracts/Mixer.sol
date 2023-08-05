@@ -68,7 +68,8 @@ contract Mixer {
 
     Token t = Token(r.getToken(tx_dp.attrS[0]));
 
-    if (!t.approve(address(this), tx_dp.attrS[1])) revert ("Unsuccessful approve operation");
+    if (!t.approve(address(this), tx_dp.attrS[1])) 
+      revert ("Unsuccessful approve operation");
 
     uint n = pp.n();
 
@@ -86,14 +87,11 @@ contract Mixer {
       ine[i] = i + tx_dp.attrS.length;
     }
 
-    // PE pe = new PE();
-
     PE.Sig memory pe_sig = pe.sign(pp.gs(), x, y, ine);
 
     sig = Sig_dp({
       pe_sig : pe_sig
     });
-    
   }
 
   /// @dev mixer process deposit request
@@ -132,26 +130,6 @@ contract Mixer {
 
   ///////// withdraw //////////
 
-/*
-  /// @param R ring accounts
-  /// @param tag tag = g_tag^sk
-  /// @param attrS (ty, val, t_beg, t_end)
-  /// @param u_rcpt receipt address
-  */
-  struct TX_wd {
-    alt_bn128.G1Point[] R; 
-    alt_bn128.G1Point tag;
-    uint256[] attrS;
-    address u_rcpt;
-  }
-
-  struct Sig_wd {
-    alt_bn128.G1Point acc_d;
-    DR.SigEC dr_sig;
-    DG.Sig dg_sig;
-    PE.Sig pe_sig;
-  }
-
   /// @dev withdraw token from mixer
   /// @param tx_wd withdraw transaction statement
   /// @param wit (theta, sk, opn, ok)
@@ -184,15 +162,17 @@ contract Mixer {
   }
 
   function process_sp(SoKsp.TX memory tx_sp, SoKsp.Sig memory sig) public returns (bool) {
-    // uint256 time = block.timestamp;
-    uint256 time = 5; /// @dev for testing
-    bool b0 = tx_sp.attrS[1] <= time && time < tx_sp.attrS[2]; // T_now /in [T_beg, T_end)
+    // uint256 time = 5; // for testing
+    /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)
+    uint256 time = block.timestamp;
+    bool b0 = tx_sp.attrS[1] <= time && time < tx_sp.attrS[2]; 
+    require (b0, "invalid transaction time");
 
-    // b1 ≜pkT ∉Σpk
-    bool b1 = _in(_pks, tx_sp.pk_T);
+    // b1 ≜ pkT ∉ Σpk
+    bool b1 = !_in(_pks, tx_sp.pk_T);
 
-    // 𝑏2 ≜tagS ∉Σtag
-    bool b2 = _in(_tags, tx_sp.tagS);
+    // b2 ≜ tagS ∉ Σtag
+    bool b2 = !_in(_tags, tx_sp.tagS);
 
     bool b3 = sp.verify(tx_sp, sig);
 
@@ -210,7 +190,10 @@ contract Mixer {
     return false;
   }
 
-  function _in(alt_bn128.G1Point[] memory ls, alt_bn128.G1Point memory pk) internal pure returns (bool) {
+  function _in(
+    alt_bn128.G1Point[] memory ls, 
+    alt_bn128.G1Point memory pk
+  ) internal pure returns (bool) {
     for (uint i = 0 ; i < ls.length; i++) {
       if (alt_bn128.eq(ls[i], pk)) return true;
     }

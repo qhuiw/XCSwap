@@ -12,19 +12,18 @@ const SoKsp = artifacts.require("SoKsp");
 const PubParam = artifacts.require("PubParam");
 const BN = require("bn.js")
 
-contract("Mixer", async (accounts) => {
+contract("Mixer Deposit & Withdraw", async (accounts) => {
   var lib, reg, x, pp, mixer, pe, wd, sp;
   const max = 2**53-1;
   const A = accounts[0];
-  // const B = accounts[1];
   const Aval = 1;
   const theta = 4;
   const ring_size = 16;
-  var R, ty, AattrP, sk, tag, opn, T_beg, T_end, ok, sk_pos;
+  var R, ty, AattrP, sk, tag, sk_pos;
   
   before (async () => {
-    reg = await TokenRegistrar.new();
     // initiate and register a NFT "x"
+    reg = await TokenRegistrar.new();
     x = await TokenNFT.new("x", "x");
     await reg.register(x.address);
 
@@ -37,7 +36,8 @@ contract("Mixer", async (accounts) => {
     await DualRing.link(lib);
     await DiffGenEqual.link(lib);
 
-    pp = await PubParam.new(1); // 1 traded token
+    // 1 traded token
+    pp = await PubParam.new(1); 
     pe = await PartialEquality.new();
     dr = await DualRing.new();
     dg = await DiffGenEqual.new();
@@ -101,6 +101,61 @@ contract("Mixer", async (accounts) => {
 
     assert.equal(b, true, "Withdraw failed");
   })
+})
+
+
+contract("Mixer Spend", async (accounts) => {
+  var lib, reg, x, pp, mixer, pe, wd, sp;
+  const max = 2**53-1;
+  const A = accounts[0];
+  const Aval = 1;
+  const theta = 4;
+  const ring_size = 16;
+  var R, ty, AattrP, sk, tag, opn, T_beg, T_end, ok;
+  
+  before (async () => {
+    // initiate and register a NFT "x"
+    reg = await TokenRegistrar.new();
+    x = await TokenNFT.new("x", "x");
+    await reg.register(x.address);
+
+    lib = await alt_bn128.new();
+    await Mixer.link(lib);
+    await PubParam.link(lib);
+    await SoKwd.link(lib);
+    await SoKsp.link(lib);
+    await PartialEquality.link(lib);
+    await DualRing.link(lib);
+    await DiffGenEqual.link(lib);
+
+    // 1 traded token
+    pp = await PubParam.new(1); 
+    pe = await PartialEquality.new();
+    dr = await DualRing.new();
+    dg = await DiffGenEqual.new();
+
+    wd = await SoKwd.new(pp.address, pe.address, dr.address, dg.address);
+    sp = await SoKsp.new(pp.address, pe.address, dr.address, dg.address);
+
+    mixer = await Mixer.new(reg.address, pp.address, pe.address, dr.address, dg.address, wd.address, sp.address);
+
+    // intialise variables
+    R = new Array(ring_size);
+    for (var i = 0; i < ring_size; i++) {
+      R[i] = await pp.randomAcc();
+    }
+
+    // assign Aval to user A
+    await x.mint(A, Aval);
+    ty = await reg.getTy(x.address);
+
+    AattrP = [ty, Aval, 0, new BN(max), new BN(RandomUint(max)), new BN(RandomUint(max)), new BN(RandomUint(max))];
+    T_beg = AattrP[2];
+    T_end = AattrP[3];
+    sk = AattrP[4];
+    opn = AattrP[5];
+    ok = AattrP[6];
+  })
 
   it ("tests spend", async () => {
     const acc = await pp.Com(AattrP);
@@ -115,23 +170,20 @@ contract("Mixer", async (accounts) => {
     const tcom_Ts = [await pp.tCom(attrT)];
     const ocom_Ts = [await pp.oCom(attrT)];
 
-    const tx_sp = [R, tag, [AattrP[5], AattrP[2], AattrP[3]], pkT, tcom_Ts, ocom_Ts];
+    const tx_sp = [R, tag, [opn, T_beg, T_end], pkT, tcom_Ts, ocom_Ts];
 
     const attrTs = [[1,2,3,4]];
 
     const wit = [theta, [ty, Aval, sk, ok], skT, attrTs];
 
-    // const sig = await mixer.spend.call(tx_sp, wit);
+    const sig = await mixer.spend.call(tx_sp, wit);
 
-    // const b = await mixer.process_sp.call(tx_sp, sig);
+    const b = await mixer.process_sp.call(tx_sp, sig);
 
-    // const pos = await sp.pos();
-    // console.log("pos =", pos);
+    // const sig = await sp.sign.call(tx_sp, wit);
+    // const b = await sp.verify.call(tx_sp, sig);
 
-    const sig = await sp.sign.call(tx_sp, wit);
-    const b = await sp.verify_.call(tx_sp, sig);
-
-    // assert.equal(b, true, "Spend failed");
+    assert.equal(b, true, "Spend failed");
   })
 })
 

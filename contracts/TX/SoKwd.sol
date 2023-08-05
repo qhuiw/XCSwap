@@ -72,7 +72,8 @@ contract SoKwd {
     // alt_bn128.G1Point[] memory new_R = new alt_bn128.G1Point[](tx_wd.R.length); // ring pks
 
     for (uint i = 0; i < tx_wd.R.length; i++) {
-      tx_wd.R[i] = tx_wd.R[i].add(acc_d.neg()); // ring pks := {acc/acc_d}
+      /// @dev R pks := {acc/acc_d}
+      tx_wd.R[i] = tx_wd.R[i].add(acc_d.neg()); 
     }
 
     DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_wd.R, pp.h());
@@ -92,8 +93,8 @@ contract SoKwd {
 
   function verify(TX memory tx_wd, Sig memory sig) public view returns (bool) {
     for (uint i = 0; i < tx_wd.R.length; i++) {
-      tx_wd.R[i] = tx_wd.R[i].add(sig.acc_d.neg()); 
-      // ring pks := {acc/acc_d}
+      /// @dev R pks := {acc/acc_d}
+      tx_wd.R[i] = tx_wd.R[i].add(sig.acc_d.neg());
     }
 
     DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_wd.R, pp.h());

@@ -57,8 +57,6 @@ contract SoKsp {
   }
 
   function sign(TX memory tx_sp, Wit memory wit) public view returns (Sig memory sig) {
-    // uint n = pp.n();
-    
     alt_bn128.G1Point[] memory Gs = pp.gs();
 
     uint256[] memory acc_d_attr = new uint256[](n);
@@ -75,12 +73,9 @@ contract SoKsp {
     sig.acc_d = acc_d;
 
     for (uint i = 0; i < tx_sp.R.length; i++) {
-      tx_sp.R[i] = tx_sp.R[i].add(acc_d.neg()); // ring pks := {acc/acc_d}
+      /// @dev ring pks := {acc/acc_d}
+      tx_sp.R[i] = tx_sp.R[i].add(acc_d.neg()); 
     }
-
-    // alt_bn128.G1Point memory c = pp.g_ok().mul(wit.attrS[3].sub(acc_d_attr[n-1]));
-
-    // require(tx_sp.R[wit.theta].eq(c), "something is wrong");
 
     DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_sp.R, pp.h());
     bytes memory m = abi.encode(address(0));
@@ -91,7 +86,6 @@ contract SoKsp {
 
     /// @dev 2. Diff Gen Equal signature (tag vs acc_d)
     sig.dg_tag_sig = dg.sign(pp.g_tag(), Gs, pp.sk_pos(), acc_d_attr);
-
 
     /// @dev 3. Part Equal signature (same T_beg, T_end, opn)
     uint256[] memory pe_y = new uint256[](n);
@@ -136,7 +130,6 @@ contract SoKsp {
       sig.pe_ty_sig[i] = pe.sign(Gs, acc_d_attr, pe_y, idx_ne);
       sig.dg_sk_sig[i] = dg.sign(pp.g_pk(), Gs, pp.sk_pos(), pe_y);
     }
-
   }
 
   struct RTN {
@@ -147,6 +140,7 @@ contract SoKsp {
     bool[] b_dg_sk;
   }
 
+  /// @dev verify the spend transaction
   function verify(TX memory tx_sp, Sig memory sig) public view returns (bool) {
     RTN memory b = verify_(tx_sp, sig);
 
@@ -157,10 +151,11 @@ contract SoKsp {
     return b.b_dr && b.b_dg_tag && b.b_pe_opn;
   }
 
-  /// @return b a struct for all booleans
-  function verify_(TX memory tx_sp, Sig memory sig) public view returns (RTN memory b) {
+  /// @dev verify the individual signatures
+  /// @return b a struct of bools
+  function verify_(TX memory tx_sp, Sig memory sig) private view returns (RTN memory b) {
     for (uint i = 0; i < tx_sp.R.length; i++) {
-      // ring pks := {acc/acc_d}
+      /// @dev R pks := {acc/acc_d}
       tx_sp.R[i] = tx_sp.R[i].add(sig.acc_d.neg()); 
     }
 
