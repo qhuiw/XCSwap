@@ -15,18 +15,22 @@ contract SoKsp {
   PE pe;
   DR dr;
   DG dg;
+  uint n;
 
-  constructor (address pp_addr) {
+  constructor (address pp_addr, address pe_addr, address dr_addr, address dg_addr) {
     pp = PubParam(pp_addr);
-    pe = new PE();
-    dr = new DR();
-    dg = new DG();
+    pe = PE(pe_addr);
+    dr = DR(dr_addr);
+    dg = DG(dg_addr);
+
+    n = pp.n();
   }
 
+  /// @param attrS (opnS, T_begS, T_endS)
   struct TX {
     alt_bn128.G1Point[] R;
     alt_bn128.G1Point tagS;
-    uint256[3] attrS; // (opnS, T_beg, T_end)
+    uint256[3] attrS; 
     alt_bn128.G1Point pk_T;
     alt_bn128.G1Point[] tcom_T;
     alt_bn128.G1Point[] ocom_T;
@@ -39,9 +43,10 @@ contract SoKsp {
     uint256 theta;
     uint256[] attrS;
     uint256 sk_T;
-    uint256[][4] attrTs;
+    uint256[4][] attrTs;
   }
 
+  /// @param acc_d delegate of acc
   struct Sig {
     alt_bn128.G1Point acc_d;
     DR.SigEC dr_sig;
@@ -51,8 +56,10 @@ contract SoKsp {
     DG.Sig[] dg_sk_sig;
   }
 
-  function sign(TX memory tx_sp, Wit memory wit) public returns (Sig memory sig) {
-    uint n = pp.n();
+  function sign(TX memory tx_sp, Wit memory wit) public view returns (Sig memory sig) {
+    // uint n = pp.n();
+    
+    alt_bn128.G1Point[] memory Gs = pp.gs();
 
     uint256[] memory acc_d_attr = new uint256[](n);
     for (uint i = 0; i < n-5; i++) {
@@ -71,29 +78,35 @@ contract SoKsp {
       tx_sp.R[i] = tx_sp.R[i].add(acc_d.neg()); // ring pks := {acc/acc_d}
     }
 
+    // alt_bn128.G1Point memory c = pp.g_ok().mul(wit.attrS[3].sub(acc_d_attr[n-1]));
+
+    // require(tx_sp.R[wit.theta].eq(c), "something is wrong");
+
     DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_sp.R, pp.h());
-    bytes memory m = abi.encode("");
-    uint256[2] memory skj = [wit.attrS[n-4].sub(acc_d_attr[n-1]), wit.theta]; // (ok-ok', theta)
+    bytes memory m = abi.encode(address(0));
+    uint256[2] memory skj = [wit.attrS[3].sub(acc_d_attr[n-1]), wit.theta]; // (ok-ok', theta)
 
     /// @dev 1. Ring signature {acc/acc_d}
     sig.dr_sig = dr.signEC(dr_pp, m, skj);
 
-    alt_bn128.G1Point[] memory Gs = pp.gs();
-
     /// @dev 2. Diff Gen Equal signature (tag vs acc_d)
     sig.dg_tag_sig = dg.sign(pp.g_tag(), Gs, pp.sk_pos(), acc_d_attr);
 
-    /// @dev 3. Part Equal signature (same T_beg, T_end, opn)
-    uint256[] memory pe_x = new uint256[](n);
-    pe_x[n-5] = tx_sp.attrS[1]; // T_beg
-    pe_x[n-4] = tx_sp.attrS[2]; // T_end
-    pe_x[n-2] = tx_sp.attrS[0]; // opn
-    uint256[] memory idx_ne = new uint256[](3);
-    idx_ne[0] = n-5;
-    idx_ne[1] = n-4;
-    idx_ne[2] = n-2;
 
-    sig.pe_opn_sig = pe.sign(Gs, pe_x, acc_d_attr, idx_ne);
+    /// @dev 3. Part Equal signature (same T_beg, T_end, opn)
+    uint256[] memory pe_y = new uint256[](n);
+    pe_y[n-5] = tx_sp.attrS[1]; // T_beg
+    pe_y[n-4] = tx_sp.attrS[2]; // T_end
+    pe_y[n-2] = tx_sp.attrS[0]; // opn
+
+    uint256[] memory idx_ne = new uint256[](n-3);
+    for (uint i = 0; i < n-5; i++){
+      idx_ne[i] = i;
+    }
+    idx_ne[n-5] = n-3;
+    idx_ne[n-4] = n-1;
+
+    sig.pe_opn_sig = pe.sign(Gs, acc_d_attr, pe_y, idx_ne);
 
     /// @dev 4. Part Equal signatures (same tyS, valS)
     /// @dev 5. Diff Gen Equal signatures (pkT vs comT) 
@@ -102,9 +115,9 @@ contract SoKsp {
     sig.pe_ty_sig = new PE.Sig[](target_length);
     sig.dg_sk_sig = new DG.Sig[](target_length);
 
-    pe_x = new uint256[](n);
+    pe_y = new uint256[](n);
     for (uint i = 0; i < pp.sk_pos(); i++){
-      pe_x[i] = wit.attrS[i];
+      pe_y[i] = wit.attrS[i];
     }
 
     idx_ne = new uint256[](5);
@@ -112,87 +125,79 @@ contract SoKsp {
       idx_ne[i] = n-5+i;
     }
 
-    pe_x[n-3] = wit.sk_T;
+    pe_y[n-3] = wit.sk_T;
 
     for (uint i = 0; i < target_length; i++){
-      pe_x[n-5] = wit.attrTs[i][0]; // T_beg
-      pe_x[n-4] = wit.attrTs[i][1]; // T_end
-      pe_x[n-2] = wit.attrTs[i][2]; // opn
-      pe_x[n-1] = wit.attrTs[i][3]; // ok
+      pe_y[n-5] = wit.attrTs[i][0]; // T_beg
+      pe_y[n-4] = wit.attrTs[i][1]; // T_end
+      pe_y[n-2] = wit.attrTs[i][2]; // opn
+      pe_y[n-1] = wit.attrTs[i][3]; // ok
 
-      sig.pe_ty_sig[i] = pe.sign(Gs, pe_x, acc_d_attr, idx_ne);
-      sig.dg_sk_sig[i] = dg.sign(pp.g_pk(), Gs, pp.sk_pos(), pe_x);
+      sig.pe_ty_sig[i] = pe.sign(Gs, acc_d_attr, pe_y, idx_ne);
+      sig.dg_sk_sig[i] = dg.sign(pp.g_pk(), Gs, pp.sk_pos(), pe_y);
     }
 
-    // / @dev Diff Gen Equal signatures (pkT vs tcomT)
-    // alt_bn128.G1Point[] memory gs = new alt_bn128.G1Point[](n-2);
-    // for (uint i = 0; i < gs.length; i++){
-    //   gs[i] = Gs[i];
-    // }
-
-    // uint256[] memory dg_sk_wit = new uint256[](n-2);
-    // /// @dev rmb to generalise index afterwards
-    // dg_sk_wit[0] = wit.attrS[0]; // ty
-    // dg_sk_wit[1] = wit.attrS[1]; // val
-    // dg_sk_wit[5] = wit.sk_T; // sk
-    
-    // for (uint i = 0; i < target_length; i++){
-    //   dg_sk_wit[2] = wit.attrTs[i][0]; // T_beg
-    //   dg_sk_wit[3] = wit.attrTs[i][1]; // T_end
-    //   sig.dg_sk_sig[i] = dg.sign(pp.g_pk(), gs, pp.sk_pos(), dg_sk_wit);
-    // }
   }
 
-  // struct RTN {
-  //   bool b_dr;
-  //   bool b_dg_tag;
-  //   bool b_pe_opn;
-  //   bool[] b_pe_ty;
-  //   bool[] b_dg_sk;
-  // }
+  struct RTN {
+    bool b_dr;
+    bool b_dg_tag;
+    bool b_pe_opn;
+    bool[] b_pe_ty;
+    bool[] b_dg_sk;
+  }
 
-  function verify(TX memory tx_sp, Sig memory sig) public returns (bool) {
+  function verify(TX memory tx_sp, Sig memory sig) public view returns (bool) {
     RTN memory b = verify_(tx_sp, sig);
-    
+
+    for (uint i = 0; i < b.b_pe_ty.length; i++) {
+      if (!b.b_pe_ty[i] || !b.b_dg_sk[i]) return false;
+    }
+
+    return b.b_dr && b.b_dg_tag && b.b_pe_opn;
   }
 
-  function verify_(TX memory tx_sp, Sig memory sig) public returns () {
-    RTN memory b = new RTN
+  /// @return b a struct for all booleans
+  function verify_(TX memory tx_sp, Sig memory sig) public view returns (RTN memory b) {
+    for (uint i = 0; i < tx_sp.R.length; i++) {
+      // ring pks := {acc/acc_d}
+      tx_sp.R[i] = tx_sp.R[i].add(sig.acc_d.neg()); 
+    }
 
     DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_sp.R, pp.h());
-    bytes memory m = abi.encode("");
 
     /// @dev 1. verify Ring signature
-    b.b_dr = dr.verifyEC(dr_pp, m, sig.dr_sig);
+    b.b_dr = dr.verifyEC(dr_pp, abi.encode(address(0)), sig.dr_sig);
     require (b.b_dr, "Ring signature does not pass");
 
     /// @dev 2. verify Diff Gen Equal signature (tag vs acc_d)
     alt_bn128.G1Point[] memory Gs = pp.gs();
+    b.b_dg_tag = dg.verify(pp.g_tag(), Gs, pp.sk_pos(), tx_sp.tagS, sig.acc_d, sig.dg_tag_sig);
+    require (b.b_dg_tag, "Diff Gen Equal tag vs acc_d does not pass");
 
-    bool b_dg_tag = dg.verify(pp.g_tag(), Gs, pp.sk_pos(), tx_sp.tagS, sig.acc_d, sig.dg_tag_sig);
-    require (b_dg_tag, "Diff Gen Equal tag vs acc_d does not pass");
+    /// @dev 3. verify Part Equal signature (T_beg, T_end, opn) vs acc_d 
+    uint256[] memory pe_y = new uint256[](n);
+    pe_y[n-5] = tx_sp.attrS[1]; // T_beg
+    pe_y[n-4] = tx_sp.attrS[2]; // T_end
+    pe_y[n-2] = tx_sp.attrS[0]; // opn
+    alt_bn128.G1Point memory Cy = pp.Com(pe_y);
 
-    /// @dev 3. verify Part Equal signature (T_beg, T_end, opn)
-    uint n = pp.n();
-    uint256[] memory pe_x = new uint256[](n);
-    pe_x[n-5] = tx_sp.attrS[1]; // T_beg
-    pe_x[n-4] = tx_sp.attrS[2]; // T_end
-    pe_x[n-2] = tx_sp.attrS[0]; // opn
-    alt_bn128.G1Point memory Cx = pp.Com(pe_x);
-    uint256[] memory idx_ne = new uint256[](3);
-    idx_ne[0] = n-5;
-    idx_ne[1] = n-4;
-    idx_ne[2] = n-2;
+    uint256[] memory idx_ne = new uint256[](n-3);
+    for (uint i = 0; i < n-5; i++){
+      idx_ne[i] = i;
+    }
+    idx_ne[n-5] = n-3;
+    idx_ne[n-4] = n-1;
 
-    bool b_pe_opn = pe.verify(Gs, idx_ne, Cx, sig.acc_d, sig.pe_opn_sig);
-    require (b_pe_opn, "Part Equal signature (same T_beg, T_end, opn) does not pass");
+    b.b_pe_opn = pe.verify(Gs, idx_ne, sig.acc_d, Cy, sig.pe_opn_sig);
+    require (b.b_pe_opn, "Part Equal signature (same T_beg, T_end, opn) does not pass");
 
     /// @dev 4. Part Equal signatures (same tyS, valS)
     /// @dev 5. Diff Gen Equal signatures (pkT vs comT) 
     uint target_length = tx_sp.tcom_T.length;
 
-    bool[] memory b_pe_ty = new bool[](target_length);
-    bool[] memory b_dg_sk = new bool[](target_length);
+    b.b_pe_ty = new bool[](target_length);
+    b.b_dg_sk = new bool[](target_length);
 
     idx_ne = new uint256[](5);
     for (uint i = 0; i < 5; i++){
@@ -200,18 +205,14 @@ contract SoKsp {
     }
 
     for (uint i = 0; i < target_length; i++){
-      Cx = tx_sp.tcom_T[i].add(tx_sp.ocom_T[i]);
+      Cy = tx_sp.tcom_T[i].add(tx_sp.ocom_T[i]);
 
-      b_pe_ty[i] = pe.verify(Gs, idx_ne, Cx, sig.acc_d, sig.pe_ty_sig[i]);
-      require (b_pe_ty[i], "Part Equal signatures (same tyS, valS) does not pass");
+      b.b_pe_ty[i] = pe.verify(Gs, idx_ne, sig.acc_d, Cy, sig.pe_ty_sig[i]);
+      require (b.b_pe_ty[i], "Part Equal signatures (same tyS, valS) does not pass");
 
-      b_dg_sk[i] = dg.verify(pp.g_pk(), Gs, pp.sk_pos(), tx_sp.pk_T, Cx, sig.dg_sk_sig[i]);
-      require (b_dg_sk[i], "Diff Gen Equal signatures (pkT vs comT) does not pass");
+      b.b_dg_sk[i] = dg.verify(pp.g_pk(), Gs, pp.sk_pos(), tx_sp.pk_T, Cy, sig.dg_sk_sig[i]);
+      require (b.b_dg_sk[i], "Diff Gen Equal signatures (pkT vs comT) does not pass");
     }
 
-
-
   }
-
-
 }

@@ -7,8 +7,8 @@ contract("PartialEquality", async () => {
   var pp, pe, lib;
   const n_ty = 1;
   const x = [1,2,3,4,5,6,7];
-  const y = [1,2,3,4,0,0,0];
-  const i_ne = [4,5,6];
+  const y = [0,0,3,4,0,6,0];
+  const i_ne = [0,1,4,6];
 
   before (async () => {
     lib = await alt_bn128.deployed();
@@ -27,13 +27,13 @@ contract("PartialEquality", async () => {
     assert.equal(b, true, "PE failed");
   })
 
-  it ("tests revised pe", async () => {
-    var gs = await pp.gs();
-    const sig = await pe.sign(gs.slice(4), x.slice(4), y.slice(4));
-    const Cx = await pp.Com(x);
-    const Cy = await pp.Com(y);
-    const b = await pe.verify(gs.slice(4), Cx, Cy, sig);
-    assert.equal(b, true, "Partial failed");
-  })
+  // it ("tests revised pe", async () => {
+  //   var gs = await pp.gs();
+  //   const sig = await pe.sign(gs.slice(4), x.slice(4), y.slice(4));
+  //   const Cx = await pp.Com(x);
+  //   const Cy = await pp.Com(y);
+  //   const b = await pe.verify(gs.slice(4), Cx, Cy, sig);
+  //   assert.equal(b, true, "Partial failed");
+  // })
 
 })

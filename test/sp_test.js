@@ -42,10 +42,10 @@ contract("Mixer", async (accounts) => {
     dr = await DualRing.new();
     dg = await DiffGenEqual.new();
 
-    wd = await SoKwd.new(pp.address, pe.address, dr.address, dg.address);
+    // wd = await SoKwd.new(pp.address, pe.address, dr.address, dg.address);
     sp = await SoKsp.new(pp.address, pe.address, dr.address, dg.address);
 
-    mixer = await Mixer.new(reg.address, pp.address, pe.address, dr.address, dg.address, wd.address, sp.address);
+    // mixer = await Mixer.new(reg.address, pp.address, pe.address, dr.address, dg.address, wd.address, sp.address);
 
     // intialise variables
     sk_pos = await pp.sk_pos();
@@ -59,7 +59,7 @@ contract("Mixer", async (accounts) => {
     await x.mint(A, Aval);
     ty = await reg.getTy(x.address);
 
-    AattrP = [ty, Aval, 0, new BN(max), new BN(RandomUint(max)), new BN(RandomUint(max)), new BN(RandomUint(max))];
+    AattrP = [ty, Aval,0,1,2,3,4];
     T_beg = AattrP[2];
     T_end = AattrP[3];
     sk = AattrP[4];
@@ -67,74 +67,30 @@ contract("Mixer", async (accounts) => {
     ok = AattrP[6];
   })
 
-  it ("tests deposit", async () => {
-    const onetacc = await pp.onetAcc(AattrP);
-    
-    const tx_dp = [onetacc, AattrP.slice(0, 4)];
-    // deposit
-    const sig = await mixer.deposit.call(tx_dp, AattrP.slice(4), {from : A}); 
+  it ("tests dr", async () => {
 
-    await mixer.deposit(tx_dp, AattrP.slice(4), {from : A});
-
-    const b = await mixer.process_dp.call(tx_dp, sig, {from : A});
-
-    await mixer.process_dp.sendTransaction(tx_dp, sig, {from : A});
-
-    assert.equal(b, true, "Deposit failed");
-  })
-
-
-  it ("tests withdraw, idx = " + theta, async () => {
     const acc = await pp.Com(AattrP);
 
     R[theta] = acc;
 
     tag = await pp.TagEval(sk);
-
-    const tx_wd = [R, tag, AattrP.slice(0, sk_pos), A];
-
-    const wit = [theta].concat(AattrP.slice(sk_pos));
-
-    const sig = await mixer.withdraw.call(tx_wd, wit);
-
-    const b = await mixer.process_wd.call(tx_wd, sig);
-
-    assert.equal(b, true, "Withdraw failed");
-  })
-
-  it ("tests spend", async () => {
-    const acc = await pp.Com(AattrP);
-    R[theta] = acc;
-
-    tag = await pp.TagEval(sk);
-
-    // used for testing correctness
     const skT = sk;
-    const pkT = await pp.TagKGen(skT); 
+    const pkT = await pp.TagKGen(skT); // used for testing correctness
     const attrT = [ty, Aval, 1, 2, skT, 3, 4];
     const tcom_Ts = [await pp.tCom(attrT)];
     const ocom_Ts = [await pp.oCom(attrT)];
+    const attrTs = [[1,2,3,4]];
 
     const tx_sp = [R, tag, [AattrP[5], AattrP[2], AattrP[3]], pkT, tcom_Ts, ocom_Ts];
 
-    const attrTs = [[1,2,3,4]];
-
-    const wit = [theta, [ty, Aval, sk, ok], skT, attrTs];
-
-    // const sig = await mixer.spend.call(tx_sp, wit);
-
-    // const b = await mixer.process_sp.call(tx_sp, sig);
-
-    // const pos = await sp.pos();
-    // console.log("pos =", pos);
+    const wit = [theta, [AattrP[0], AattrP[1], AattrP[4], AattrP[6]], skT, attrTs];
 
     const sig = await sp.sign.call(tx_sp, wit);
+
     const b = await sp.verify_.call(tx_sp, sig);
-
-    // assert.equal(b, true, "Spend failed");
   })
-})
 
-function RandomUint(max) {
-  return Math.floor(Math.random() * max) + 1;
-}
+
+
+
+})

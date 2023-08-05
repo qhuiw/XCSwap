@@ -15,19 +15,22 @@ contract PubParam {
 
   alt_bn128.G1Point _h;
 
-  uint n_attr;
-  uint n_ty;
+  uint _n_attr;
+  uint _sk_pos;
 
+  /// @dev one-time account
   struct Acc {
     alt_bn128.G1Point pk;
     alt_bn128.G1Point tcom;
     alt_bn128.G1Point ocom;
   }
   
+  /// @dev extends to multi-token swap
+  /// @param max_ty maximum number of traded token
   constructor (uint max_ty) {
-    n_attr = 2*max_ty + 5;
-    n_ty = 2*max_ty;
-    init(n_attr);
+    _n_attr = 2 * max_ty + 5;
+    _sk_pos = 2 * max_ty + 2;
+    init(_n_attr);
   }
 
   function init(uint _n) private {
@@ -50,32 +53,34 @@ contract PubParam {
     tag = _g_tag.mul(sk);
   }
 
+  /// @dev one-time account in single commitment form
   function Com(uint256[] memory attr) public view returns (alt_bn128.G1Point memory acc) {
-    require (attr.length == n_attr, "Length unmatched");
+    require (attr.length == _n_attr, "Length unmatched");
     acc = alt_bn128.G1Point(0, 0);
-    for (uint i = 0 ; i < n_attr; i++) {
+    for (uint i = 0 ; i < _n_attr; i++) {
       acc = acc.add(_gs[i].mul(attr[i]));
     }
   }
 
   function tCom(uint256[] memory attr) public view returns (alt_bn128.G1Point memory tcom) {
     tcom = alt_bn128.G1Point(0, 0);
-    for (uint i = 0; i < n_attr-2; i++) {
+    for (uint i = 0; i < _n_attr-2; i++) {
       tcom = tcom.add(_gs[i].mul(attr[i]));
     }
   }
 
   function oCom(uint256[] memory attr) public view returns (alt_bn128.G1Point memory ocom) {
     ocom = alt_bn128.G1Point(0, 0);
-    for (uint i = n_attr-2; i < n_attr; i++) {
+    for (uint i = _n_attr-2; i < _n_attr; i++) {
       ocom = ocom.add(_gs[i].mul(attr[i]));
     }
   }
 
+  /// @dev one-time account in composite form
   function onetAcc(uint256[] memory attr) public view returns (Acc memory) {
-    require (attr.length == n_attr, "PubParam: attribute cardinality does not match");
+    require (attr.length == _n_attr, "PubParam: attribute cardinality does not match");
     return Acc({
-      pk : TagKGen(attr[n_attr-3]),
+      pk : TagKGen(attr[_n_attr-3]),
       tcom : tCom(attr),
       ocom : oCom(attr)
     });
@@ -94,7 +99,7 @@ contract PubParam {
   }
 
   function g_ok() public view returns (alt_bn128.G1Point memory) {
-    return _gs[n_attr-1];
+    return _gs[_n_attr-1];
   }
 
   function h() public view returns (alt_bn128.G1Point memory) {
@@ -102,11 +107,11 @@ contract PubParam {
   }
 
   function n() public view returns (uint) {
-    return n_attr;
+    return _n_attr;
   }
   
   function sk_pos() public view returns (uint) {
-    return n_ty;
+    return _sk_pos;
   }
 
   function randomAcc() public view returns (alt_bn128.G1Point memory) {

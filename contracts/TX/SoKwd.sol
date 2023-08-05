@@ -35,20 +35,14 @@ contract SoKwd {
   DR dr;
   DG dg;
 
-  // constructor (address pp_addr, address pe_addr, address dr_addr, address dg_addr) {
-  //   pe = PE(pe_addr);
-  //   dr = DR(dr_addr);
-  //   dg = DG(dg_addr);
-  //   pp = PubParam(pp_addr);
-  // }
-
-  constructor (address pp_addr) {
+  constructor (address pp_addr, address pe_addr, address dr_addr, address dg_addr) {
+    pe = PE(pe_addr);
+    dr = DR(dr_addr);
+    dg = DG(dg_addr);
     pp = PubParam(pp_addr);
-    pe = new PE();
-    dr = new DR();
-    dg = new DG();
   }
 
+  /// @param wit (𝜃S, skS, opnS, okS)
   function sign(TX memory tx_wd, uint256[4] memory wit) public view returns (Sig memory sig){
     require (tx_wd.tag.eq(pp.TagEval(wit[1])), "Tag matches");
 
@@ -96,8 +90,12 @@ contract SoKwd {
 
   }
 
-  
   function verify(TX memory tx_wd, Sig memory sig) public view returns (bool) {
+    for (uint i = 0; i < tx_wd.R.length; i++) {
+      tx_wd.R[i] = tx_wd.R[i].add(sig.acc_d.neg()); 
+      // ring pks := {acc/acc_d}
+    }
+
     DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_wd.R, pp.h());
     bytes memory m = abi.encode(tx_wd.u_rcpt);
 

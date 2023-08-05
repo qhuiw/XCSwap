@@ -9,13 +9,6 @@ contract PartialEquality {
   using alt_bn128 for uint256;
   using alt_bn128 for alt_bn128.G1Point;
 
-  // PubParam private pp;
-  // alt_bn128.G1Point[] gs;
-  
-  // constructor (address pp_addr) {
-  //   gs = PubParam(pp_addr).gs();
-  // }
-
   struct Sig {
     alt_bn128.G1Point c;
     uint256[] zs;
@@ -75,7 +68,7 @@ contract PartialEquality {
     return alt_bn128.eq(L, R);
   }
 
-
+  /// @param gs full generator
   /// @param x full witness
   /// @param y full witness
   /// @param idx_ne unequal indices
@@ -87,7 +80,7 @@ contract PartialEquality {
   ) public view returns (Sig memory sig) {
     require(x.length == y.length, "PartialEqualtiy: witness unequal length");
     uint l = idx_ne.length;
-    require (l <= x.length);
+    require (l < gs.length, "idx_ne length exceeds limit");
 
     uint256[] memory rs = new uint256[](l);
     alt_bn128.G1Point memory c = alt_bn128.G1Point(0, 0);
@@ -102,7 +95,7 @@ contract PartialEquality {
 
     for (uint i = 0; i < l; i++) {
       rs[i] = rs[i].add(
-        alt_bn128.sub(x[idx_ne[i]], y[idx_ne[i]]).mul(e)
+        x[idx_ne[i]].add(y[idx_ne[i]].neg()).mul(e)
       );
     }
 
@@ -112,8 +105,10 @@ contract PartialEquality {
     });
   }
 
-  /// @param Cx commitment of witness x
-  /// @param Cy commitment of witness y
+  /// @param gs full generator
+  /// @param idx_ne unequal indices
+  /// @param Cx commitment of full witness x
+  /// @param Cy commitment of full witness y
   /// @param sig partial equality signature
   function verify (
     alt_bn128.G1Point[] memory gs, 
