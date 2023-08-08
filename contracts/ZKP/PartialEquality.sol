@@ -95,7 +95,7 @@ contract PartialEquality {
 
     for (uint i = 0; i < l; i++) {
       rs[i] = rs[i].add(
-        x[idx_ne[i]].add(y[idx_ne[i]].neg()).mul(e)
+        x[idx_ne[i]].sub(y[idx_ne[i]]).mul(e)
       );
     }
 

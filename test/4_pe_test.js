@@ -1,7 +1,7 @@
 const alt_bn128 = artifacts.require("alt_bn128");
 const PartialEquality = artifacts.require("PartialEquality");
 const PubParam = artifacts.require("PubParam");
-// const assert = require("assert");
+const assert = require("assert");
 
 contract("PartialEquality", async () => {
   var pp, pe, lib;
@@ -24,6 +24,15 @@ contract("PartialEquality", async () => {
     const Cx = await pp.Com(x);
     const Cy = await pp.Com(y);
     const b = await pe.verify(gs, i_ne, Cx, Cy, sig);
+    assert.equal(b, true, "PE failed");
+  })
+
+  it ("tests pe", async () => {
+    const gs = await pp.gs();
+    const sig = await pe.sign(gs, y, x, i_ne);
+    const Cx = await pp.Com(x);
+    const Cy = await pp.Com(y);
+    const b = await pe.verify(gs, i_ne, Cy, Cx, sig);
     assert.equal(b, true, "PE failed");
   })
 

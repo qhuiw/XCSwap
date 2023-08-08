@@ -5,9 +5,6 @@ import "./lib/alt_bn128.sol";
 import "./Token/Token.sol";
 import "./Token/TokenRegistrar.sol";
 import "./PubParam.sol";
-// import {PartialEquality as PE} from "./ZKP/PartialEquality.sol";
-// import {DualRingEC as DR} from "./ZKP/DualRingEC.sol";
-// import {DiffGenEqual as DG} from "./ZKP/DiffGenEqual.sol";
 import "./TX/SoKdp.sol";
 import "./TX/SoKwd.sol";
 import "./TX/SoKsp.sol";
@@ -23,30 +20,9 @@ contract Mixer {
 
   TokenRegistrar r;
   PubParam pp;
-  // PE pe;
-  // DR dr;
-  // DG dg;
   SoKdp dp;
   SoKwd wd;
   SoKsp sp;
-
-  // constructor (
-  //   address r_addr, 
-  //   address pp_addr, 
-  //   address pe_addr, 
-  //   address dr_addr,
-  //   address dg_addr,
-  //   address wd_addr,
-  //   address sp_addr
-  // ) {
-  //   r = TokenRegistrar(r_addr);
-  //   pp = PubParam(pp_addr);
-  //   pe = PE(pe_addr);
-  //   dr = DR(dr_addr);
-  //   dg = DG(dg_addr);
-  //   wd = SoKwd(wd_addr);
-  //   sp = SoKsp(sp_addr);
-  // }
 
   constructor (
     address r_addr, 
@@ -169,15 +145,13 @@ contract Mixer {
   }
 
   function _in(
-    alt_bn128.G1Point[] memory ls, 
+    alt_bn128.G1Point[] memory ls,
     alt_bn128.G1Point memory pk
-  ) internal pure returns (bool) {
+  ) public pure returns (bool) {
     for (uint i = 0 ; i < ls.length; i++) {
       if (alt_bn128.eq(ls[i], pk)) return true;
     }
     return false;
   }
-
-
 
 }

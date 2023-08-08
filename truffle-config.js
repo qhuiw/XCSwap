@@ -36,10 +36,6 @@ module.exports = {
    */
 
   networks: {
-    // develop : {
-    //   network_id: "*",
-    //   gasLimit :  7219750 // default 6721975,
-    // }
     development: {
       network_id: "*",
       port: 8545,
@@ -48,7 +44,6 @@ module.exports = {
       websockets: true
     }
   },
-  mocha: {},
   compilers: {
     solc: {
       version: "0.8.19",
@@ -60,6 +55,10 @@ module.exports = {
         // viaIR: true
       }
     }
+  },
+  // Set default mocha options here, use special reporters etc.
+  mocha: {
+    // timeout: 100000
   },
   solidityLog: {
     displayPrefix: " :"

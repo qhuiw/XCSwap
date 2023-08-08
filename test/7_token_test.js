@@ -2,7 +2,6 @@ const assert = require("assert");
 const TokenRegistrar = artifacts.require("TokenRegistrar");
 const TokenNFT = artifacts.require("TokenNFT");
 const TokenFT = artifacts.require("TokenFT");
-// const Mixer = artifacts.require("Mixer");
 
 contract("Token", async (accounts) => {
   const A = accounts[0];
@@ -15,7 +14,6 @@ contract("Token", async (accounts) => {
     registrar = await TokenRegistrar.new();
     x = await TokenNFT.new("x", "x");
     y = await TokenNFT.new("y", "y");
-    // z = await TokenFT.new("z", "z");
   })
 
   it ("tests register", async () => {

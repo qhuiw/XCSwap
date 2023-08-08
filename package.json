@@ -1,7 +1,33 @@
 {
   "dependencies": {
+    "@metamask/sdk": "^0.5.6",
     "@openzeppelin/contracts": "^4.8.2",
+    "@truffle/contract": "^4.3.19",
     "truffle-contract-size": "^2.0.1",
     "web3": "^4.0.3"
-  }
+  },
+  "name": "xcswap",
+  "description": "",
+  "version": "1.0.0",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Qianhui-anu/XCSwap.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Qianhui-anu/XCSwap/issues"
+  },
+  "homepage": "https://github.com/Qianhui-anu/XCSwap#readme",
+  
+  "type": "module"
+  
 }
