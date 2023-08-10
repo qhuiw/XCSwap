@@ -47,6 +47,7 @@ contract PartialEquality {
   /// @param gs unequal 
   /// @param Cx commitment of witness x
   /// @param Cy commitment of witness y
+  /// @param sig partial equality signature
   function verify (
     alt_bn128.G1Point[] memory gs, 
     alt_bn128.G1Point memory Cx,

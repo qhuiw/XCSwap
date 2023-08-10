@@ -63,6 +63,7 @@ contract PubParam {
   }
 
   function tCom(uint256[] memory attr) public view returns (alt_bn128.G1Point memory tcom) {
+    require (attr.length >= _n_attr-2, "PubParam: attribute cardinality does not match");
     tcom = alt_bn128.G1Point(0, 0);
     for (uint i = 0; i < _n_attr-2; i++) {
       tcom = tcom.add(_gs[i].mul(attr[i]));
@@ -70,6 +71,7 @@ contract PubParam {
   }
 
   function oCom(uint256[] memory attr) public view returns (alt_bn128.G1Point memory ocom) {
+    require(attr.length == _n_attr, "PubParam: attribute cardinality does not match");
     ocom = alt_bn128.G1Point(0, 0);
     for (uint i = _n_attr-2; i < _n_attr; i++) {
       ocom = ocom.add(_gs[i].mul(attr[i]));

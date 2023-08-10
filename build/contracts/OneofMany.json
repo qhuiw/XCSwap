@@ -1,0 +1,157 @@
+{
+  "contractName": "OneofMany",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ZKP/OneofMany.sol\":\"OneofMany\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1},\"remappings\":[]},\"sources\":{\"project:/contracts/ZKP/OneofMany.sol\":{\"keccak256\":\"0x767c3497e76e9207fc8c400dc60f6ea3c1990e34b530341c9832d77b6eb3dcd6\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://0bf71f204aa1a1eef21abf65aa196e88111ac335eff540694a8154c9782767d7\",\"dweb:/ipfs/QmWz8xCVZxyqCRPW7VYdXc46u9HGsNSFk5hUaZRLUxsshT\"]},\"project:/contracts/lib/alt_bn128.sol\":{\"keccak256\":\"0xa67da76ed8af8ae22991337c9b757ad7c1c8552f555fcaa16ce9c010f70e9024\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://5200de5bb8d6c5057d2c33aa6cdccf716ecdc75dd77f921e72c7d197f800b2bd\",\"dweb:/ipfs/QmWYmFhzRRXL871tpZk3MpZkTRSuxmySUuUfmGZgnEHybs\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212207ee89c5914719965280b923bd22eb4f8a2ca332a70328fbf50c56ece123bdf6664736f6c63430008130033",
+  "deployedBytecode": "0x6080604052600080fdfea26469706673582212207ee89c5914719965280b923bd22eb4f8a2ca332a70328fbf50c56ece123bdf6664736f6c63430008130033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "101:99:13:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "101:99:13:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: GPL-3.0\npragma solidity >=0.4.0 <0.9.0;\n\nimport \"../lib/alt_bn128.sol\";\n\ncontract OneofMany {\n  using alt_bn128 for uint256;\n  using alt_bn128 for alt_bn128.G1Point;\n\n  \n\n}",
+  "sourcePath": "/Users/qian/Desktop/Y4/COMP4550/project/XCSwap/contracts/ZKP/OneofMany.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/ZKP/OneofMany.sol",
+    "exportedSymbols": {
+      "OneofMany": [
+        6267
+      ],
+      "alt_bn128": [
+        7974
+      ]
+    },
+    "id": 6268,
+    "license": "GPL-3.0",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6258,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".0",
+          "<",
+          "0.9",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "36:31:13"
+      },
+      {
+        "absolutePath": "project:/contracts/lib/alt_bn128.sol",
+        "file": "../lib/alt_bn128.sol",
+        "id": 6259,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 6268,
+        "sourceUnit": 7975,
+        "src": "69:30:13",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "OneofMany",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 6267,
+        "linearizedBaseContracts": [
+          6267
+        ],
+        "name": "OneofMany",
+        "nameLocation": "110:9:13",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "global": false,
+            "id": 6262,
+            "libraryName": {
+              "id": 6260,
+              "name": "alt_bn128",
+              "nameLocations": [
+                "130:9:13"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 7974,
+              "src": "130:9:13"
+            },
+            "nodeType": "UsingForDirective",
+            "src": "124:28:13",
+            "typeName": {
+              "id": 6261,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "144:7:13",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            }
+          },
+          {
+            "global": false,
+            "id": 6266,
+            "libraryName": {
+              "id": 6263,
+              "name": "alt_bn128",
+              "nameLocations": [
+                "161:9:13"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 7974,
+              "src": "161:9:13"
+            },
+            "nodeType": "UsingForDirective",
+            "src": "155:38:13",
+            "typeName": {
+              "id": 6265,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 6264,
+                "name": "alt_bn128.G1Point",
+                "nameLocations": [
+                  "175:9:13",
+                  "185:7:13"
+                ],
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 7458,
+                "src": "175:17:13"
+              },
+              "referencedDeclaration": 7458,
+              "src": "175:17:13",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_G1Point_$7458_storage_ptr",
+                "typeString": "struct alt_bn128.G1Point"
+              }
+            }
+          }
+        ],
+        "scope": 6268,
+        "src": "101:99:13",
+        "usedErrors": []
+      }
+    ],
+    "src": "36:164:13"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.19+commit.7dd6d404.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.13",
+  "updatedAt": "2023-08-08T16:41:00.901Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

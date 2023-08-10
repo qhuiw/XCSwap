@@ -52,10 +52,13 @@ contract DiffGenEqual {
     });
   }
 
+  /// @dev verify different generator signature
   /// @param gx single generator
   /// @param gys multi generator
   /// @param x_idx index of witness x in y
   /// @param Cx single gen commitment
+  /// @param Cy multi gen commitment
+  /// @param sig DiffGenEqual signature
   function verify(
     alt_bn128.G1Point memory gx, 
     alt_bn128.G1Point[] memory gys, 
@@ -71,6 +74,7 @@ contract DiffGenEqual {
     alt_bn128.G1Point memory b1L = gx.mul(sig.zs[x_idx]);
     alt_bn128.G1Point memory b1R = Cx.mul(e).add(sig.cx);
     bool b1 = alt_bn128.eq(b1L, b1R);
+    require(b1, "DiffGenEqual : b1 failed");
 
     alt_bn128.G1Point memory b2L = alt_bn128.G1Point(0, 0);
     for (uint i = 0; i < gys.length; i++) {
@@ -78,6 +82,7 @@ contract DiffGenEqual {
     }
     alt_bn128.G1Point memory b2R = Cy.mul(e).add(sig.cy);
     bool b2 = alt_bn128.eq(b2L, b2R);
+    require(b2, "DiffGenEqual : b2 failed");
 
     return b1 && b2;
   }
