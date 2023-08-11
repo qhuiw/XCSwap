@@ -119,7 +119,7 @@ contract("Protocol", async (accounts) => {
     const acc = await pp.Com(PBy);
     R[theta] = acc;
 
-    // const tx_sp = 
+    
 
     
 

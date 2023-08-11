@@ -6,6 +6,7 @@ const TokenNFT = artifacts.require("TokenNFT");
 const PartialEquality = artifacts.require("PartialEquality");
 const DualRing = artifacts.require("DualRingEC");
 const DiffGenEqual = artifacts.require("DiffGenEqual");
+const OneofMany = artifacts.require("OneofMany");
 
 const SoKdp = artifacts.require("SoKdp");
 const SoKwd = artifacts.require("SoKwd");
@@ -14,14 +15,15 @@ const PubParam = artifacts.require("PubParam");
 const BN = require("bn.js")
 
 contract("Mixer Deposit & Withdraw", async (accounts) => {
-  var lib, pp, mixer, pe, dp, wd, sp;
+  var lib, pp, mixer, pe, dr, dg, om;
+  var dp, wd, sp;
   var rg, x;
   const max = 2**53-1;
   const A = accounts[0];
   const Aval = 1;
   const theta = 4;
   const ring_size = 16;
-  var R, ty, AattrP;
+  var R, gs, ty, AattrP;
   
   before (async () => {
     lib = await alt_bn128.new();
@@ -33,16 +35,18 @@ contract("Mixer Deposit & Withdraw", async (accounts) => {
     await PartialEquality.link(lib);
     await DualRing.link(lib);
     await DiffGenEqual.link(lib);
+    await OneofMany.link(lib);
 
     /* 1 traded token */
     pp = await PubParam.new(1); 
     pe = await PartialEquality.new();
     dr = await DualRing.new();
     dg = await DiffGenEqual.new();
+    om = await OneofMany.new();
 
     dp = await SoKdp.new(pp.address, pe.address);
-    wd = await SoKwd.new(pp.address, pe.address, dr.address, dg.address);
-    sp = await SoKsp.new(pp.address, pe.address, dr.address, dg.address);
+    wd = await SoKwd.new(pp.address, pe.address, dr.address, dg.address, om.address);
+    sp = await SoKsp.new(pp.address, pe.address, dr.address, dg.address, om.address);
 
     rg = await TokenRegistrar.new();
 
@@ -60,6 +64,12 @@ contract("Mixer Deposit & Withdraw", async (accounts) => {
     R = new Array(ring_size);
     for (var i = 0; i < ring_size; i++) {
       R[i] = await pp.randomAcc();
+    }
+
+    /* initialise gs */
+    gs = new Array(Math.log2(ring_size));
+    for (var i = 0; i < gs.length; i++) {
+      gs[i] = await pp.randomAcc();
     }
 
     AattrP = [ty, Aval, 0, new BN(max), new BN(RandomUint(max)), new BN(RandomUint(max)), new BN(RandomUint(max))];
@@ -92,7 +102,7 @@ contract("Mixer Deposit & Withdraw", async (accounts) => {
 
     const tag = await pp.TagEval(sk);
 
-    const tx_wd = [R, tag, AattrP.slice(0, sk_pos), A];
+    const tx_wd = [R, gs, tag, AattrP.slice(0, sk_pos), A];
 
     const wit = [theta].concat(AattrP.slice(sk_pos));
 
@@ -104,16 +114,17 @@ contract("Mixer Deposit & Withdraw", async (accounts) => {
   })
 })
 
-
+/////////////////////// Spend /////////////////////
 contract("Mixer Spend", async (accounts) => {
-  var lib, pp, mixer, pe, wd, sp;
+  var lib, pp, mixer, pe, dr, dg, om;
+  var dp, wd, sp;
   var rg, x;
   const max = 2**53-1;
   const A = accounts[0];
   const Aval = 1;
   const theta = 4;
   const ring_size = 16;
-  var R, ty, AattrP, T_beg, T_end, sk, opn, ok;
+  var R, gs, ty, AattrP, T_beg, T_end, sk, opn, ok;
   
   before (async () => {
     lib = await alt_bn128.new();
@@ -125,16 +136,18 @@ contract("Mixer Spend", async (accounts) => {
     await PartialEquality.link(lib);
     await DualRing.link(lib);
     await DiffGenEqual.link(lib);
+    await OneofMany.link(lib);
 
     /* 1 traded token */
     pp = await PubParam.new(1); 
     pe = await PartialEquality.new();
     dr = await DualRing.new();
     dg = await DiffGenEqual.new();
+    om = await OneofMany.new();
 
     dp = await SoKdp.new(pp.address, pe.address);
-    wd = await SoKwd.new(pp.address, pe.address, dr.address, dg.address);
-    sp = await SoKsp.new(pp.address, pe.address, dr.address, dg.address);
+    wd = await SoKwd.new(pp.address, pe.address, dr.address, dg.address, om.address);
+    sp = await SoKsp.new(pp.address, pe.address, dr.address, dg.address, om.address);
 
     rg = await TokenRegistrar.new();
 
@@ -152,6 +165,11 @@ contract("Mixer Spend", async (accounts) => {
     R = new Array(ring_size);
     for (var i = 0; i < ring_size; i++) {
       R[i] = await pp.randomAcc();
+    }
+
+    gs = new Array(Math.log2(ring_size));
+    for (var i = 0; i < gs.length; i++) {
+      gs[i] = await pp.randomAcc();
     }
 
     AattrP = [ty, Aval, 0, new BN(max), new BN(RandomUint(max)), new BN(RandomUint(max)), new BN(RandomUint(max))];
@@ -175,7 +193,7 @@ contract("Mixer Spend", async (accounts) => {
     const tcom_Ts = [await pp.tCom(attrT)];
     const ocom_Ts = [await pp.oCom(attrT)];
 
-    const tx_sp = [R, tag, [opn, T_beg, T_end], pkT, tcom_Ts, ocom_Ts];
+    const tx_sp = [R, gs, tag, [opn, T_beg, T_end], pkT, tcom_Ts, ocom_Ts];
 
     const attrTs = [[1,2,3,4]];
 

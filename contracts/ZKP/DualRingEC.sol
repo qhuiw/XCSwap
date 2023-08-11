@@ -64,6 +64,9 @@ contract DualRingEC is DualRing {
     }
     
     /// @dev sign a dualring signature on message m
+    /// @param pp {g, pks, u}
+    /// @param m message
+    /// @param skj [sk, index]
     function signEC(ParamEC memory pp, bytes memory m, uint256[2] memory skj) public view returns (SigEC memory sig) {
         DualRing.Sig memory dr_sig; 
         uint256 c;
@@ -91,6 +94,9 @@ contract DualRingEC is DualRing {
     }
 
     /// @dev verify a dualring signature on message m
+    /// @param pp {g, pks, u}
+    /// @param m message
+    /// @param sig {z, R, nisa_sig}
     function verifyEC(ParamEC memory pp, bytes memory m, SigEC memory sig) public view returns (bool) {
         uint256 c = H(m, pp.dr_pp.pks, sig.R);
         alt_bn128.G1Point memory P = sig.R.add(pp.dr_pp.g.mul(sig.z).neg());

@@ -5,6 +5,7 @@ import "../lib/alt_bn128.sol";
 import "../PubParam.sol";
 import {PartialEquality as PE} from "../ZKP/PartialEquality.sol";
 import {DualRingEC as DR} from "../ZKP/DualRingEC.sol";
+import {OneofMany as OM} from "../ZKP/OneofMany.sol";
 import {DiffGenEqual as DG} from "../ZKP/DiffGenEqual.sol";
 
 contract SoKwd {
@@ -12,12 +13,14 @@ contract SoKwd {
   using alt_bn128 for uint256;
   using alt_bn128 for alt_bn128.G1Point;
 
-  /// @param R ring accounts
+  /// @param R N ring accounts
+  /// @param gs log N generators
   /// @param tag tag = g_tag^sk
   /// @param attrS (ty, val, t_beg, t_end)
   /// @param u_rcpt receipt address
   struct TX {
-    alt_bn128.G1Point[] R; 
+    alt_bn128.G1Point[] R;
+    alt_bn128.G1Point[] gs;
     alt_bn128.G1Point tag;
     uint256[] attrS;
     address u_rcpt;
@@ -25,7 +28,8 @@ contract SoKwd {
 
   struct Sig {
     alt_bn128.G1Point acc_d;
-    DR.SigEC dr_sig;
+    // DR.SigEC dr_sig;
+    OM.Sig om_sig;
     DG.Sig dg_sig;
     PE.Sig pe_sig;
   }
@@ -34,12 +38,14 @@ contract SoKwd {
   PE pe;
   DR dr;
   DG dg;
+  OM om;
 
-  constructor (address pp_addr, address pe_addr, address dr_addr, address dg_addr) {
+  constructor (address pp_addr, address pe_addr, address dr_addr, address dg_addr, address om_addr) {
+    pp = PubParam(pp_addr);
     pe = PE(pe_addr);
     dr = DR(dr_addr);
     dg = DG(dg_addr);
-    pp = PubParam(pp_addr);
+    om = OM(om_addr);
   }
 
   /// @param wit (𝜃S, skS, opnS, okS)
@@ -69,19 +75,19 @@ contract SoKwd {
     alt_bn128.G1Point memory acc_d = pp.Com(acc_d_attr); // acc_d
     sig.acc_d = acc_d;
 
-    // alt_bn128.G1Point[] memory new_R = new alt_bn128.G1Point[](tx_wd.R.length); // ring pks
-
     for (uint i = 0; i < tx_wd.R.length; i++) {
       /// @dev R pks := {acc/acc_d}
       tx_wd.R[i] = tx_wd.R[i].add(acc_d.neg()); 
     }
 
-    DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_wd.R, pp.h());
-    bytes memory m = abi.encode(tx_wd.u_rcpt);
+    // DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_wd.R, pp.h());
+    // bytes memory m = abi.encode(tx_wd.u_rcpt);
+    OM.Param memory om_pp = om.param(tx_wd.gs, tx_wd.R, pp.g_ok());
     uint256[2] memory skj = [wit[3].sub(acc_d_attr[n-1]), wit[0]]; // (ok-ok', theta)
 
     /// @dev Ring signature {acc/acc_d}
-    sig.dr_sig = dr.signEC(dr_pp, m, skj);
+    // sig.dr_sig = dr.signEC(dr_pp, m, skj);
+    sig.om_sig = om.sign(om_pp, skj);
 
     /// @dev Diff Gen Equal signature (tag vs acc_d)
     sig.dg_sig = dg.sign(pp.g_tag(), pp.gs(), pp.sk_pos(), acc_d_attr);
@@ -97,11 +103,12 @@ contract SoKwd {
       tx_wd.R[i] = tx_wd.R[i].add(sig.acc_d.neg());
     }
 
-    DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_wd.R, pp.h());
-    bytes memory m = abi.encode(tx_wd.u_rcpt);
-
     /// @dev verify Ring signature
-    bool b_dr = dr.verifyEC(dr_pp, m, sig.dr_sig);
+    // DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_wd.R, pp.h());
+    // bytes memory m = abi.encode(tx_wd.u_rcpt);
+    // bool b_dr = dr.verifyEC(dr_pp, m, sig.dr_sig);
+    OM.Param memory om_pp = om.param(tx_wd.gs, tx_wd.R, pp.g_ok());
+    bool b_dr = om.verify(om_pp, sig.om_sig);
     require (b_dr, "Ring signature does not pass");
 
     /// @dev verify Diff Gen Equal signature

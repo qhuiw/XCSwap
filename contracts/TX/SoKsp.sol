@@ -6,6 +6,7 @@ import "../PubParam.sol";
 import {PartialEquality as PE} from "../ZKP/PartialEquality.sol";
 import {DualRingEC as DR} from "../ZKP/DualRingEC.sol";
 import {DiffGenEqual as DG} from "../ZKP/DiffGenEqual.sol";
+import {OneofMany as OM} from "../ZKP/OneofMany.sol";
 
 contract SoKsp {
   using alt_bn128 for uint256;
@@ -15,18 +16,21 @@ contract SoKsp {
   PE pe;
   DR dr;
   DG dg;
+  OM om;
   uint n;
 
   constructor (
     address pp_addr, 
     address pe_addr, 
     address dr_addr, 
-    address dg_addr
+    address dg_addr,
+    address om_addr
   ) {
     pp = PubParam(pp_addr);
     pe = PE(pe_addr);
     dr = DR(dr_addr);
     dg = DG(dg_addr);
+    om = OM(om_addr);
 
     n = pp.n();
   }
@@ -34,6 +38,7 @@ contract SoKsp {
   /// @param attrS (opnS, T_begS, T_endS)
   struct TX {
     alt_bn128.G1Point[] R;
+    alt_bn128.G1Point[] gs;
     alt_bn128.G1Point tagS;
     uint256[3] attrS; 
     alt_bn128.G1Point pk_T;
@@ -54,7 +59,8 @@ contract SoKsp {
   /// @param acc_d delegate of acc
   struct Sig {
     alt_bn128.G1Point acc_d;
-    DR.SigEC dr_sig;
+    // DR.SigEC dr_sig;
+    OM.Sig om_sig;
     DG.Sig dg_tag_sig;
     PE.Sig pe_opn_sig;
     PE.Sig[] pe_ty_sig;
@@ -82,12 +88,13 @@ contract SoKsp {
       tx_sp.R[i] = tx_sp.R[i].add(acc_d.neg()); 
     }
 
-    DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_sp.R, pp.h());
-    bytes memory m = abi.encode(address(0));
-    uint256[2] memory skj = [wit.attrS[3].sub(acc_d_attr[n-1]), wit.theta]; // (ok-ok', theta)
-
     /// @dev 1. Ring signature {acc/acc_d}
-    sig.dr_sig = dr.signEC(dr_pp, m, skj);
+    // DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_sp.R, pp.h());
+    // bytes memory m = abi.encode(address(0));
+    OM.Param memory om_pp = om.param(tx_sp.gs, tx_sp.R, pp.g_ok());
+    uint256[2] memory skj = [wit.attrS[3].sub(acc_d_attr[n-1]), wit.theta]; // (ok-ok', theta)
+    // sig.dr_sig = dr.signEC(dr_pp, m, skj);
+    sig.om_sig = om.sign(om_pp, skj);
 
     /// @dev 2. Diff Gen Equal signature (tag vs acc_d)
     sig.dg_tag_sig = dg.sign(pp.g_tag(), Gs, pp.sk_pos(), acc_d_attr);
@@ -164,10 +171,11 @@ contract SoKsp {
       tx_sp.R[i] = tx_sp.R[i].add(sig.acc_d.neg()); 
     }
 
-    DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_sp.R, pp.h());
-
-    /// @dev 1. verify Ring signature
-    b.b_dr = dr.verifyEC(dr_pp, abi.encode(address(0)), sig.dr_sig);
+    /// @dev 1. verify Ring signature {acc/acc_d}
+    // DR.ParamEC memory dr_pp = dr.param(pp.g_ok(), tx_sp.R, pp.h());
+    OM.Param memory om_pp = om.param(tx_sp.gs, tx_sp.R, pp.g_ok());
+    // b.b_dr = dr.verifyEC(dr_pp, abi.encode(address(0)), sig.dr_sig);
+    b.b_dr = om.verify(om_pp, sig.om_sig);
     require (b.b_dr, "Ring signature does not pass");
 
     /// @dev 2. verify Diff Gen Equal signature (tag vs acc_d)
