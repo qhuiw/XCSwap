@@ -17,13 +17,13 @@ const BN = require("bn.js")
 contract("Mixer Deposit & Withdraw", async (accounts) => {
   var lib, pp, mixer, pe, dr, dg, om;
   var dp, wd, sp;
-  var rg, x;
+  var rg, x, ty;
   const max = 2**53-1;
   const A = accounts[0];
   const Aval = 1;
   const theta = 4;
   const ring_size = 16;
-  var R, gs, ty, AattrP;
+  var AattrP;
   
   before (async () => {
     lib = await alt_bn128.new();
@@ -60,18 +60,7 @@ contract("Mixer Deposit & Withdraw", async (accounts) => {
     await x.mint(A, Aval);
     ty = await rg.getTy(x.address);
 
-    /* intialise R */
-    R = new Array(ring_size);
-    for (var i = 0; i < ring_size; i++) {
-      R[i] = await pp.randomAcc();
-    }
-
-    /* initialise gs */
-    gs = new Array(Math.log2(ring_size));
-    for (var i = 0; i < gs.length; i++) {
-      gs[i] = await pp.randomAcc();
-    }
-
+    /* initialise attr */
     AattrP = [ty, Aval, 0, new BN(max), new BN(RandomUint(max)), new BN(RandomUint(max)), new BN(RandomUint(max))];
   })
 
@@ -88,14 +77,22 @@ contract("Mixer Deposit & Withdraw", async (accounts) => {
 
     await mixer.process_dp.sendTransaction(tx_dp, sig, {from : A});
 
-    assert.equal(b, true, "Deposit failed");
+    assert.equal(b, true, "Deposit failed");    
   })
-
 
   it ("tests withdraw, idx = " + theta, async () => {
     const acc = await pp.Com(AattrP);
 
+    const bool = await mixer.isValid([acc]);
+
+    assert.equal(bool, true, "Account deposit failed");
+
+    /* Warning: need to convert iterable to array */
+    const rr = await mixer.get_accs();
+    const R = Array.from(rr).slice(0, ring_size);
     R[theta] = acc;
+
+    const gs = R.slice(- Math.log2(ring_size));
 
     const sk_pos = await pp.sk_pos();
     const sk = AattrP[sk_pos];
@@ -111,20 +108,21 @@ contract("Mixer Deposit & Withdraw", async (accounts) => {
     const b = await mixer.process_wd.call(tx_wd, sig);
 
     assert.equal(b, true, "Withdraw failed");
-  })
+  });
+
 })
 
 /////////////////////// Spend /////////////////////
 contract("Mixer Spend", async (accounts) => {
   var lib, pp, mixer, pe, dr, dg, om;
   var dp, wd, sp;
-  var rg, x;
+  var rg, x, ty;
   const max = 2**53-1;
   const A = accounts[0];
   const Aval = 1;
   const theta = 4;
   const ring_size = 16;
-  var R, gs, ty, AattrP, T_beg, T_end, sk, opn, ok;
+  var AattrP;
   
   before (async () => {
     lib = await alt_bn128.new();
@@ -161,33 +159,45 @@ contract("Mixer Spend", async (accounts) => {
     await x.mint(A, Aval);
     ty = await rg.getTy(x.address);
 
-    /* intialise R */
-    R = new Array(ring_size);
-    for (var i = 0; i < ring_size; i++) {
-      R[i] = await pp.randomAcc();
-    }
-
-    gs = new Array(Math.log2(ring_size));
-    for (var i = 0; i < gs.length; i++) {
-      gs[i] = await pp.randomAcc();
-    }
-
+    /* initialise attr */
     AattrP = [ty, Aval, 0, new BN(max), new BN(RandomUint(max)), new BN(RandomUint(max)), new BN(RandomUint(max))];
-    T_beg = AattrP[2];
-    T_end = AattrP[3];
-    sk = AattrP[4];
-    opn = AattrP[5];
-    ok = AattrP[6];
+  })
+
+  it ("tests deposit", async () => {
+    const onetacc = await pp.onetAcc(AattrP);
+    
+    const tx_dp = [onetacc, AattrP.slice(0, 4)];
+
+    const sig = await mixer.deposit.call(tx_dp, AattrP.slice(4), {from : A}); 
+
+    await mixer.deposit(tx_dp, AattrP.slice(4), {from : A});
+
+    const b = await mixer.process_dp.call(tx_dp, sig, {from : A});
+
+    await mixer.process_dp.sendTransaction(tx_dp, sig, {from : A});
+
+    assert.equal(b, true, "Deposit failed");    
   })
 
   it ("tests spend", async () => {
+    const T_beg = AattrP[2];
+    const T_end = AattrP[3];
+    const sk = AattrP[4];
+    const opn = AattrP[5];
+    const ok = AattrP[6];
+
+    /* R and gs */
+    const rr = await mixer.get_accs();
+    const R = Array.from(rr).slice(0, ring_size);
+
     const acc = await pp.Com(AattrP);
     R[theta] = acc;
 
-    const tag = await pp.TagEval(sk);
+    const gs = rr.slice(- Math.log2(ring_size));
 
-    // used for testing correctness
-    const skT = sk;
+    const tag = await pp.TagEval(sk);
+    /* random target account */
+    const skT = sk-1;
     const pkT = await pp.TagKGen(skT); 
     const attrT = [ty, Aval, 1, 2, skT, 3, 4];
     const tcom_Ts = [await pp.tCom(attrT)];

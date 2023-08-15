@@ -9,6 +9,8 @@ import "./TX/SoKdp.sol";
 import "./TX/SoKwd.sol";
 import "./TX/SoKsp.sol";
 
+uint constant R_size = 16;
+
 contract Mixer {
   
   using alt_bn128 for uint256;
@@ -36,6 +38,14 @@ contract Mixer {
     dp = SoKdp(dp_addr);
     wd = SoKwd(wd_addr);
     sp = SoKsp(sp_addr);
+
+    init();
+  }
+
+  function init() private {
+    for (uint i = 0; i < R_size; i++){
+      _accs.push(alt_bn128.random(i).uintToCurvePoint());
+    }
   }
 
   ///////// deposit /////////
@@ -59,7 +69,8 @@ contract Mixer {
   /// @param sig deposit signature
   function process_dp(SoKdp.TX memory tx_dp, SoKdp.Sig memory sig) public returns (bool) {
     /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)
-    uint256 time = block.timestamp;
+    // uint256 time = block.timestamp;
+    uint256 time = 0; // for testing
     bool b0 = tx_dp.attrS[2] <= time && time < tx_dp.attrS[3]; 
 
     /// @dev b1 ≜ pk ∉ Σpk
@@ -89,16 +100,21 @@ contract Mixer {
   }
   
   function process_wd(SoKwd.TX memory tx_wd, SoKwd.Sig memory sig) public returns (bool) {
+    if (!isValid(tx_wd.R)) revert("Withdraw: Invalid R");
+
     /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)
-    uint256 time = block.timestamp;
+    // uint256 time = block.timestamp;
+    uint256 time = 0; // for testing
     bool b0 = tx_wd.attrS[2] <= time && time < tx_wd.attrS[3];
+    require(b0, "Withdraw: invalid transaction time");
 
     /// @dev b1 = verify signature
     bool b1 = wd.verify(tx_wd, sig);
-    require (b1, "SoKwd failed");
+    require (b1, "Withdraw: SoKwd failed");
 
     /// @dev b2 ≜ tagS ∉ Σtag
     bool b2 = !_in(_tags, tx_wd.tag);
+    require(b2, "Withdraw: tag already used");
 
     if (b0 && b1 && b2) {
       _tags.push(tx_wd.tag);
@@ -115,20 +131,24 @@ contract Mixer {
   }
 
   function process_sp(SoKsp.TX memory tx_sp, SoKsp.Sig memory sig) public returns (bool) {
+    if (!isValid(tx_sp.R)) revert("Spend: Invalid R");
+
     // uint256 time = 5; // for testing
     /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)
     uint256 time = block.timestamp;
     bool b0 = tx_sp.attrS[1] <= time && time < tx_sp.attrS[2]; 
-    require (b0, "invalid transaction time");
+    require (b0, "Spend: invalid transaction time");
 
     // b1 ≜ pkT ∉ Σpk
     bool b1 = !_in(_pks, tx_sp.pk_T);
+    require(b1, "Spend: pkT already used");
 
     // b2 ≜ tagS ∉ Σtag
     bool b2 = !_in(_tags, tx_sp.tagS);
+    require(b2, "Spend: tagS already used");
 
     bool b3 = sp.verify(tx_sp, sig);
-    require (b3, "SoKsp failed");
+    require (b3, "Spend: SoKsp failed");
 
     if (b0 && b1 && b2 && b3){
       _tags.push(tx_sp.tagS);
@@ -142,6 +162,17 @@ contract Mixer {
       return true;
     }
     return false;
+  }
+
+  function get_accs() public view returns (alt_bn128.G1Point[] memory){
+    return _accs;
+  }
+
+  function isValid(alt_bn128.G1Point[] memory R) public view returns (bool) {
+    for (uint i = 0; i < R.length; i++) {
+      if (!_in(_accs, R[i])) return false;
+    }
+    return true;
   }
 
   function _in(

@@ -148,6 +148,10 @@ library alt_bn128 {
     function random() public view returns(uint256){
         return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender))) % q;
     }
+    
+    function random(uint i) public view returns(uint256){
+        return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, i))) % q;
+    }
 
     // function random() internal view returns (uint256) {
     //     return uint256(keccak256(abi.encodePacked(
