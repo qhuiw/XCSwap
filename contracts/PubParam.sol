@@ -120,4 +120,8 @@ contract PubParam {
     return alt_bn128.random().uintToCurvePoint();
   }
 
+  function com(alt_bn128.G1Point[2] memory g) public view returns (alt_bn128.G1Point memory) {
+    return g[0].add(g[1]);
+  }
+
 }

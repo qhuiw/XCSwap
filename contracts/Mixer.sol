@@ -59,7 +59,7 @@ contract Mixer {
     Token t = Token(r.getToken(tx_dp.attrS[0]));
 
     if (!t.approve(address(this), tx_dp.attrS[1])) 
-      revert ("Unsuccessful approve operation");
+      revert ("Deposit: Unsuccessful approve operation");
 
     sig = dp.sign(tx_dp, wit);
   }
@@ -72,19 +72,23 @@ contract Mixer {
     // uint256 time = block.timestamp;
     uint256 time = 0; // for testing
     bool b0 = tx_dp.attrS[2] <= time && time < tx_dp.attrS[3]; 
+    require(b0, "Deposit: invalid transaction time");
 
     /// @dev b1 ≜ pk ∉ Σpk
     bool b1 = !_in(_pks, tx_dp.s.pk);
+    require(b1, "Deposit: pk already used");
 
     /// @dev b2 ≜ SoKverify(L_dp)
     bool b2 = dp.verify(tx_dp, sig);
-    require (b2, "SoKdp failed");
+    require(b2, "Deposit: SoKdp failed");
 
     if (b0 && b1 && b2){
       alt_bn128.G1Point memory Cx = tx_dp.s.tcom.add(tx_dp.s.ocom);
       _accs.push(Cx);
       _pks.push(tx_dp.s.pk);
       Token t = Token(r.getToken(tx_dp.attrS[0]));
+
+      /// @dev ty.transfer[owner, mixer]
       return t.transfer(msg.sender, address(this), tx_dp.attrS[1]);
     }
     return false;
@@ -104,7 +108,7 @@ contract Mixer {
 
     /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)
     // uint256 time = block.timestamp;
-    uint256 time = 0; // for testing
+    uint256 time = tx_wd.attrS[2]+1; // for testing
     bool b0 = tx_wd.attrS[2] <= time && time < tx_wd.attrS[3];
     require(b0, "Withdraw: invalid transaction time");
 
@@ -135,7 +139,8 @@ contract Mixer {
 
     // uint256 time = 5; // for testing
     /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)
-    uint256 time = block.timestamp;
+    // uint256 time = block.timestamp;
+    uint256 time = tx_sp.attrS[1] + 1; // for testing
     bool b0 = tx_sp.attrS[1] <= time && time < tx_sp.attrS[2]; 
     require (b0, "Spend: invalid transaction time");
 
@@ -175,12 +180,20 @@ contract Mixer {
     return true;
   }
 
+  function inAcc(alt_bn128.G1Point memory g) public view returns (bool) {
+    return _in(_accs, g);
+  }
+
+  function inTag(alt_bn128.G1Point memory g) public view returns (bool) {
+    return _in(_tags, g);
+  }
+
   function _in(
     alt_bn128.G1Point[] memory ls,
-    alt_bn128.G1Point memory pk
-  ) public pure returns (bool) {
+    alt_bn128.G1Point memory g
+  ) private pure returns (bool) {
     for (uint i = 0 ; i < ls.length; i++) {
-      if (alt_bn128.eq(ls[i], pk)) return true;
+      if (alt_bn128.eq(ls[i], g)) return true;
     }
     return false;
   }

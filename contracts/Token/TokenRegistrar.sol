@@ -8,14 +8,14 @@ import "./Token.sol";
  */
 contract TokenRegistrar {
   /// @dev unique type id => token address
-  mapping(uint256 => address) tokenTy;
+  mapping(uint256 => address) _tokenTy;
 
   /// @dev register a token
   /// @param tk_addr token address
   function register(address tk_addr) public returns (bool) {
     if (_exists(tk_addr)) return false;
     uint256 ty = _hash(tk_addr); 
-    tokenTy[ty] = tk_addr;
+    _tokenTy[ty] = tk_addr;
     // set ty
     Token(tk_addr).setTy(ty);
     return true;
@@ -36,7 +36,7 @@ contract TokenRegistrar {
   /// @dev get token address by its unique type
   /// @param ty token type
   function getToken(uint256 ty) public view returns (address) {
-    address tk_addr = tokenTy[ty];
+    address tk_addr = _tokenTy[ty];
     if (tk_addr == address(0)) revert ("Token type not exist");
     return tk_addr;
   }
@@ -45,7 +45,7 @@ contract TokenRegistrar {
   /// @param tk_addr token address
   function _exists(address tk_addr) private view returns (bool) {
     uint256 ty = _hash(tk_addr);
-    return tokenTy[ty] != address(0);
+    return _tokenTy[ty] != address(0);
   }
 
   /// @dev unique token identifier by hashing name and symbol

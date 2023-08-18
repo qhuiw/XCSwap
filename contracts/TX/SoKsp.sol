@@ -136,8 +136,9 @@ contract SoKsp {
     for (uint i = 0; i < target_length; i++){
       pe_y[n-5] = wit.attrTs[i][0]; // T_beg
       pe_y[n-4] = wit.attrTs[i][1]; // T_end
-      pe_y[n-2] = wit.attrTs[i][2]; // opn
-      pe_y[n-1] = wit.attrTs[i][3]; // ok
+      /// @dev here what to do with opn and ok?
+      // pe_y[n-2] = wit.attrTs[i][2]; // opn
+      // pe_y[n-1] = wit.attrTs[i][3]; // ok
 
       sig.pe_ty_sig[i] = pe.sign(Gs, acc_d_attr, pe_y, idx_ne);
       sig.dg_sk_sig[i] = dg.sign(pp.g_pk(), Gs, pp.sk_pos(), pe_y);
@@ -213,7 +214,8 @@ contract SoKsp {
     }
 
     for (uint i = 0; i < target_length; i++){
-      Cy = tx_sp.tcom_T[i].add(tx_sp.ocom_T[i]);
+      // Cy = tx_sp.tcom_T[i].add(tx_sp.ocom_T[i]);
+      Cy = tx_sp.tcom_T[i];
 
       b.b_pe_ty[i] = pe.verify(Gs, idx_ne, sig.acc_d, Cy, sig.pe_ty_sig[i]);
       require (b.b_pe_ty[i], "Part Equal signatures (same tyS, valS) does not pass");
