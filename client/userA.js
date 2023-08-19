@@ -36,12 +36,11 @@ const connectWalletHandler = async () => {
 }
 
 const main = async () => {
-  // const El = document.getElementById('connect');
-  // El.onclick = connectWalletHandler;
+  const El = document.getElementById('connect');
+  El.onclick = connectWalletHandler;
 
-  // require('react-dom');
-  // window.React2 = require('react');
-  // console.log(window.React1 === window.React2);
+  // const root = createRoot(El);
+  // root.render(<NavigationBar />);
 }
 
 // function NavigationBar() {
