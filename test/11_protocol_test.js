@@ -1,6 +1,4 @@
 const assert = require("assert");
-// const contract = require("@truffle/contract");
-
 const alt_bn128 = artifacts.require("alt_bn128");
 const Mixer = artifacts.require("Mixer");
 const TokenRegistrar = artifacts.require("TokenRegistrar");
