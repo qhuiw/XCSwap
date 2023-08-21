@@ -28,6 +28,12 @@ contract TokenFT is Token {
     return true;
   }
 
+  function isApproved(address spender, uint256 value) public view override returns (bool){
+    address owner = msg.sender;
+    if (balanceOf(owner) < value) revert ("Insufficient Allowance");
+    return _allowances[owner][spender] >= value;
+  }
+
   /// @dev transfer token
   /// @param from owner address
   /// @param to destination address

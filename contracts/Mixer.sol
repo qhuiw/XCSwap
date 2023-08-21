@@ -58,7 +58,7 @@ contract Mixer {
 
     Token t = Token(r.getToken(tx_dp.attrS[0]));
 
-    if (!t.approve(address(this), tx_dp.attrS[1])) 
+    if (!t.isApproved(address(this), tx_dp.attrS[1])) 
       revert ("Deposit: Unsuccessful approve operation");
 
     sig = dp.sign(tx_dp, wit);

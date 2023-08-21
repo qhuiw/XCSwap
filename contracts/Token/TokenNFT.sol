@@ -31,6 +31,12 @@ contract TokenNFT is Token {
     return true;
   }
 
+  function isApproved(address to, uint256 tokenId) public view override returns (bool) {
+    address owner = ownerOf(tokenId);
+    if (to == owner) revert ("TokenNFT.approved: Invalid Operator");
+    return _tokenApproval[tokenId] == to;
+  }
+
   function transfer(address from, address to, uint256 tokenId) public override returns (bool) {
     address operator = msg.sender;
     address owner = ownerOf(tokenId);

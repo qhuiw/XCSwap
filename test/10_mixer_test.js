@@ -69,9 +69,11 @@ contract("Mixer Deposit & Withdraw", async (accounts) => {
     
     const tx_dp = [onetacc, AattrP.slice(0, 4)];
 
+    await x.approve.sendTransaction(mixer.address, Aval, {from : A});
+
     const sig = await mixer.deposit.call(tx_dp, AattrP.slice(4), {from : A}); 
 
-    await mixer.deposit(tx_dp, AattrP.slice(4), {from : A});
+    // await mixer.deposit(tx_dp, AattrP.slice(4), {from : A});
 
     const b = await mixer.process_dp.call(tx_dp, sig, {from : A});
 
@@ -168,9 +170,11 @@ contract("Mixer Spend", async (accounts) => {
     
     const tx_dp = [onetacc, AattrP.slice(0, 4)];
 
+    await x.approve.sendTransaction(mixer.address, Aval, {from : A});
+
     const sig = await mixer.deposit.call(tx_dp, AattrP.slice(4), {from : A}); 
 
-    await mixer.deposit(tx_dp, AattrP.slice(4), {from : A});
+    // await mixer.deposit(tx_dp, AattrP.slice(4), {from : A});
 
     const b = await mixer.process_dp.call(tx_dp, sig, {from : A});
 

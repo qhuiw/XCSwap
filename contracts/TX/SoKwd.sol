@@ -48,7 +48,7 @@ contract SoKwd {
     om = OM(om_addr);
   }
 
-  /// @param wit (𝜃S, skS, opnS, okS)
+  /// @param wit (theta_S, skS, opnS, okS)
   function sign(TX memory tx_wd, uint256[4] memory wit) public view returns (Sig memory sig){
     require (tx_wd.tag.eq(pp.TagEval(wit[1])), "Tag matches");
 

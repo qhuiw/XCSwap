@@ -142,9 +142,11 @@ contract("Protocol", async (accounts) => {
 
     const tx_dp = [onetP_By, attrP_By.slice(0, 4)];
 
+    await y.approve.sendTransaction(mixerY.address, valy, {from : B});
+
     const sig = await mixerY.deposit.call(tx_dp, attrP_By.slice(4), {from : B});
 
-    await mixerY.deposit.sendTransaction(tx_dp, attrP_By.slice(4), {from : B});
+    // await mixerY.deposit.sendTransaction(tx_dp, attrP_By.slice(4), {from : B});
 
     const bool = await mixerY.process_dp.call(tx_dp, sig, {from : B});
 
@@ -205,9 +207,11 @@ contract("Protocol", async (accounts) => {
 
     const tx_dp = [onetP_Ax, attrP_Ax.slice(0, 4)];
 
+    await x.approve.sendTransaction(mixerX.address, valx, {from : A});
+
     const sig = await mixerX.deposit.call(tx_dp, attrP_Ax.slice(4), {from : A});
 
-    await mixerX.deposit.sendTransaction(tx_dp, attrP_Ax.slice(4), {from : A});
+    // await mixerX.deposit.sendTransaction(tx_dp, attrP_Ax.slice(4), {from : A});
 
     const bool = await mixerX.process_dp.call(tx_dp, sig, {from : A});
 
