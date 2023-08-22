@@ -34,12 +34,12 @@ contract PubParam {
   }
 
   function init(uint _n) private {
-    _h = uint256(1).uintToCurvePoint();
-    _g_pk = alt_bn128.random().uintToCurvePoint();
-    _g_tag = alt_bn128.random().uintToCurvePoint();
+    _h = alt_bn128.random(_n).uintToCurvePoint();
+    _g_pk = alt_bn128.random(_n+1).uintToCurvePoint();
+    _g_tag = alt_bn128.random(_n+2).uintToCurvePoint();
 
     for (uint i = 0; i < _n; i++) {
-      _gs.push(alt_bn128.random().uintToCurvePoint());
+      _gs.push(alt_bn128.random(_n+3+i).uintToCurvePoint());
     }
   }
 

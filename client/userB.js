@@ -1,5 +1,4 @@
 import Web3 from "web3";
-// import { createRoot } from 'react-dom/client';
 import lib from "../build/contracts/alt_bn128.json";
 
 var accounts = null;
@@ -11,7 +10,7 @@ const connectWalletHandler = async () => {
       /* request wallet connect */
       await window.ethereum.request({ method: "eth_requestAccounts" });
       /* create web3 instance and set to state var */
-      const web3 = new Web3(window.ethereum || new Web3.providers.HttpProvider('http://127.0.0.1:9545'));
+      const web3 = new Web3(window.ethereum || new Web3.providers.HttpProvider('http://127.0.0.1:8545'));
       /* get list of accounts */
       accounts = await web3.eth.getAccounts();
       console.log(accounts);
@@ -33,7 +32,6 @@ const connectWalletHandler = async () => {
 
 const main = async () => {
   const btn = document.getElementById('connect');
-  // if (accounts != null) btn.style.visibility = 'hidden';
   btn.onclick = connectWalletHandler;
 }
 

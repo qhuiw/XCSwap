@@ -23,7 +23,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"i\",\"type\":\"uint256\"}],\"name\":\"getRelay\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Relay/RelayRegistry.sol\":\"RelayRegistry\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1},\"remappings\":[]},\"sources\":{\"project:/contracts/Relay/RelayRegistry.sol\":{\"keccak256\":\"0xe18e8f0ed0513d9329cc497427bab23c8d7ab040afc1fe2ae29bd96486e1286d\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://4def25ae41873103eafbc5bbe3ccc1bdf33cd692ccfcef332a4c3bc177281131\",\"dweb:/ipfs/QmZPp54XYBVdieiqY37EqEUYvqm6F3nUJueKq6QNi3Aq6x\"]}},\"version\":1}",
@@ -1974,9 +1975,17 @@
     "name": "solc",
     "version": "0.8.19+commit.7dd6d404.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "1001": {
+      "events": {},
+      "links": {},
+      "address": "0x6Da9C73e03DEF100D9B2DA10bbdB73682BAf6dAA",
+      "transactionHash": "0xea3d00f1069c0dd0ff5406f93ecc2a037ee80425cef1797640f8330c0f70e0f7"
+    }
+  },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-19T15:56:27.240Z",
+  "updatedAt": "2023-08-22T03:30:48.894Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},

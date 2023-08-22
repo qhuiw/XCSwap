@@ -199,3 +199,28 @@ contract Mixer {
   }
 
 }
+
+contract MixerFactory {
+  address[] _mixers;
+
+  // constructor(
+  //   address r_addr, 
+  //   address pp_addr, 
+  //   address dp_addr,
+  //   address wd_addr,
+  //   address sp_addr) {
+  //   /// @dev init 2 mixers
+  //   for (uint i = 0; i < 2; i++){
+  //     Mixer m = new Mixer(r_addr, pp_addr, dp_addr, wd_addr, sp_addr);
+  //     _mixers.push(address(m));
+  //   }
+  // }
+
+  function appendMixers(address m) public {
+    _mixers.push(m);
+  }
+
+  function getMixers() public view returns (address[] memory) {
+    return _mixers;
+  }
+}

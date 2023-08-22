@@ -11665,9 +11665,22 @@
     "name": "solc",
     "version": "0.8.19+commit.7dd6d404.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "1001": {
+      "events": {},
+      "links": {},
+      "address": "0x8a5Cf74891a4E6b7a66421Bc96cC42C304e3ce15",
+      "transactionHash": "0x134896a5bc9411c1e77aa2af70bff65b3f2ad53cdf9a37f1e90aaa8fe1339e0b"
+    },
+    "5777": {
+      "events": {},
+      "links": {},
+      "address": "0x28B4e1aC4BD8bF546a99fd13FC579467562c4019",
+      "transactionHash": "0xfc2676677bf7f6f97d1359e8064427fdf834b653ad50fdd8f214784dea12df06"
+    }
+  },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-19T19:16:54.518Z",
+  "updatedAt": "2023-08-21T19:14:53.505Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "arithmetic operations over elliptic curve alt_bn128",

@@ -15,11 +15,11 @@ abstract contract Token {
     _symbol = symbol_;
   }
 
-  function name() external view returns (string memory) {
+  function name() external view virtual returns (string memory) {
     return _name;
   }
 
-  function symbol() external view returns (string memory) {
+  function symbol() external view virtual returns (string memory) {
     return _symbol;
   }
 
@@ -32,7 +32,7 @@ abstract contract Token {
     _ty = ty_;
   }
 
-  function approve(address to, uint256 val) public virtual returns (bool);
+  function approve(address to, uint256 val) public virtual;
   function isApproved(address to, uint256 val) public virtual returns (bool);
   function transfer(address from, address to, uint256 val) public virtual returns (bool);
   function mint(address to, uint256 val) public virtual;

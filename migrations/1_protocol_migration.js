@@ -1,8 +1,10 @@
 const alt_bn128 = artifacts.require("alt_bn128");
+const MixerFactory = artifacts.require("MixerFactory");
 const Mixer = artifacts.require("Mixer");
 const TokenRegistrar = artifacts.require("TokenRegistrar");
 const TokenNFT = artifacts.require("TokenNFT");
-const PartialEquality = artifacts.require("PartialEquality");
+const NFTFactory = artifacts.require("NFTFactory");
+const PartEqual = artifacts.require("PartialEquality");
 const DualRing = artifacts.require("DualRingEC");
 const OneofMany = artifacts.require("OneofMany");
 const DiffGenEqual = artifacts.require("DiffGenEqual");
@@ -14,157 +16,56 @@ const SoKsp = artifacts.require("SoKsp");
 const SoKba = artifacts.require("SoKba");
 const SoKab = artifacts.require("SoKab");
 const PubParam = artifacts.require("PubParam");
-const {writeFile} = require('fs/promises');
-const fs = require('fs');
+const RelayRegistry = artifacts.require("RelayRegistry");
+
+const overwritable = true;
 
 module.exports = async function(deployer){
-  // await deployer.deploy(lib);
-  // await deployer.link(lib, 
-  //   [ Mixer, PubParam, 
-  //     DualRing, PartialEquality, DiffGenEqual, OneofMany, Sigma,
-  //     SoKdp, SoKwd, SoKsp, SoKab, SoKba
-  //   ]);
+  await deployer.deploy(alt_bn128, {overwrite: overwritable});
 
-  // await deployer.deploy(PubParam, 1);
+  await deployer.link(alt_bn128,
+    [ Mixer, MixerFactory, PubParam,
+      DualRing, PartEqual, DiffGenEqual, OneofMany, Sigma
+    ]);
 
+  await deployer.link(alt_bn128, [SoKdp, SoKwd, SoKsp, SoKab, SoKba]);
 
-  // await deployer.deploy(TokenRegistrar);
+  await deployer.deploy(PubParam, 1, {overwrite: overwritable});
 
-  // var lib, pp, dr, pe, sg, om;
-  // var dp, wd, sp, ba, ab;
-  // var rg, x, y, ty_x, ty_y, mixerX, mixerY;
+  await deployer.deploy(DualRing, {overwrite: overwritable});
+  await deployer.deploy(PartEqual, {overwrite: overwritable}); 
+  await deployer.deploy(DiffGenEqual, {overwrite: overwritable});
+  await deployer.deploy(OneofMany, {overwrite: overwritable});
+  await deployer.deploy(Sigma, {overwrite: overwritable});
 
-  const lib = await alt_bn128.new();
-  await Mixer.link(lib);
-  await PubParam.link(lib);
-
-  await SoKdp.link(lib);
-  await SoKwd.link(lib);
-  await SoKsp.link(lib);
-  await SoKba.link(lib);
-  await SoKab.link(lib);
-
-  await PartialEquality.link(lib);
-  await DualRing.link(lib);
-  await DiffGenEqual.link(lib);
-  await Sigma.link(lib);
-  await OneofMany.link(lib);
-
-    /* 1 traded token */
-  const pp = await PubParam.new(1); 
-  const pe = await PartialEquality.new();
-  const dr = await DualRing.new();
-  const om = await OneofMany.new();
-  const dg = await DiffGenEqual.new();
-  const sg = await Sigma.new();
-
-  console.log(pp.address)
-  // deployer.deploy(PubParam, 1);
-
-    /* set up */
-  const ba = await SoKba.new(pp.address, pe.address, dg.address, sg.address);
-  const ab = await SoKab.new(pp.address, pe.address, dg.address, sg.address);
-  /* mixer */
-  const dp = await SoKdp.new(pp.address, pe.address);
-  const wd = await SoKwd.new(pp.address, pe.address, dr.address, dg.address, om.address);
-  const sp = await SoKsp.new(pp.address, pe.address, dr.address, dg.address, om.address);
-
-    /* token registrar */
-  const rg = await TokenRegistrar.new();
-
-  const mixerX = await Mixer.new(rg.address, pp.address, dp.address, wd.address, sp.address);
-  console.log("mixerX", mixerX.address)
-  const mixerY = await Mixer.new(rg.address, pp.address, dp.address, wd.address, sp.address);
-  console.log("mixerY", mixerY.address)
-
-    /*  initiate and register NFTs "x" & "y" */
-  const x = await TokenNFT.new("x", "x");
-  await rg.register(x.address);
-
-  const y = await TokenNFT.new("y", "y");
-  await rg.register(y.address);
-
-  const addr = {
-    "mixerX": mixerX.address,
-    "mixerY": mixerY.address,
-    "x": x.address,
-    "y": y.address
-  };
-
-  fs.writeFileSync('/../tmp/config.json', JSON.stringify(addr), (err) => {
-    if (err) throw err;
-  });
+  await deployer.deploy(
+    SoKab, PubParam.address, PartEqual.address, DiffGenEqual.address, Sigma.address, {overwrite: overwritable});
+  await deployer.deploy(
+    SoKba, PubParam.address, PartEqual.address, DiffGenEqual.address, Sigma.address, {overwrite: overwritable});
   
-};
+  await deployer.deploy(
+    SoKdp, PubParam.address, PartEqual.address, {overwrite: overwritable});
+  await deployer.deploy(
+    SoKwd, PubParam.address, PartEqual.address, DualRing.address, DiffGenEqual.address, OneofMany.address, {overwrite: overwritable});
+  await deployer.deploy(
+    SoKsp, PubParam.address, PartEqual.address, DualRing.address, DiffGenEqual.address, OneofMany.address, {overwrite: overwritable});
 
-// const deploy = async () => {
-//   var lib, pp, dr, pe, sg, om;
-//   var dp, wd, sp, ba, ab;
-//   var rg, x, y, ty_x, ty_y, mixerX, mixerY;
+  await deployer.deploy(TokenRegistrar, {overwrite: overwritable});
 
-//   lib = await alt_bn128.new();
-//   await Mixer.link(lib);
-//   await PubParam.link(lib);
+  await deployer.deploy(MixerFactory, TokenRegistrar.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address,
+    {overwrite: overwritable}
+  );
 
-//   await SoKdp.link(lib);
-//   await SoKwd.link(lib);
-//   await SoKsp.link(lib);
-//   await SoKba.link(lib);
-//   await SoKab.link(lib);
+  await deployer.deploy(RelayRegistry, {overwrite: overwritable});
 
-//   await PartialEquality.link(lib);
-//   await DualRing.link(lib);
-//   await DiffGenEqual.link(lib);
-//   await Sigma.link(lib);
-//   await OneofMany.link(lib);
+  await deployer.deploy(NFTFactory, {overwrite: overwritable});
 
-//     /* 1 traded token */
-//   pp = await PubParam.new(1); 
-//   pe = await PartialEquality.new();
-//   dr = await DualRing.new();
-//   om = await OneofMany.new();
-//   dg = await DiffGenEqual.new();
-//   sg = await Sigma.new();
+  const f = await NFTFactory.deployed();
 
-//   console.log(pp.address)
-//   deployer.deploy(PubParam, 1);
+  await f.createNFT("x", "x");
 
-//     /* set up */
-//   ba = await SoKba.new(pp.address, pe.address, dg.address, sg.address);
-//   ab = await SoKab.new(pp.address, pe.address, dg.address, sg.address);
-//   /* mixer */
-//   dp = await SoKdp.new(pp.address, pe.address);
-//   wd = await SoKwd.new(pp.address, pe.address, dr.address, dg.address, om.address);
-//   sp = await SoKsp.new(pp.address, pe.address, dr.address, dg.address, om.address);
 
-//     /* token registrar */
-//   rg = await TokenRegistrar.new();
+  // await deployer.deploy(TokenNFT);
 
-//   mixerX = await Mixer.new(rg.address, pp.address, dp.address, wd.address, sp.address);
-//   console.log("mixerX", mixerX.address)
-//   mixerY = await Mixer.new(rg.address, pp.address, dp.address, wd.address, sp.address);
-//   console.log("mixerY", mixerY.address)
-
-//   /*  initiate and register NFTs "x" & "y" */
-//   x = await TokenNFT.new("x", "x");
-//   await rg.register(x.address);
-
-//   y = await TokenNFT.new("y", "y");
-//   await rg.register(y.address);
-
-//   const addr = {
-//     "mixerX": mixerX.address,
-//     "mixerY": mixerY.address,
-//     "x": x.address,
-//     "y": y.address
-//   };
-
-//   const data = JSON.stringify(addr);
-
-//   fs.writeFile('../config.txt', data, (err) => {
-//     if (err) throw err;
-//   });
-
-// }
-
-// deploy();
+  // await deployer.deploy(Mixer, TokenRegistrar.address, DualRing.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address);
+}

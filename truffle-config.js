@@ -18,11 +18,11 @@
  *
  */
 
-// require('dotenv').config();
-// const mnemonic = process.env["MNEMONIC"];
+require('dotenv').config();
+const mnemonic = process.env["MNEMONIC"];
 // const infuraProjectId = process.env["INFURA_PROJECT_ID"];
  
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require("truffle-hdwallet-provider-klaytn");
 
 module.exports = {
   /**
@@ -40,9 +40,22 @@ module.exports = {
       network_id: "*",
       port: 8545,
       host: "127.0.0.1",
-      // gas : 6721975, (default)
+      gas : 6721975, //(default)
       websockets: true
-    }
+    },
+    baobab: {
+      networkCheckTimeout: 10000000, // connection timeout problem
+      pollingInterval:30000, 
+      provider: () => {
+        // return new HDWalletProvider(mnemonic, "https://public-en-baobab.klaytn.net/");
+        return new HDWalletProvider(mnemonic, "https://api.baobab.klaytn.net:8651");
+      },
+      network_id: "1001", //Klaytn baobab testnet
+      gas: "8500000",
+      gasPrice: null,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
   },
   compilers: {
     solc: {

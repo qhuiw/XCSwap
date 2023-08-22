@@ -17,7 +17,7 @@ contract TokenFT is Token {
   /// @dev approve spender to spend token on behave of owner
   /// @param spender authorised spender
   /// @param value authorised amount
-  function approve(address spender, uint256 value) public override returns (bool) {
+  function approve(address spender, uint256 value) public override {
     if (spender == address(0)) revert ("Invalid Spender");
     
     address owner = msg.sender;
@@ -25,7 +25,7 @@ contract TokenFT is Token {
 
     _allowances[owner][spender] = value;
 
-    return true;
+    // return true;
   }
 
   function isApproved(address spender, uint256 value) public view override returns (bool){

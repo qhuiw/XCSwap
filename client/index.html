@@ -15,18 +15,28 @@
 </head>
 <body>
   <!-- mt-4 mb-4 -->
-  <nav class="navbar mt-2"> 
-    <div class="container">
-      <div class="navbar-brand">
-        <div class="content">
-          <h3>Welcome to 
-            <b class="has-text-primary">XCSwap</b>!
-          </h3>
-          <p class="subtitle">A confidential cross-chain transaction system</p>
+  <div class="panel">
+    <nav class="navbar mt-2"> 
+      <div class="container">
+        <div class="navbar-brand">
+          <div class="content">
+            <h3>Welcome to 
+              <b class="has-text-primary">XCSwap</b>!
+            </h3>
+            <p class="subtitle">A confidential cross-chain transaction system</p>
+            
+          </div>
         </div>
+        <div class="navbar-end">
+          <p> Disclaimer:
+            this is a prototype website 
+          </p>
+          <div class="navbar-divider"></div>
+        </div>
+        
       </div>
-    </div>
-  </nav>
+    </nav>
+  </div>
   
   <!-- <section class="section">
     <div class="container">
@@ -35,35 +45,44 @@
     </div>
   </section> -->
 
-  <div class="box">
+  <!-- <div class="box">
     <div class="text-center">
-      <h3><strong>Contracts Deploying...</strong></h3>
+      <h3><strong>Deploy Contracts</strong></h3>
     </div>
-  </div>
+  </div> -->
 
-  <div class="container mt-2">
+  <div class="container mt-2" id="role">
     <div class="content">
-      <h4>Please select your role..</h4>
+      <h4>Please select your transaction network</h4>
     </div>
     <div class="row">
       <div class = "col">
         <!-- <button type="button" class="btn btn-primary btn-lg btn-block" -->
-        <button class="button is-primary btn-lg"
-      onclick="window.open('http://localhost:1234/userA')">
-        <b> User A </b> 
-        </button>
+        
+        <div class="box" id="userA">
+          <button class="button is-primary btn-lg"
+        onclick="window.open(location.protocol+'/userA')">
+          <b> User A </b> 
+          </button>
+          <img src="./images/truffle.png" alt="localhost" border="0" style="width:50px;height:50px">
+          <p><b> Truffle Develop </b></p>
+        </div>
       </div>
       <div class = "col">
-        <button class="button is-primary btn-lg"
-        onclick="window.open('http://localhost:1234/userB')">
+        <div class="box" id="userB">
+          <button class="button is-primary btn-lg"
+        onclick="window.open(location.protocol+'/userB')">
           <b> User B </b> 
         </button>
+        <img src="./images/klaytn.jpeg" alt="klaytn" border="0" style="width:50px;height:50px">
+        <p><b>Klaytn</b></p>
+        </div>
       </div>
     </div>
 
-    <div class="content">
-      <h4>User B has token y User A token x </h4>
-    </div>
+    <!-- <div class="content"> -->
+      <!-- <h4>User B has token y User A token x </h4> -->
+    <!-- </div> -->
     
   </div>
 
