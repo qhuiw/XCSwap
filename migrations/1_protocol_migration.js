@@ -20,7 +20,7 @@ const RelayRegistry = artifacts.require("RelayRegistry");
 
 const overwritable = true;
 
-module.exports = async function(deployer){
+module.exports = async function(deployer, _, accounts){
   await deployer.deploy(alt_bn128, {overwrite: overwritable});
 
   await deployer.link(alt_bn128,
@@ -52,20 +52,33 @@ module.exports = async function(deployer){
 
   await deployer.deploy(TokenRegistrar, {overwrite: overwritable});
 
-  await deployer.deploy(MixerFactory, TokenRegistrar.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address,
-    {overwrite: overwritable}
-  );
+  await deployer.deploy(Mixer, TokenRegistrar.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address, {overwrite: overwritable});
+
+  await deployer.deploy(MixerFactory, Mixer.address, {overwrite: overwritable});
 
   await deployer.deploy(RelayRegistry, {overwrite: overwritable});
 
   await deployer.deploy(NFTFactory, {overwrite: overwritable});
+  
+  /* Create MixerX, Y by Clone Factory pattern */
+  const mf = await MixerFactory.deployed();
+  // await mf.createCopy(); 
+  await deployer.deploy(Mixer, TokenRegistrar.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address, {overwrite: overwritable});
+  const mixerY = await Mixer.deployed();
+  await mf.addMixer(mixerY.address);
 
-  const f = await NFTFactory.deployed();
+  /* Create NFTs by Factory pattern */
+  const nftf = await NFTFactory.deployed();
+  await nftf.createNFT("x", "x");
+  await nftf.createNFT("y", "y");
+  const tokenAddrs = await nftf.getTokens();
 
-  await f.createNFT("x", "x");
+  /* register token x and y */
+  const reg = await TokenRegistrar.deployed();
+  await reg.register(tokenAddrs[0]);
+  await reg.register(tokenAddrs[1]);
+  // const x = await TokenNFT.at(tokens[0]);
+  // const y = await TokenNFT.at(tokens[1]);
 
-
-  // await deployer.deploy(TokenNFT);
-
-  // await deployer.deploy(Mixer, TokenRegistrar.address, DualRing.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address);
+  // await x.mint(accounts[0], 1);
 }

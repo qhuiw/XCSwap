@@ -5,20 +5,24 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx parcel ./*.html"
+    "start": "npm run css-build && npm run client",
+    "client": "npx parcel ./*.html",
+    "css-build": "node-sass index.scss > index.css"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "parcel": "^2.9.3"
+    "assert": "^2.0.0",
+    "parcel": "^2.9.3",
+    "path-browserify": "^1.0.1",
+    "punycode": "^1.4.1",
+    "stream-browserify": "^3.0.0"
   },
   "dependencies": {
+    "@truffle/contract": "^4.6.28",
     "bootstrap": "^5.3.1",
     "bulma": "^0.9.4",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-native": "^0.72.4",
-    "react-router-dom": "^6.15.0"
+    "node-sass": "^9.0.0"
   }
 }

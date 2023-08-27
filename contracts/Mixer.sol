@@ -42,7 +42,7 @@ contract Mixer {
     init();
   }
 
-  function init() private {
+  function init() public {
     for (uint i = 0; i < R_size; i++){
       _accs.push(alt_bn128.random(i).uintToCurvePoint());
     }
@@ -63,6 +63,12 @@ contract Mixer {
 
     sig = dp.sign(tx_dp, wit);
   }
+  // function deposit(SoKdp.TX memory tx_dp, uint256[3] memory wit) public view returns (SoKdp.TX memory){
+  //   address t = r.getToken(tx_dp.attrS[0]);
+  //   // sig = dp.sign(tx_dp, wit);
+  //   // return true;
+  //   return tx_dp;
+  // }
 
   /// @dev mixer process deposit request
   /// @param tx_dp deposit transaction statement
@@ -200,27 +206,39 @@ contract Mixer {
 
 }
 
+// import "@optionality.io/clone-factory/contracts/CloneFactory.sol";
+
 contract MixerFactory {
   address[] _mixers;
+  address masterMixer;
 
-  // constructor(
-  //   address r_addr, 
-  //   address pp_addr, 
-  //   address dp_addr,
-  //   address wd_addr,
-  //   address sp_addr) {
-  //   /// @dev init 2 mixers
-  //   for (uint i = 0; i < 2; i++){
-  //     Mixer m = new Mixer(r_addr, pp_addr, dp_addr, wd_addr, sp_addr);
-  //     _mixers.push(address(m));
-  //   }
-  // }
+  constructor(address _masterMixer) {
+    masterMixer = _masterMixer;
+    _mixers.push(masterMixer);
+  }
 
-  function appendMixers(address m) public {
-    _mixers.push(m);
+  function createCopy() public {
+    address clone = createClone(masterMixer);
+    Mixer(clone).init();
+    _mixers.push(clone);
+  }
+
+  function addMixer(address _mixer) public {
+    _mixers.push(_mixer);
   }
 
   function getMixers() public view returns (address[] memory) {
     return _mixers;
+  }
+
+  function createClone(address target) internal returns (address result) {
+    bytes20 targetBytes = bytes20(target);
+    assembly {
+      let clone := mload(0x40)
+      mstore(clone, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)
+      mstore(add(clone, 0x14), targetBytes)
+      mstore(add(clone, 0x28), 0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000)
+      result := create(0, clone, 0x37)
+    }
   }
 }

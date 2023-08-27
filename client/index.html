@@ -4,14 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XCSwap</title>
-  <!-- <link rel="stylesheet" href="node_modules/bulma/css/bulma.css"> -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://bulma.io/vendor/fontawesome-free-5.15.2-web/css/all.min.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="node_modules/bulma/css/bulma.css">
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"> -->
   <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-  <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous"> -->
+
+  <style>
+    .wrap {
+      overflow: scroll;
+      overflow-wrap: break-word;
+    }
+  </style>
   
-  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
 </head>
 <body>
   <!-- mt-4 mb-4 -->
@@ -24,7 +29,6 @@
               <b class="has-text-primary">XCSwap</b>!
             </h3>
             <p class="subtitle">A confidential cross-chain transaction system</p>
-            
           </div>
         </div>
         <div class="navbar-end">
@@ -33,66 +37,87 @@
           </p>
           <div class="navbar-divider"></div>
         </div>
-        
       </div>
     </nav>
   </div>
-  
-  <!-- <section class="section">
-    <div class="container">
-
-      <h1 class="title has-text-primary">hi </h1>
-    </div>
-  </section> -->
-
-  <!-- <div class="box">
-    <div class="text-center">
-      <h3><strong>Deploy Contracts</strong></h3>
-    </div>
-  </div> -->
-
-  <div class="container mt-2" id="role">
+  <div class="container mt-2" id="page">
     <div class="content">
-      <h4>Please select your transaction network</h4>
+      <h4>Please select <span class="tag is-primary is-light">your</span> transaction network</h4>
     </div>
-    <div class="row">
-      <div class = "col">
-        <!-- <button type="button" class="btn btn-primary btn-lg btn-block" -->
-        
-        <div class="box" id="userA">
-          <button class="button is-primary btn-lg"
-        onclick="window.open(location.protocol+'/userA')">
+    <div class = "columns">
+      <div class = "column">
+        <div class="box is-clickable" name="mnet" value="truffle">
+          <!-- <button class="button is-primary btn-lg"
+        onclick="window.open(location.protocol+'/userA')"> -->
+          <!-- <button class="button is-primary btn-lg" id="userA"> -->
+          <!-- <b> User A </b>  -->
+          <!-- </button> -->
+            
+            <img src="./images/truffle.png" border="0" style="width:50px;height:50px">
+          <p><b> Truffle </b></p>
+        </div>
+      </div>
+      <div class = "column is-half">
+        <div class="box is-clickable" name="mnet" value="klaytn">
+          <!-- <button class="button is-primary btn-lg" id="userB">
+            <b> User B </b> 
+          </button> -->
+          <img src="./images/klaytn.jpeg" alt="klaytn" border="0" style="width:50px;height:50px">
+          <p><b>Klaytn</b></p>
+        </div>
+      </div>
+    </div>
+    <div class="content mt-4">
+      <h4>Please select <span class="tag is-primary is-light">your partner</span>'s network</h4>
+    </div>
+    <div class="columns">
+      <div class = "column">
+        <div class="box is-clickable" name="pnet" value="truffle">
+          <!-- <button class="button is-primary btn-lg"
+        onclick="window.open(location.protocol+'/userA')"> -->
+          <!-- <button class="button is-primary btn-lg" id="userA">
           <b> User A </b> 
-          </button>
-          <img src="./images/truffle.png" alt="localhost" border="0" style="width:50px;height:50px">
-          <p><b> Truffle Develop </b></p>
+          </button> -->
+          <img src="./images/truffle.png" border="0" style="width:50px;height:50px">
+          <p><b> Truffle </b></p>
+          
         </div>
       </div>
-      <div class = "col">
-        <div class="box" id="userB">
-          <button class="button is-primary btn-lg"
-        onclick="window.open(location.protocol+'/userB')">
-          <b> User B </b> 
-        </button>
-        <img src="./images/klaytn.jpeg" alt="klaytn" border="0" style="width:50px;height:50px">
-        <p><b>Klaytn</b></p>
+      <div class = "column">
+        <div class="box is-clickable" name="pnet" value="klaytn">
+          <img src="./images/klaytn.jpeg" border="0" style="width:50px;height:50px">
+          <p><b>Klaytn</b></p>
         </div>
       </div>
     </div>
 
-    <!-- <div class="content"> -->
-      <!-- <h4>User B has token y User A token x </h4> -->
-    <!-- </div> -->
-    
+    <div class="content">
+      <h4>Are you setting up first?</h4>
+    </div>
+    <div class="field is-grouped is-grouped-centered">
+      <label class="box control">
+        <input type="radio" name="r" value="B">
+        <b>Yes</b>
+      </label>
+      <label class="box control">
+        <input type="radio" name="r" value="A">
+        <b>No</b>
+      </label>
+    </div>
   </div>
-
   
 
-  <!-- <script type = "module" src="./script/deploy.cjs"></script> -->
+  <div class="container mt-4">
+    <button class="button is-medium is-primary is-light is-pulled-right" id="next">
+      <span>
+        <strong>Next</strong>
+      </span>
+      <i>→</i>
+    </button>
+</div>
 
-  <!-- <script type = "module" src="index.js"></script> -->
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+  <script type = "module" src="index.js"></script>
 
 </body>
 </html>

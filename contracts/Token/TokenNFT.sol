@@ -2,7 +2,7 @@
 pragma solidity >=0.4.0 <0.9.0;
 
 import "./Token.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "../../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 /**
  * @dev ERC721
@@ -92,11 +92,14 @@ contract TokenNFT is Token, ERC721 {
 }
 
 contract NFTFactory {
-  TokenNFT[] public tokens;
+  address[] _tokens;
 
-  function createNFT(string memory name, string memory symbol) public returns (TokenNFT) {
+  function createNFT(string memory name, string memory symbol) public {
     TokenNFT token = new TokenNFT(name, symbol);
-    tokens.push(token);
-    return token;
+    _tokens.push(address(token));
+  }
+
+  function getTokens() public view returns (address[] memory) {
+    return _tokens;
   }
 }
