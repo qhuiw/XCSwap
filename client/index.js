@@ -11,13 +11,6 @@ const NFTArt = require("../build/contracts/TokenNFT.json");
 const NFTFArt = require("../build/contracts/NFTFactory.json");
 const TokenReg = require("../build/contracts/TokenRegistrar.json");
 
-/**
- * currently, create MixerX, Y, 
- * token X, Y, and register token X, Y upon deployment 
- * 
- */ 
-
-
 /* state */
 var web3 = null, account= null;
 var user = null;
@@ -30,155 +23,106 @@ var ci=false, valx, valy, T1, T2, T3, Tmax, s;
 var attrP_By, P_By, attrP_Bx;
 var attrP_Ax, P_Ax, attrP_Ay;
 
-const mintB = async () => {
+const mint = async () => {
   if (ci == false) {
     alert("Please submit common inputs"); 
     return;
   }
 
+  const valtk = user == 'A'? valx : valy;
+  const tk = user == 'A'? x : y;
+
   const val = document.getElementById('mtinput').value;
-  if (BigInt(val) != valy) { 
+  if (BigInt(val) != valtk) { 
     alert("Please input correct value"); 
     return; 
   }
 
   try {
-    await y.methods.mint(account, valy).send({
+    await tk.methods.mint(account, valtk).send({
       from: account, gas: 6721975, gasPrice: 20000000000});
   } catch(err) {
     console.log(err.message);
     alert(err.message);
+    return;
   }
   
-  const y_owner = await y.methods.ownerOf(valy).call();
-  if (y_owner != account) {
-    alert("Minting failed");
-    return;
-  } else {
-    alert("Minting successful");
-  }
-}
-
-const mintA = async () => {
-  if (ci == false) {
-    alert("Please submit common inputs");
-    return;
-  }
-
-  const val = document.getElementById('mtinput').value;
-  if (BigInt(val) != valx) { 
-    alert("Please input correct value"); 
-    return; 
-  }
-
-  try {
-    await x.methods.mint(account, valx).send(
-    {from: account, gas: 6721975, gasPrice: 20000000000});
-  } catch(err) {
-    console.log(err.message);
-    alert(err.message);
-  }
-
-  const x_owner = await x.methods.ownerOf(valx).call();
-  if (x_owner != account) {
+  const tk_owner = await tk.methods.ownerOf(valtk).call();
+  if (tk_owner != account) {
     alert("Minting failed");
     return;
   }
   alert("Minting successful");
 }
 
-const approveA = async () => {
+const approve = async () => {
   const addr = document.getElementById('approveaddr').value;
   const ty = document.getElementById('approvety').value;
-  if (BigInt(ty) != valx || addr != mixerX.options.address) {
+
+  const valtk = user == 'A'? valx : valy;
+  const mixer = user == 'A'? mixerX : mixerY;
+  const tk = user == 'A'? x : y;
+
+  if (BigInt(ty) != valtk || addr != mixer.options.address) {
     alert("Please input correct value");
     return;
   }
   try {
-    await x.methods.approve(mixerX.options.address, valx).send({from : account, gas: 6721975, gasPrice: 20000000000});
+    await tk.methods.approve(mixer.options.address, valtk).send({from : account, gas: 6721975, gasPrice: 20000000000});
   } catch(err) {
     alert(err.message);
   }
   alert("Approve successful");
 }
 
-const approveB = async () => {
-  const addr = document.getElementById('approveaddr').value;
-  const ty = document.getElementById('approvety').value;
-  if (BigInt(ty) != valy || addr != mixerY.options.address) {
-    alert("Please input correct value");
-    return;
-  }
-  try {
-    await y.methods.approve(mixerY.options.address, valy).send(
-      {from : account, gas: 6721975, gasPrice: 20000000000});
-  } catch(err) {
-    alert(err.message);
-  } 
-  alert ("Approve successful")
-}
+const deposit = async () => {
+  const name = user == 'A'? "X" : "Y";
+  const valtk = user == 'A'? valx : valy;
+  const tytk = user == 'A'? ty_x : ty_y;
+  const mixer = user == 'A'? mixerX : mixerY;
+  const tk = user == 'A'? x : y;
 
-
-const depositB = async () => {
-  const dpinput = document.getElementById('dp-input-Y').value;
-  if (BigInt(dpinput) != valy) {
+  const dpinput = document.getElementById(`dp-input-${name}`).value;
+  if (BigInt(dpinput) != valtk) {
     alert("Please input correct value");
   }
+  const attrP = [tytk, valtk, 0, Tmax, rand(), rand(), rand()];
 
-  attrP_By = [BigInt(ty_y), valy, 0, Tmax, rand(), rand(), rand()];
-  const onetP_By = await pp.methods.onetAcc(attrP_By).call();
-
-  const tx_dp = [onetP_By, attrP_By.slice(0,4)];
-
-  const sig = await mixerY.methods.deposit(tx_dp, attrP_By.slice(4)).call();
-
-  try {
-    await mixerY.methods.process_dp(tx_dp, sig).send({
-      from: account, gas: 6721975, gasPrice: 20000000000});
-  } catch(err) {
-    alert(err.message);
-  }
-
-  const y_ownerAfter = await y.methods.ownerOf(valy).call();
-  if (y_ownerAfter != mixerY.options.address) {
-    alert("Deposit failed");
-    return;
+  if (user == 'A') {
+    attrP_Ax = attrP;
   } else {
-    alert("Deposit successful");
+    attrP_By = attrP;
   }
 
-  P_By = await pp.methods.Com(attrP_By).call();
-  const pacc = document.getElementById('pacc');
-  pacc.appendChild(lib.createElementFromString(`<p>${P_By.X},<br>${P_By.Y} <b>Minted</b></p>`));
-}
+  const onetP = await pp.methods.onetAcc(attrP).call();
 
-const depositA = async () => {
-  const dpinput = document.getElementById('dp-input-X').value;
-  if (BigInt(dpinput) != valx) {
-    alert("Please input correct value");
-  }
-  attrP_Ax = [ty_x, valx, 0, Tmax, rand(), rand(), rand()];
-  const onetP_Ax = await pp.methods.onetAcc(attrP_Ax).call();
+  const tx_dp = [onetP, attrP.slice(0,4)];
 
-  const tx_dp = [onetP_Ax, attrP_Ax.slice(0,4)];
+  const sig = await mixer.methods.deposit(tx_dp, attrP.slice(4)).call();
 
-  const sig = await mixerX.methods.deposit(tx_dp, attrP_Ax.slice(4,7)).call();
   try {
-    await mixerX.methods.process_dp(tx_dp, sig).send({
+    await mixer.methods.process_dp(tx_dp, sig).send({
       from: account, gas: 6721975, gasPrice: 20000000000});
   } catch(err) {
     alert(err.message);
-  }
-
-  const x_ownerAfter = await x.methods.ownerOf(valx).call();
-  if (x_ownerAfter != mixerX.options.address) {
-    alert("Deposit failed");
     return;
   }
 
-  P_Ax = await pp.methods.Com(attrP_Ax).call();
+  const tk_ownerAfter = await tk.methods.ownerOf(valtk).call();
+  if (tk_ownerAfter != mixer.options.address) {
+    alert("Deposit failed");
+    return;
+  }
+  alert("Deposit successful");
+
+  const P = await pp.methods.Com(attrP).call();
+  if (user == 'A') {
+    P_Ax = P;
+  } else {
+    P_By = P;
+  }
   const pacc = document.getElementById('pacc');
-  pacc.appendChild(lib.createElementFromString(`<p>${P_Ax.X},<br>${P_Ax.Y} <b>Minted</b></p>`));
+  pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Minted</b></p>`));
 }
 
 const preswapB = async () => {
@@ -274,7 +218,7 @@ const preswapA = async () => {
 const isin = async (isX) => {
   const mixer = isX? mixerX : mixerY;
   const name = isX? "X" : "Y";
-  const acc = document.getElementById(`isin-input-${name}`).value.split().map(x => x.trim());
+  const acc = document.getElementById(`isin-input-${name}`).value.split().map(elt => elt.trim());
   const res = await mixer.methods.inAcc(acc).call();
   if (res != true) {
     alert("The account is not in the pool, please redeem");
@@ -642,8 +586,8 @@ const init = async (platform) =>{
 
   const dpX = document.getElementById('deposit-button-X');
   const dpY = document.getElementById('deposit-button-Y');
-  dpX.onclick = depositA;
-  dpY.onclick = depositB;
+  dpX.onclick = deposit;
+  dpY.onclick = deposit;
   const psX = document.getElementById('preswap-button-X');
   const psY = document.getElementById('preswap-button-Y');
   psX.onclick = preswapA;
@@ -750,10 +694,10 @@ const init = async (platform) =>{
   cibutton.onclick = inputHandler.bind(null, cibutton);
 
   const mt = document.getElementById('mt');
-  mt.onclick = user == "A" ? mintA : mintB;
+  mt.onclick = mint;
 
-  const approve = document.getElementById('approve');
-  approve.onclick = user == "A" ? approveA : approveB;
+  const approvebtn = document.getElementById('approve');
+  approvebtn.onclick = approve;
 
   const vb = document.getElementById('verifybutton');
   vb.onclick = verify;
