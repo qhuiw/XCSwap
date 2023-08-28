@@ -29,9 +29,9 @@
       "constant": true
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_mixer\",\"type\":\"address\"}],\"name\":\"addMixer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getMixers\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Mixer.sol\":\"MixerFactory\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1},\"remappings\":[]},\"sources\":{\"project:/contracts/Mixer.sol\":{\"keccak256\":\"0x810c35bdac8ede31927afa9499c59b2940d2be0da2e3209ba97441606d2737ec\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://2457ad95a43056a961753c05d94c1c7c3ec044aaec3649a52d0fbbaf159a726b\",\"dweb:/ipfs/QmRMmEfZdtdgyDUSkVGEotXiLQJwB1A3bZyK6z8D5jmNUj\"]},\"project:/contracts/PubParam.sol\":{\"keccak256\":\"0x22548be0233a7e3df351508dad0a0b32088e049aecd2046333ecee052d94c66f\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://9df7a60ffb0f5e0177451b5798fd88d13cbfb1df67fc4572eb07bf80066baf43\",\"dweb:/ipfs/QmRXfBv6B3naEWH2oWi2ZtGMDV39GS2JtGXi6QH9E2rDMj\"]},\"project:/contracts/TX/SoKdp.sol\":{\"keccak256\":\"0x32dc0d89b979862b1d90e2e912a3e510dfead9d2949a875cffa34244c0eb83e5\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://09d49accb861c67146453e72512e41d6cd13ecb53e9d3af12a0d6180c16391c4\",\"dweb:/ipfs/QmQbw9Bs27J7meaVvhSomoQBDKu5AXeSFuowAwzF2uAba9\"]},\"project:/contracts/TX/SoKsp.sol\":{\"keccak256\":\"0x944f17a66eff17b96cb644c3006ea37927725de118d15ae94af9d8f4336e6586\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://8fbdb0c6d56e6eab992486e59df4ed3bcc44e13b03a320b6a1b2f420bb2db662\",\"dweb:/ipfs/QmeZ4ZrMsXoVTKVs3rp8iYRpMVWtjFbF3zpT3ugPJmbkxu\"]},\"project:/contracts/TX/SoKwd.sol\":{\"keccak256\":\"0xe705f533ecd14ec610cbe496d8611a1dced0f9dbc2bfee4ef4fd03b28b4c889d\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://d189828c74134e757468a92e2d4d593217f0fcb9f07844da29b3d6e1d0594eb7\",\"dweb:/ipfs/QmXUcXDUBPCyHuWNRkMv1f7WpwhqJJd97zZU1PAWCYprBV\"]},\"project:/contracts/Token/Token.sol\":{\"keccak256\":\"0xb84d0bd724917ef3f96f0adc99bdf2f304f910daeaa1ad79f49cd6a101cbd932\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://81da8e81b96095a707336d2f2a2d03524a01285c75053caef7fde3f6715e3ad0\",\"dweb:/ipfs/QmeggSiK5ipBoeWtvJWABpNutsFcQAp4AYRhL8CgcaSq9g\"]},\"project:/contracts/Token/TokenRegistrar.sol\":{\"keccak256\":\"0x71ac6120e86a2bdbb03069c157eac0db9b193b80f39846e26446553e0c8735da\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://754a17114e6b659a406cc3264fbbb14d7a29be4886c0eee9fb18f9200b00674a\",\"dweb:/ipfs/QmRdhB4PWAPnHnriohJJUmLpWGkHku7ArejKF5cGGYGWUJ\"]},\"project:/contracts/ZKP/DiffGenEqual.sol\":{\"keccak256\":\"0xaf300fae307bae391c923f9910ec9a1d23c6b809b00ae6035b91faf91f04f9dc\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://ff28411c743b6c65e6c405d814da414e7037ddc973c1280d9eacbb8d8ead103c\",\"dweb:/ipfs/QmTk1Lbg1k2z1CwH4KD82Lk3yAMR9isiHtATPqypdnw5E9\"]},\"project:/contracts/ZKP/DualRing.sol\":{\"keccak256\":\"0x5e9edd051932a8150a3bf97711aed24b1c987cf80773acdd0be38275e16b0f6f\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://50cb4e6469eab8fd95d2fcdff7b85bb74eb1bbdf0b4155f38be886137da95b77\",\"dweb:/ipfs/QmRyx6qaGh7ZSV2JH9y4Qkhz2QJyLd1roFJBo4dj22jTyW\"]},\"project:/contracts/ZKP/DualRingEC.sol\":{\"keccak256\":\"0x6954b4d46f36f7fdaf153450e2206633d6c945a19ac5b8e1ea66df154ec2e477\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://9f5d0d49a1537073ad61fda27fce7cd00ac256a58971b28278a34a86677e5c86\",\"dweb:/ipfs/QmQv1SUUk1kfjHbdsEuHbCzrDTuDAca9fKnDRUWKu1Nnzd\"]},\"project:/contracts/ZKP/NISA.sol\":{\"keccak256\":\"0xbd99ba6f822b5caca71547fd259c662ba0eb3b909a49d2f68bd7243fe1556cbb\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://876df06bb77d968911bc7393982af2e84bbc7a1e0efb8e418bda421cf36cf6da\",\"dweb:/ipfs/QmRi9aZU1j4bkivURVMAe62sAK4dqUhjLMPhAvsS8Y1AKq\"]},\"project:/contracts/ZKP/OneofMany.sol\":{\"keccak256\":\"0x6d3d07a8f580e5273148f73f2297afde23b13e7a961eb2ce49a138fbb00c46b0\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://4a752388f897fe38eba20bf20b5467d37a436c64bbfa9ab53815de769e25b551\",\"dweb:/ipfs/QmTussXfFvR25krhMpmQDxfPQGMgrLUTrpHvAp4uoBYPsu\"]},\"project:/contracts/ZKP/PartialEquality.sol\":{\"keccak256\":\"0x3a945100c3299cafb7cc92309511a0e12b38af6d88089abfa786ac891d802206\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://c7b9b18b0383b6faee9850af8137ef0b27ec29d1b53b836547f05f991362fee2\",\"dweb:/ipfs/QmYCaFDs2GaP9sr8bCaWcSrb4RBR1vmaUSxa4J61Vpiq8S\"]},\"project:/contracts/lib/alt_bn128.sol\":{\"keccak256\":\"0xbbef8e3e70ed8181dda028ca17f530c980d7790fe635be1487c65c3a219f0323\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://5c2e066d0e67d872262c2df6223970693a1c156fe6c71ca7f3c8804a25a9069d\",\"dweb:/ipfs/QmS8mXdezbeKsmZEBDde4pSsACgPwhw88MGAxx3ATQuwTs\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b506101cd806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80630fe928fe1461003b578063344152c31461009a575b600080fd5b61009861004936600461011a565b600080546001810182559080527f290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e5630180546001600160a01b0319166001600160a01b0392909216919091179055565b005b6100a26100b8565b6040516100af919061014a565b60405180910390f35b6060600080548060200260200160405190810160405280929190818152602001828054801561011057602002820191906000526020600020905b81546001600160a01b031681526001909101906020018083116100f2575b5050505050905090565b60006020828403121561012c57600080fd5b81356001600160a01b038116811461014357600080fd5b9392505050565b6020808252825182820181905260009190848201906040850190845b8181101561018b5783516001600160a01b031683529284019291840191600101610166565b5090969550505050505056fea264697066735822122018ab01e279ecb47608b0ab440645b437086b97d31bb843b062590323d202400364736f6c63430008130033",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c80630fe928fe1461003b578063344152c31461009a575b600080fd5b61009861004936600461011a565b600080546001810182559080527f290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e5630180546001600160a01b0319166001600160a01b0392909216919091179055565b005b6100a26100b8565b6040516100af919061014a565b60405180910390f35b6060600080548060200260200160405190810160405280929190818152602001828054801561011057602002820191906000526020600020905b81546001600160a01b031681526001909101906020018083116100f2575b5050505050905090565b60006020828403121561012c57600080fd5b81356001600160a01b038116811461014357600080fd5b9392505050565b6020808252825182820181905260009190848201906040850190845b8181101561018b5783516001600160a01b031683529284019291840191600101610166565b5090969550505050505056fea264697066735822122018ab01e279ecb47608b0ab440645b437086b97d31bb843b062590323d202400364736f6c63430008130033",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_mixer\",\"type\":\"address\"}],\"name\":\"addMixer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getMixers\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Mixer.sol\":\"MixerFactory\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1},\"remappings\":[]},\"sources\":{\"project:/contracts/Mixer.sol\":{\"keccak256\":\"0xe0ab7d519fb19a151e831bae39ae6cb2241979b85788a8df1829d1df732e29d4\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://5a4e1db672c9dff093c30a3dae6d626d7407179cb31cb5dcdb2c4dec4b2885b0\",\"dweb:/ipfs/QmYVv9vFSh6zyrNZi7GDq9QSsdFeN2sVAwyVKxCBNUMYuz\"]},\"project:/contracts/PubParam.sol\":{\"keccak256\":\"0x22548be0233a7e3df351508dad0a0b32088e049aecd2046333ecee052d94c66f\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://9df7a60ffb0f5e0177451b5798fd88d13cbfb1df67fc4572eb07bf80066baf43\",\"dweb:/ipfs/QmRXfBv6B3naEWH2oWi2ZtGMDV39GS2JtGXi6QH9E2rDMj\"]},\"project:/contracts/TX/SoKdp.sol\":{\"keccak256\":\"0x32dc0d89b979862b1d90e2e912a3e510dfead9d2949a875cffa34244c0eb83e5\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://09d49accb861c67146453e72512e41d6cd13ecb53e9d3af12a0d6180c16391c4\",\"dweb:/ipfs/QmQbw9Bs27J7meaVvhSomoQBDKu5AXeSFuowAwzF2uAba9\"]},\"project:/contracts/TX/SoKsp.sol\":{\"keccak256\":\"0x944f17a66eff17b96cb644c3006ea37927725de118d15ae94af9d8f4336e6586\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://8fbdb0c6d56e6eab992486e59df4ed3bcc44e13b03a320b6a1b2f420bb2db662\",\"dweb:/ipfs/QmeZ4ZrMsXoVTKVs3rp8iYRpMVWtjFbF3zpT3ugPJmbkxu\"]},\"project:/contracts/TX/SoKwd.sol\":{\"keccak256\":\"0xe705f533ecd14ec610cbe496d8611a1dced0f9dbc2bfee4ef4fd03b28b4c889d\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://d189828c74134e757468a92e2d4d593217f0fcb9f07844da29b3d6e1d0594eb7\",\"dweb:/ipfs/QmXUcXDUBPCyHuWNRkMv1f7WpwhqJJd97zZU1PAWCYprBV\"]},\"project:/contracts/Token/Token.sol\":{\"keccak256\":\"0xb84d0bd724917ef3f96f0adc99bdf2f304f910daeaa1ad79f49cd6a101cbd932\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://81da8e81b96095a707336d2f2a2d03524a01285c75053caef7fde3f6715e3ad0\",\"dweb:/ipfs/QmeggSiK5ipBoeWtvJWABpNutsFcQAp4AYRhL8CgcaSq9g\"]},\"project:/contracts/Token/TokenRegistrar.sol\":{\"keccak256\":\"0x71ac6120e86a2bdbb03069c157eac0db9b193b80f39846e26446553e0c8735da\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://754a17114e6b659a406cc3264fbbb14d7a29be4886c0eee9fb18f9200b00674a\",\"dweb:/ipfs/QmRdhB4PWAPnHnriohJJUmLpWGkHku7ArejKF5cGGYGWUJ\"]},\"project:/contracts/ZKP/DiffGenEqual.sol\":{\"keccak256\":\"0xaf300fae307bae391c923f9910ec9a1d23c6b809b00ae6035b91faf91f04f9dc\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://ff28411c743b6c65e6c405d814da414e7037ddc973c1280d9eacbb8d8ead103c\",\"dweb:/ipfs/QmTk1Lbg1k2z1CwH4KD82Lk3yAMR9isiHtATPqypdnw5E9\"]},\"project:/contracts/ZKP/DualRing.sol\":{\"keccak256\":\"0x5e9edd051932a8150a3bf97711aed24b1c987cf80773acdd0be38275e16b0f6f\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://50cb4e6469eab8fd95d2fcdff7b85bb74eb1bbdf0b4155f38be886137da95b77\",\"dweb:/ipfs/QmRyx6qaGh7ZSV2JH9y4Qkhz2QJyLd1roFJBo4dj22jTyW\"]},\"project:/contracts/ZKP/DualRingEC.sol\":{\"keccak256\":\"0x6954b4d46f36f7fdaf153450e2206633d6c945a19ac5b8e1ea66df154ec2e477\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://9f5d0d49a1537073ad61fda27fce7cd00ac256a58971b28278a34a86677e5c86\",\"dweb:/ipfs/QmQv1SUUk1kfjHbdsEuHbCzrDTuDAca9fKnDRUWKu1Nnzd\"]},\"project:/contracts/ZKP/NISA.sol\":{\"keccak256\":\"0xbd99ba6f822b5caca71547fd259c662ba0eb3b909a49d2f68bd7243fe1556cbb\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://876df06bb77d968911bc7393982af2e84bbc7a1e0efb8e418bda421cf36cf6da\",\"dweb:/ipfs/QmRi9aZU1j4bkivURVMAe62sAK4dqUhjLMPhAvsS8Y1AKq\"]},\"project:/contracts/ZKP/OneofMany.sol\":{\"keccak256\":\"0x6d3d07a8f580e5273148f73f2297afde23b13e7a961eb2ce49a138fbb00c46b0\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://4a752388f897fe38eba20bf20b5467d37a436c64bbfa9ab53815de769e25b551\",\"dweb:/ipfs/QmTussXfFvR25krhMpmQDxfPQGMgrLUTrpHvAp4uoBYPsu\"]},\"project:/contracts/ZKP/PartialEquality.sol\":{\"keccak256\":\"0x3a945100c3299cafb7cc92309511a0e12b38af6d88089abfa786ac891d802206\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://c7b9b18b0383b6faee9850af8137ef0b27ec29d1b53b836547f05f991362fee2\",\"dweb:/ipfs/QmYCaFDs2GaP9sr8bCaWcSrb4RBR1vmaUSxa4J61Vpiq8S\"]},\"project:/contracts/lib/alt_bn128.sol\":{\"keccak256\":\"0xbbef8e3e70ed8181dda028ca17f530c980d7790fe635be1487c65c3a219f0323\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://5c2e066d0e67d872262c2df6223970693a1c156fe6c71ca7f3c8804a25a9069d\",\"dweb:/ipfs/QmS8mXdezbeKsmZEBDde4pSsACgPwhw88MGAxx3ATQuwTs\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506101cd806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80630fe928fe1461003b578063344152c31461009a575b600080fd5b61009861004936600461011a565b600080546001810182559080527f290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e5630180546001600160a01b0319166001600160a01b0392909216919091179055565b005b6100a26100b8565b6040516100af919061014a565b60405180910390f35b6060600080548060200260200160405190810160405280929190818152602001828054801561011057602002820191906000526020600020905b81546001600160a01b031681526001909101906020018083116100f2575b5050505050905090565b60006020828403121561012c57600080fd5b81356001600160a01b038116811461014357600080fd5b9392505050565b6020808252825182820181905260009190848201906040850190845b8181101561018b5783516001600160a01b031683529284019291840191600101610166565b5090969550505050505056fea26469706673582212206aa516ceda95314be9db104c4c77352121d4fbbe907de79b976bc5b61c6f72a464736f6c63430008130033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c80630fe928fe1461003b578063344152c31461009a575b600080fd5b61009861004936600461011a565b600080546001810182559080527f290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e5630180546001600160a01b0319166001600160a01b0392909216919091179055565b005b6100a26100b8565b6040516100af919061014a565b60405180910390f35b6060600080548060200260200160405190810160405280929190818152602001828054801561011057602002820191906000526020600020905b81546001600160a01b031681526001909101906020018083116100f2575b5050505050905090565b60006020828403121561012c57600080fd5b81356001600160a01b038116811461014357600080fd5b9392505050565b6020808252825182820181905260009190848201906040850190845b8181101561018b5783516001600160a01b031683529284019291840191600101610166565b5090969550505050505056fea26469706673582212206aa516ceda95314be9db104c4c77352121d4fbbe907de79b976bc5b61c6f72a464736f6c63430008130033",
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [
@@ -845,9 +845,9 @@
       "name": "#utility.yul"
     }
   ],
-  "sourceMap": "5928:333:0:-:0;;;;;;;;;;;;;;;;;;;",
-  "deployedSourceMap": "5928:333:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;6094:72;;;;;;:::i;:::-;6141:7;:20;;;;;;;;;;;;;;-1:-1:-1;;;;;;6141:20:0;-1:-1:-1;;;;;6141:20:0;;;;;;;;;;6094:72;;;6170:85;;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;;6212:16;6243:7;6236:14;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;6236:14:0;;;;;;;;;;;;;;;;;;;;;;;6170:85;:::o;14:286:14:-;73:6;126:2;114:9;105:7;101:23;97:32;94:52;;;142:1;139;132:12;94:52;168:23;;-1:-1:-1;;;;;220:31:14;;210:42;;200:70;;266:1;263;256:12;200:70;289:5;14:286;-1:-1:-1;;;14:286:14:o;305:658::-;476:2;528:21;;;598:13;;501:18;;;620:22;;;447:4;;476:2;699:15;;;;673:2;658:18;;;447:4;742:195;756:6;753:1;750:13;742:195;;;821:13;;-1:-1:-1;;;;;817:39:14;805:52;;912:15;;;;877:12;;;;853:1;771:9;742:195;;;-1:-1:-1;954:3:14;;305:658;-1:-1:-1;;;;;;305:658:14:o",
-  "source": "// SPDX-License-Identifier: GPL-3.0\npragma solidity >=0.4.0 <0.9.0;\n\nimport \"./lib/alt_bn128.sol\";\nimport \"./Token/Token.sol\";\nimport \"./Token/TokenRegistrar.sol\";\nimport \"./PubParam.sol\";\nimport \"./TX/SoKdp.sol\";\nimport \"./TX/SoKwd.sol\";\nimport \"./TX/SoKsp.sol\";\n\nuint constant R_size = 16;\n\ncontract Mixer {\n  \n  using alt_bn128 for uint256;\n  using alt_bn128 for alt_bn128.G1Point;\n\n  alt_bn128.G1Point[] _accs;\n  alt_bn128.G1Point[] _pks;\n  alt_bn128.G1Point[] _tags;\n\n  TokenRegistrar r;\n  PubParam pp;\n  SoKdp dp;\n  SoKwd wd;\n  SoKsp sp;\n\n  constructor (\n    address r_addr, \n    address pp_addr, \n    address dp_addr,\n    address wd_addr,\n    address sp_addr\n  ) {\n    r = TokenRegistrar(r_addr);\n    pp = PubParam(pp_addr);\n    dp = SoKdp(dp_addr);\n    wd = SoKwd(wd_addr);\n    sp = SoKsp(sp_addr);\n\n    init();\n  }\n\n  function init() public {\n    for (uint i = 0; i < R_size; i++){\n      _accs.push(alt_bn128.random(i).uintToCurvePoint());\n    }\n  }\n\n  ///////// deposit /////////\n\n  /// @dev user deposit token into mixer\n  /// @param tx_dp deposit transaction statement\n  /// @param wit witness (sk, opn, ok)\n  /// @return sig deposit signature\n  function deposit(SoKdp.TX memory tx_dp, uint256[3] memory wit) public returns (SoKdp.Sig memory sig){\n\n    Token t = Token(r.getToken(tx_dp.attrS[0]));\n\n    if (!t.isApproved(address(this), tx_dp.attrS[1])) \n      revert (\"Deposit: Unsuccessful approve operation\");\n\n    sig = dp.sign(tx_dp, wit);\n  }\n  // function deposit(SoKdp.TX memory tx_dp, uint256[3] memory wit) public view returns (SoKdp.TX memory){\n  //   address t = r.getToken(tx_dp.attrS[0]);\n  //   // sig = dp.sign(tx_dp, wit);\n  //   // return true;\n  //   return tx_dp;\n  // }\n\n  /// @dev mixer process deposit request\n  /// @param tx_dp deposit transaction statement\n  /// @param sig deposit signature\n  function process_dp(SoKdp.TX memory tx_dp, SoKdp.Sig memory sig) public returns (bool) {\n    /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)\n    // uint256 time = block.timestamp;\n    uint256 time = 0; // for testing\n    bool b0 = tx_dp.attrS[2] <= time && time < tx_dp.attrS[3]; \n    require(b0, \"Deposit: invalid transaction time\");\n\n    /// @dev b1 ≜ pk ∉ Σpk\n    bool b1 = !_in(_pks, tx_dp.s.pk);\n    require(b1, \"Deposit: pk already used\");\n\n    /// @dev b2 ≜ SoKverify(L_dp)\n    bool b2 = dp.verify(tx_dp, sig);\n    require(b2, \"Deposit: SoKdp failed\");\n\n    if (b0 && b1 && b2){\n      alt_bn128.G1Point memory Cx = tx_dp.s.tcom.add(tx_dp.s.ocom);\n      _accs.push(Cx);\n      _pks.push(tx_dp.s.pk);\n      Token t = Token(r.getToken(tx_dp.attrS[0]));\n\n      /// @dev ty.transfer[owner, mixer]\n      return t.transfer(msg.sender, address(this), tx_dp.attrS[1]);\n    }\n    return false;\n  }\n\n  //////// withdraw //////////\n\n  /// @dev withdraw token from mixer\n  /// @param tx_wd withdraw transaction statement\n  /// @param wit (theta, sk, opn, ok)\n  function withdraw(SoKwd.TX memory tx_wd, uint256[4] memory wit) public view returns (SoKwd.Sig memory){\n    return wd.sign(tx_wd, wit);\n  }\n  \n  function process_wd(SoKwd.TX memory tx_wd, SoKwd.Sig memory sig) public returns (bool) {\n    if (!isValid(tx_wd.R)) revert(\"Withdraw: Invalid R\");\n\n    /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)\n    // uint256 time = block.timestamp;\n    uint256 time = tx_wd.attrS[2]+1; // for testing\n    bool b0 = tx_wd.attrS[2] <= time && time < tx_wd.attrS[3];\n    require(b0, \"Withdraw: invalid transaction time\");\n\n    /// @dev b1 = verify signature\n    bool b1 = wd.verify(tx_wd, sig);\n    require (b1, \"Withdraw: SoKwd failed\");\n\n    /// @dev b2 ≜ tagS ∉ Σtag\n    bool b2 = !_in(_tags, tx_wd.tag);\n    require(b2, \"Withdraw: tag already used\");\n\n    if (b0 && b1 && b2) {\n      _tags.push(tx_wd.tag);\n\n      Token t = Token(r.getToken(tx_wd.attrS[0]));\n      /// @dev ty.transfer[mixer, rcpt]\n      return t.transfer(address(this), tx_wd.u_rcpt, tx_wd.attrS[1]);\n    }\n    return false;\n  }\n\n  function spend(SoKsp.TX memory tx_sp, SoKsp.Wit memory wit) public view returns (SoKsp.Sig memory){\n    return sp.sign(tx_sp, wit);\n  }\n\n  function process_sp(SoKsp.TX memory tx_sp, SoKsp.Sig memory sig) public returns (bool) {\n    if (!isValid(tx_sp.R)) revert(\"Spend: Invalid R\");\n\n    // uint256 time = 5; // for testing\n    /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)\n    // uint256 time = block.timestamp;\n    uint256 time = tx_sp.attrS[1] + 1; // for testing\n    bool b0 = tx_sp.attrS[1] <= time && time < tx_sp.attrS[2]; \n    require (b0, \"Spend: invalid transaction time\");\n\n    // b1 ≜ pkT ∉ Σpk\n    bool b1 = !_in(_pks, tx_sp.pk_T);\n    require(b1, \"Spend: pkT already used\");\n\n    // b2 ≜ tagS ∉ Σtag\n    bool b2 = !_in(_tags, tx_sp.tagS);\n    require(b2, \"Spend: tagS already used\");\n\n    bool b3 = sp.verify(tx_sp, sig);\n    require (b3, \"Spend: SoKsp failed\");\n\n    if (b0 && b1 && b2 && b3){\n      _tags.push(tx_sp.tagS);\n      _pks.push(tx_sp.pk_T);\n\n      alt_bn128.G1Point memory acc;\n      for (uint i = 0; i < tx_sp.ocom_T.length; i++) {\n        acc = tx_sp.tcom_T[i].add(tx_sp.ocom_T[i]);\n        _accs.push(acc);\n      }\n      return true;\n    }\n    return false;\n  }\n\n  function get_accs() public view returns (alt_bn128.G1Point[] memory){\n    return _accs;\n  }\n\n  function isValid(alt_bn128.G1Point[] memory R) public view returns (bool) {\n    for (uint i = 0; i < R.length; i++) {\n      if (!_in(_accs, R[i])) return false;\n    }\n    return true;\n  }\n\n  function inAcc(alt_bn128.G1Point memory g) public view returns (bool) {\n    return _in(_accs, g);\n  }\n\n  function inTag(alt_bn128.G1Point memory g) public view returns (bool) {\n    return _in(_tags, g);\n  }\n\n  function _in(\n    alt_bn128.G1Point[] memory ls,\n    alt_bn128.G1Point memory g\n  ) private pure returns (bool) {\n    for (uint i = 0 ; i < ls.length; i++) {\n      if (alt_bn128.eq(ls[i], g)) return true;\n    }\n    return false;\n  }\n\n}\n\n// import \"@optionality.io/clone-factory/contracts/CloneFactory.sol\";\n\ncontract MixerFactory {\n  address[] _mixers;\n\n  // constructor(address _masterMixer) {\n  //   masterMixer = _masterMixer;\n  //   _mixers.push(masterMixer);\n  // }\n\n  function addMixer(address _mixer) public {\n    _mixers.push(_mixer);\n  }\n\n  function getMixers() public view returns (address[] memory) {\n    return _mixers;\n  }\n\n  \n}",
+  "sourceMap": "5928:215:0:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "5928:215:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;5976:72;;;;;;:::i;:::-;6023:7;:20;;;;;;;;;;;;;;-1:-1:-1;;;;;;6023:20:0;-1:-1:-1;;;;;6023:20:0;;;;;;;;;;5976:72;;;6052:85;;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;;6094:16;6125:7;6118:14;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;6118:14:0;;;;;;;;;;;;;;;;;;;;;;;6052:85;:::o;14:286:14:-;73:6;126:2;114:9;105:7;101:23;97:32;94:52;;;142:1;139;132:12;94:52;168:23;;-1:-1:-1;;;;;220:31:14;;210:42;;200:70;;266:1;263;256:12;200:70;289:5;14:286;-1:-1:-1;;;14:286:14:o;305:658::-;476:2;528:21;;;598:13;;501:18;;;620:22;;;447:4;;476:2;699:15;;;;673:2;658:18;;;447:4;742:195;756:6;753:1;750:13;742:195;;;821:13;;-1:-1:-1;;;;;817:39:14;805:52;;912:15;;;;877:12;;;;853:1;771:9;742:195;;;-1:-1:-1;954:3:14;;305:658;-1:-1:-1;;;;;;305:658:14:o",
+  "source": "// SPDX-License-Identifier: GPL-3.0\npragma solidity >=0.4.0 <0.9.0;\n\nimport \"./lib/alt_bn128.sol\";\nimport \"./Token/Token.sol\";\nimport \"./Token/TokenRegistrar.sol\";\nimport \"./PubParam.sol\";\nimport \"./TX/SoKdp.sol\";\nimport \"./TX/SoKwd.sol\";\nimport \"./TX/SoKsp.sol\";\n\nuint constant R_size = 16;\n\ncontract Mixer {\n  \n  using alt_bn128 for uint256;\n  using alt_bn128 for alt_bn128.G1Point;\n\n  alt_bn128.G1Point[] _accs;\n  alt_bn128.G1Point[] _pks;\n  alt_bn128.G1Point[] _tags;\n\n  TokenRegistrar r;\n  PubParam pp;\n  SoKdp dp;\n  SoKwd wd;\n  SoKsp sp;\n\n  constructor (\n    address r_addr, \n    address pp_addr, \n    address dp_addr,\n    address wd_addr,\n    address sp_addr\n  ) {\n    r = TokenRegistrar(r_addr);\n    pp = PubParam(pp_addr);\n    dp = SoKdp(dp_addr);\n    wd = SoKwd(wd_addr);\n    sp = SoKsp(sp_addr);\n\n    init();\n  }\n\n  function init() public {\n    for (uint i = 0; i < R_size; i++){\n      _accs.push(alt_bn128.random(i).uintToCurvePoint());\n    }\n  }\n\n  ///////// deposit /////////\n\n  /// @dev user deposit token into mixer\n  /// @param tx_dp deposit transaction statement\n  /// @param wit witness (sk, opn, ok)\n  /// @return sig deposit signature\n  function deposit(SoKdp.TX memory tx_dp, uint256[3] memory wit) public returns (SoKdp.Sig memory sig){\n\n    Token t = Token(r.getToken(tx_dp.attrS[0]));\n\n    if (!t.isApproved(address(this), tx_dp.attrS[1])) \n      revert (\"Deposit: Unsuccessful approve operation\");\n\n    sig = dp.sign(tx_dp, wit);\n  }\n  // function deposit(SoKdp.TX memory tx_dp, uint256[3] memory wit) public view returns (SoKdp.TX memory){\n  //   address t = r.getToken(tx_dp.attrS[0]);\n  //   // sig = dp.sign(tx_dp, wit);\n  //   // return true;\n  //   return tx_dp;\n  // }\n\n  /// @dev mixer process deposit request\n  /// @param tx_dp deposit transaction statement\n  /// @param sig deposit signature\n  function process_dp(SoKdp.TX memory tx_dp, SoKdp.Sig memory sig) public returns (bool) {\n    /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)\n    // uint256 time = block.timestamp;\n    uint256 time = 0; // for testing\n    bool b0 = tx_dp.attrS[2] <= time && time < tx_dp.attrS[3]; \n    require(b0, \"Deposit: invalid transaction time\");\n\n    /// @dev b1 ≜ pk ∉ Σpk\n    bool b1 = !_in(_pks, tx_dp.s.pk);\n    require(b1, \"Deposit: pk already used\");\n\n    /// @dev b2 ≜ SoKverify(L_dp)\n    bool b2 = dp.verify(tx_dp, sig);\n    require(b2, \"Deposit: SoKdp failed\");\n\n    if (b0 && b1 && b2){\n      alt_bn128.G1Point memory Cx = tx_dp.s.tcom.add(tx_dp.s.ocom);\n      _accs.push(Cx);\n      _pks.push(tx_dp.s.pk);\n      Token t = Token(r.getToken(tx_dp.attrS[0]));\n\n      /// @dev ty.transfer[owner, mixer]\n      return t.transfer(msg.sender, address(this), tx_dp.attrS[1]);\n    }\n    return false;\n  }\n\n  //////// withdraw //////////\n\n  /// @dev withdraw token from mixer\n  /// @param tx_wd withdraw transaction statement\n  /// @param wit (theta, sk, opn, ok)\n  function withdraw(SoKwd.TX memory tx_wd, uint256[4] memory wit) public view returns (SoKwd.Sig memory){\n    return wd.sign(tx_wd, wit);\n  }\n  \n  function process_wd(SoKwd.TX memory tx_wd, SoKwd.Sig memory sig) public returns (bool) {\n    if (!isValid(tx_wd.R)) revert(\"Withdraw: Invalid R\");\n\n    /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)\n    // uint256 time = block.timestamp;\n    uint256 time = tx_wd.attrS[2]+1; // for testing\n    bool b0 = tx_wd.attrS[2] <= time && time < tx_wd.attrS[3];\n    require(b0, \"Withdraw: invalid transaction time\");\n\n    /// @dev b1 = verify signature\n    bool b1 = wd.verify(tx_wd, sig);\n    require (b1, \"Withdraw: SoKwd failed\");\n\n    /// @dev b2 ≜ tagS ∉ Σtag\n    bool b2 = !_in(_tags, tx_wd.tag);\n    require(b2, \"Withdraw: tag already used\");\n\n    if (b0 && b1 && b2) {\n      _tags.push(tx_wd.tag);\n\n      Token t = Token(r.getToken(tx_wd.attrS[0]));\n      /// @dev ty.transfer[mixer, rcpt]\n      return t.transfer(address(this), tx_wd.u_rcpt, tx_wd.attrS[1]);\n    }\n    return false;\n  }\n\n  function spend(SoKsp.TX memory tx_sp, SoKsp.Wit memory wit) public view returns (SoKsp.Sig memory){\n    return sp.sign(tx_sp, wit);\n  }\n\n  function process_sp(SoKsp.TX memory tx_sp, SoKsp.Sig memory sig) public returns (bool) {\n    if (!isValid(tx_sp.R)) revert(\"Spend: Invalid R\");\n\n    // uint256 time = 5; // for testing\n    /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)\n    // uint256 time = block.timestamp;\n    uint256 time = tx_sp.attrS[1] + 1; // for testing\n    bool b0 = tx_sp.attrS[1] <= time && time < tx_sp.attrS[2]; \n    require (b0, \"Spend: invalid transaction time\");\n\n    // b1 ≜ pkT ∉ Σpk\n    bool b1 = !_in(_pks, tx_sp.pk_T);\n    require(b1, \"Spend: pkT already used\");\n\n    // b2 ≜ tagS ∉ Σtag\n    bool b2 = !_in(_tags, tx_sp.tagS);\n    require(b2, \"Spend: tagS already used\");\n\n    bool b3 = sp.verify(tx_sp, sig);\n    require (b3, \"Spend: SoKsp failed\");\n\n    if (b0 && b1 && b2 && b3){\n      _tags.push(tx_sp.tagS);\n      _pks.push(tx_sp.pk_T);\n\n      alt_bn128.G1Point memory acc;\n      for (uint i = 0; i < tx_sp.ocom_T.length; i++) {\n        acc = tx_sp.tcom_T[i].add(tx_sp.ocom_T[i]);\n        _accs.push(acc);\n      }\n      return true;\n    }\n    return false;\n  }\n\n  function get_accs() public view returns (alt_bn128.G1Point[] memory){\n    return _accs;\n  }\n\n  function isValid(alt_bn128.G1Point[] memory R) public view returns (bool) {\n    for (uint i = 0; i < R.length; i++) {\n      if (!_in(_accs, R[i])) return false;\n    }\n    return true;\n  }\n\n  function inAcc(alt_bn128.G1Point memory g) public view returns (bool) {\n    return _in(_accs, g);\n  }\n\n  function inTag(alt_bn128.G1Point memory g) public view returns (bool) {\n    return _in(_tags, g);\n  }\n\n  function _in(\n    alt_bn128.G1Point[] memory ls,\n    alt_bn128.G1Point memory g\n  ) private pure returns (bool) {\n    for (uint i = 0 ; i < ls.length; i++) {\n      if (alt_bn128.eq(ls[i], g)) return true;\n    }\n    return false;\n  }\n\n}\n\n// import \"@optionality.io/clone-factory/contracts/CloneFactory.sol\";\n\ncontract MixerFactory {\n  address[] _mixers;\n\n  function addMixer(address _mixer) public {\n    _mixers.push(_mixer);\n  }\n\n  function getMixers() public view returns (address[] memory) {\n    return _mixers;\n  }\n\n  \n}",
   "sourcePath": "/Users/qian/Desktop/Y4/COMP4550/project/XCSwap/contracts/Mixer.sol",
   "ast": {
     "absolutePath": "project:/contracts/Mixer.sol",
@@ -10619,7 +10619,7 @@
             "body": {
               "id": 756,
               "nodeType": "Block",
-              "src": "6135:31:0",
+              "src": "6017:31:0",
               "statements": [
                 {
                   "expression": {
@@ -10630,7 +10630,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 747,
-                        "src": "6154:6:0",
+                        "src": "6036:6:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -10650,7 +10650,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 745,
-                        "src": "6141:7:0",
+                        "src": "6023:7:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_address_$dyn_storage",
                           "typeString": "address[] storage ref"
@@ -10661,10 +10661,10 @@
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
-                      "memberLocation": "6149:4:0",
+                      "memberLocation": "6031:4:0",
                       "memberName": "push",
                       "nodeType": "MemberAccess",
-                      "src": "6141:12:0",
+                      "src": "6023:12:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_arraypush_nonpayable$_t_array$_t_address_$dyn_storage_ptr_$_t_address_$returns$__$attached_to$_t_array$_t_address_$dyn_storage_ptr_$",
                         "typeString": "function (address[] storage pointer,address)"
@@ -10679,7 +10679,7 @@
                     "nameLocations": [],
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "6141:20:0",
+                    "src": "6023:20:0",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
@@ -10688,7 +10688,7 @@
                   },
                   "id": 755,
                   "nodeType": "ExpressionStatement",
-                  "src": "6141:20:0"
+                  "src": "6023:20:0"
                 }
               ]
             },
@@ -10698,7 +10698,7 @@
             "kind": "function",
             "modifiers": [],
             "name": "addMixer",
-            "nameLocation": "6103:8:0",
+            "nameLocation": "5985:8:0",
             "nodeType": "FunctionDefinition",
             "parameters": {
               "id": 748,
@@ -10709,10 +10709,10 @@
                   "id": 747,
                   "mutability": "mutable",
                   "name": "_mixer",
-                  "nameLocation": "6120:6:0",
+                  "nameLocation": "6002:6:0",
                   "nodeType": "VariableDeclaration",
                   "scope": 757,
-                  "src": "6112:14:0",
+                  "src": "5994:14:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -10723,7 +10723,7 @@
                     "id": 746,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "6112:7:0",
+                    "src": "5994:7:0",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -10733,16 +10733,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "6111:16:0"
+              "src": "5993:16:0"
             },
             "returnParameters": {
               "id": 749,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "6135:0:0"
+              "src": "6017:0:0"
             },
             "scope": 767,
-            "src": "6094:72:0",
+            "src": "5976:72:0",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
@@ -10751,7 +10751,7 @@
             "body": {
               "id": 765,
               "nodeType": "Block",
-              "src": "6230:25:0",
+              "src": "6112:25:0",
               "statements": [
                 {
                   "expression": {
@@ -10760,7 +10760,7 @@
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
                     "referencedDeclaration": 745,
-                    "src": "6243:7:0",
+                    "src": "6125:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage",
                       "typeString": "address[] storage ref"
@@ -10769,7 +10769,7 @@
                   "functionReturnParameters": 762,
                   "id": 764,
                   "nodeType": "Return",
-                  "src": "6236:14:0"
+                  "src": "6118:14:0"
                 }
               ]
             },
@@ -10779,13 +10779,13 @@
             "kind": "function",
             "modifiers": [],
             "name": "getMixers",
-            "nameLocation": "6179:9:0",
+            "nameLocation": "6061:9:0",
             "nodeType": "FunctionDefinition",
             "parameters": {
               "id": 758,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "6188:2:0"
+              "src": "6070:2:0"
             },
             "returnParameters": {
               "id": 762,
@@ -10799,7 +10799,7 @@
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
                   "scope": 766,
-                  "src": "6212:16:0",
+                  "src": "6094:16:0",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -10811,7 +10811,7 @@
                       "id": 759,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
-                      "src": "6212:7:0",
+                      "src": "6094:7:0",
                       "stateMutability": "nonpayable",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -10820,7 +10820,7 @@
                     },
                     "id": 760,
                     "nodeType": "ArrayTypeName",
-                    "src": "6212:9:0",
+                    "src": "6094:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
                       "typeString": "address[]"
@@ -10829,21 +10829,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "6211:18:0"
+              "src": "6093:18:0"
             },
             "scope": 767,
-            "src": "6170:85:0",
+            "src": "6052:85:0",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "public"
           }
         ],
         "scope": 768,
-        "src": "5928:333:0",
+        "src": "5928:215:0",
         "usedErrors": []
       }
     ],
-    "src": "36:6225:0"
+    "src": "36:6107:0"
   },
   "compiler": {
     "name": "solc",
@@ -10853,12 +10853,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xcD23eb6894EBC8Ba9Eb4c6EBC3ce3fB78403Ef48",
-      "transactionHash": "0xdc22162017191d2d31b4399a5d5ed38190f568993d18abbcf979912f46116c0c"
+      "address": "0xc7e80052102c32aB102aC4d5af6C44Be025a15d2",
+      "transactionHash": "0xacb1399d8a826f39086a8361410e375aa12a3e809a3612d7e27b727a714f039f"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-27T15:58:14.603Z",
+  "updatedAt": "2023-08-28T06:06:14.736Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

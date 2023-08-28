@@ -12647,14 +12647,14 @@
     "5777": {
       "events": {},
       "links": {
-        "alt_bn128": "0xc5607b2F346e001643Dbb916681E5323541F9233"
+        "alt_bn128": "0x3161ddF34b25e39c5c4415189c98B1Eabc09e200"
       },
-      "address": "0xA6de87EbcE8efd59BF2Bf515e7981707Ada31Ecb",
-      "transactionHash": "0xa13ac40e1d05cd67dcb300823987c9b5a1be706b0966e33a2654c8b19e8fe969"
+      "address": "0xB809C93114e0F38B693c97cC12D81966779aF555",
+      "transactionHash": "0xf044ae6bba8027b238d22766b543e527b962f89605da442169da7febfc90e829"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-27T15:58:14.895Z",
+  "updatedAt": "2023-08-28T06:06:15.022Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

@@ -189,8 +189,9 @@ const preswapB = async () => {
   const attrE = [ty_y, valy, T2, T3, beta[0], beta[0]+s, beta[3]];
   const attrR_By = [ty_y, valy, T3, Tmax, beta[0], beta[1], beta[2]];
 
-  const ps_input = document.getElementById('ps-input-Y').value;
-  if (ps_input != P_By) {
+  const ps_input = document.getElementById('ps-input-Y').value.split(',').map(x => x.trim());
+
+  if (ps_input[0] != P_By.X || ps_input[1] != P_By.Y) {
     alert("Please input correct value");
     return;
   }
@@ -199,29 +200,35 @@ const preswapB = async () => {
 
   const R = Array.from(await mixerY.methods.get_accs().call()).slice(0, ring_size);
 
-  const theta = rand() % ring_size;
+  const theta = 4;
   R[theta] = P_By;
 
   const gs = R.slice(-Math.log2(ring_size));
 
-  const tagy = await pp.methods.TagEval(attrP_By[4]);
+  const tagy = await pp.methods.TagEval(attrP_By[4]).call();
 
   const tcom_T = [tcomE_Ay, await pp.methods.tCom(attrR_By).call()];
   const ocom_T = [ocomE_Ay, await pp.methods.oCom(attrR_By).call()];
-  const attrTs = [attrE.slice(2,4).concat([6,7]), [T3, Tmax, beta[1], beta[2]]];
 
-  const tx_ps = [R, gs, tagy, [attrP_By[5], 0, Tmax], pky,  tcom_T, ocom_T];
+  const attrTs = [attrE.slice(2,4).concat([rand(), rand()]), [T3, Tmax, beta[1], beta[2]]];
+
+  const tx_sp = [R, gs, tagy, [attrP_By[5], BigInt(0), Tmax], pky,  tcom_T, ocom_T];
 
   const wit = [theta, [ty_y, valy, attrP_By[4], attrP_By[6]], beta[0], attrTs];
 
-  const sig = await mixerY.methods.spend(tx_ps, wit).call();
+  const sig = await mixerY.methods.spend(tx_sp, wit).call();
 
   try {
-    await mixerY.methods.process_ps(tx_ps, sig).send({
+    await mixerY.methods.process_sp(tx_sp, sig).send({
       from: account, gas: 6721975, gasPrice: 20000000000});
   } catch(err) {
     alert(err.message);
   }
+  alert ("PreSwap successful");
+}
+
+const preswapA = async () => {
+
 
 }
 
@@ -319,7 +326,6 @@ const setupA = async () => {
 const verify = async () => {
   const encode = document.getElementById('verify').value;
   const decode = JSON.parse(atob(encode));
-  console.log(decode);
 
   if (decode.length != 5) {
     alert("Verify failed");
@@ -361,6 +367,50 @@ const verify = async () => {
 const redeem = async () => {
   console.log("redeem");
 }
+
+
+
+const withdraw = async (isX) => {
+  var attrP, mixer;
+  if (user == 'A') {
+    attrP = isX? attrP_Ax : attrP_Ay;
+  } else {
+    attrP = isX? attrP_Bx : attrP_By;
+  }
+  if (attrP == null) {
+    alert("No P-account to withdraw");
+    return;
+  }
+
+  mixer = isX? mixerX : mixerY;
+
+  const P = await pp.methods.Com(attrP).call();
+  const tag = await pp.methods.TagEval(attrP[4]).call();
+
+  const R = Array.from(await mixer.methods.get_accs().call()).slice(0, ring_size);
+  const theta = 4;
+  R[theta] = P;
+
+  const gs = R.slice(-Math.log2(ring_size));
+
+  const tx_wd = [R, gs, tag, attrP.slice(0,4), account];
+
+  const wit = [theta].concat(attrP.slice(4));
+
+  const sig = await mixer.methods.withdraw(tx_wd, wit).call();
+
+  try {
+    await mixer.methods.process_wd(tx_wd, sig).send({
+      from: account, gas: 6721975, gasPrice: 20000000000});
+  } catch(err) {
+    alert(err.message);
+  }
+  alert ("Withdraw successful");
+  const pacc = document.getElementById('pacc');
+  console.log(pacc.children);
+  pacc.lastChild.remove();
+}
+
 
 const init = async (platform) =>{
   const page = document.getElementById('page');
@@ -462,8 +512,7 @@ const init = async (platform) =>{
     </div>`);
   const verifyfield = lib.createElementFromString(
     `<div class="box mb-5">
-      <textarea class="textarea" placeholder="Paste your partner's encoded commitments and signature here" id="verify">
-      </textarea>
+      <textarea class="textarea" placeholder="Paste your partner's encoded commitments and signature here" id="verify"></textarea>
       <br>
       <button class="button is-primary is-pulled-right" id="verifybutton">
         <b> Verify </b>
@@ -487,9 +536,9 @@ const init = async (platform) =>{
       </div>
       <div class="field has-addons">
         <div class="control is-expanded">
-          <input class="input" type="text" placeholder="Enter P-account to withdraw" ${disabledBX + disabledAY} id="wd-input-${name}">
+          <input class="input" type="text" placeholder="Enter P-account to withdraw" id="wd-input-${name}">
         </div>
-        <button class="btn btn-primary" id="withdraw-button-${name}" ${disabledBX + disabledAY}>
+        <button class="btn btn-primary" id="withdraw-button-${name}">
           Withdraw
         </button>
       </div>
@@ -537,6 +586,14 @@ const init = async (platform) =>{
   const dpY = document.getElementById('deposit-button-Y');
   dpX.onclick = depositA;
   dpY.onclick = depositB;
+  const psX = document.getElementById('preswap-button-X');
+  const psY = document.getElementById('preswap-button-Y');
+  psX.onclick = preswapA;
+  psY.onclick = preswapB;
+  const wdX = document.getElementById('withdraw-button-X');
+  const wdY = document.getElementById('withdraw-button-Y');
+  wdX.onclick = withdraw.bind(null, true);
+  wdY.onclick = withdraw.bind(null, false);
 
   var step4, step5;
   if (user == "B") {
@@ -553,8 +610,6 @@ const init = async (platform) =>{
     setupbutton.onclick = setupB;
     step4.appendChild(setupbutton);
     step5.appendChild(verifyfield);
-    
-
   } else {
     step4 = lib.createElementFromString(
       `<div class = "content" id="step4">
@@ -594,10 +649,7 @@ const init = async (platform) =>{
 
   const inputHandler = async (b) => {
     if (account == null) { alert("Please connect wallet"); return; }
-    const inputs = [];
-    document.getElementById('setup').value.split(",").forEach(element => {
-      inputs.push(BigInt(element));
-    });
+    const inputs = document.getElementById('setup').value.split(",").map(element => BigInt(element));
     if (inputs.length != 7) {
       alert("Please input 7 values");
       return;
@@ -654,8 +706,8 @@ const main = async () => {
   
     reg = new web3.eth.Contract(TokenReg.abi, TokenReg.networks[5777].address);
   
-    ty_x = await reg.methods.getTy(tokenAddrs[0]).call();
-    ty_y = await reg.methods.getTy(tokenAddrs[1]).call();
+    ty_x = BigInt(await reg.methods.getTy(tokenAddrs[0]).call());
+    ty_y = BigInt(await reg.methods.getTy(tokenAddrs[1]).call());
   }
   setup();
 
@@ -692,7 +744,6 @@ const main = async () => {
   }
   const next = document.getElementById('next');
   next.onclick = () => {
-    // console.log(chains, user);
     if (chains[0] == null || chains[1] == null || user == null) {
       alert("Please select all options");
       return;
