@@ -196,8 +196,6 @@ const preswapB = async () => {
     return;
   }
 
-  // const P_By = await pp.methods.Com(attrP_By).call();
-
   const R = Array.from(await mixerY.methods.get_accs().call()).slice(0, ring_size);
 
   const theta = 4;
@@ -225,9 +223,65 @@ const preswapB = async () => {
     alert(err.message);
   }
   alert ("PreSwap successful");
+  attrP_By = null;
 }
 
 const preswapA = async () => {
+  if (alpha == null) {
+    alert("Please setup with your partner first");
+  }
+
+  const attrE = [ty_x, valx, T1, T2, alpha[0], alpha[1], alpha[2]];
+  const attrR_Ax = [ty_x, valx, T2, Tmax, alpha[0], alpha[3], alpha[4]];
+
+  const ps_input = document.getElementById('ps-input-X').value.split(',').map(x => x.trim());
+
+  if (ps_input[0] != P_Ax.X || ps_input[1] != P_Ax.Y) {
+    alert("Please input correct value");
+    return;
+  }
+
+  const R = Array.from(await mixerX.methods.get_accs().call()).slice(0, ring_size);
+
+  const theta = 4;
+  R[theta] = P_Ax;
+
+  const gs = R.slice(-Math.log2(ring_size));
+
+  const tagx = await pp.methods.TagEval(attrP_Ax[4]).call();
+
+  const tcom_T = [tcomE_Bx, await pp.methods.tCom(attrR_Ax).call()];
+  const ocom_T = [ocomE_Bx, await pp.methods.oCom(attrR_Ax).call()];
+
+  const attrTs = [attrE.slice(2,4).concat([rand(), rand()]), [T2, Tmax, alpha[3], alpha[4]]];
+
+  const tx_sp = [R, gs, tagx, [attrP_Ax[5], BigInt(0), Tmax], pkx,  tcom_T, ocom_T];
+
+  const wit = [theta, [ty_x, valx, attrP_Ax[4], attrP_Ax[6]], alpha[0], attrTs];
+
+  const sig = await mixerX.methods.spend(tx_sp, wit).call();
+
+  try {
+    await mixerX.methods.process_sp(tx_sp, sig).send({
+      from: account, gas: 6721975, gasPrice: 20000000000});
+  } catch(err) {
+    alert(err.message);
+  }
+  alert ("PreSwap successful");
+  attrP_Ax = null;
+}
+
+const isin = async (isX) => {
+  const mixer = isX? mixerX : mixerY;
+  const name = isX? "X" : "Y";
+  const acc = document.getElementById(`isin-input-${name}`).value.split().map(x => x.trim());
+  const res = await mixer.methods.inAcc(acc).call();
+  if (res != true) {
+    alert("The account is not in the pool, please redeem");
+  }
+  alert("Successful");
+}
+const exchangeA = async () => {
 
 
 }
@@ -481,6 +535,10 @@ const init = async (platform) =>{
           </div>
         </div>
       </div>
+
+      <div class="content mt-2" id="offchain">
+        <h4> Private key Communication </h4>
+      </div> 
       
       <div class="content mt-2">
         <h4> Your one-time accounts </h4>
@@ -568,7 +626,7 @@ const init = async (platform) =>{
       </div>
       <div class="field has-addons">
         <div class="control is-expanded">
-          <input class="input" type="text" placeholder="Enter E-account for checking" ${disabledBY + disabledAX} id="wd-input-${name}">
+          <input class="input" type="text" placeholder="Enter E-account for checking" ${disabledBY + disabledAX} id="isin-input-${name}">
         </div>
         <button class="btn btn-primary" id="isin-button-${name}" ${disabledBY + disabledAX}>
           CheckAccount
@@ -595,7 +653,13 @@ const init = async (platform) =>{
   wdX.onclick = withdraw.bind(null, true);
   wdY.onclick = withdraw.bind(null, false);
 
-  var step4, step5;
+  const isinX = document.getElementById('isin-button-X');
+  const isinY = document.getElementById('isin-button-Y');
+  isinX.onclick = isin.bind(null, true);
+  isinY.onclick = isin.bind(null, false);
+
+  const offchain = document.getElementById('offchain');
+  var step4, step5, alphabox;
   if (user == "B") {
     step4 = lib.createElementFromString(
       `<div class = "content" id="step4">
@@ -610,6 +674,18 @@ const init = async (platform) =>{
     setupbutton.onclick = setupB;
     step4.appendChild(setupbutton);
     step5.appendChild(verifyfield);
+    alphabox = lib.createElementFromString(
+      `<div class="box" id="alphabox">
+        <div class="field has-addons">
+          <div class="control is-expanded">
+            <input class="input" type="text" placeholder="Enter your partner's private key" id="alpha">
+          </div>
+          <button class="btn btn-primary" id="alpha-button">
+            Submit
+          </button>
+        </div>
+      </div>`);
+    offchain.appendChild(alphabox);
   } else {
     step4 = lib.createElementFromString(
       `<div class = "content" id="step4">
@@ -624,6 +700,11 @@ const init = async (platform) =>{
     step4.appendChild(verifyfield);
     setupbutton.onclick = setupA;
     step5.appendChild(setupbutton);
+    alphabox = lib.createElementFromString(
+      `<div class="box" id="alphabox">
+        <b> Send private key to your partner: </b>
+      </div>`);
+    offchain.appendChild(alphabox);
   }
   lib.insertAfter(step4, step3);
   lib.insertAfter(step5, step4);
