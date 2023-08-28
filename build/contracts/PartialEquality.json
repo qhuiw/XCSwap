@@ -15454,14 +15454,14 @@
     "5777": {
       "events": {},
       "links": {
-        "alt_bn128": "0x0B6fE46e00F678A16821D8747eb0449228859612"
+        "alt_bn128": "0xc5607b2F346e001643Dbb916681E5323541F9233"
       },
-      "address": "0x02415E235dc3548d8cA00BB79a0EB79e1efC7adB",
-      "transactionHash": "0x72d7e677212a3d611ec75a2007f0a08177fc3ab9a827196a270498074fbf2c9f"
+      "address": "0x016B89E63Bf61Bd8d820E137285C73C8f2B69c66",
+      "transactionHash": "0x5d2ab8eb8cbdfb0b4b732fc4da2cb8fa110c5190b46b8a7fdd517a14a19adacb"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-27T07:43:33.617Z",
+  "updatedAt": "2023-08-27T15:58:14.678Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

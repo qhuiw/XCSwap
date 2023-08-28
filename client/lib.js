@@ -31,7 +31,7 @@ const net = {
 
 const rand = () => {
   const max = 1000000;
-  return Math.floor(Math.random() * max) + 1;
+  return BigInt(Math.floor(Math.random() * max) + 1);
 } 
 
 module.exports = { createElementFromString, insertAfter, net, rand, getRPCErrorMessage };

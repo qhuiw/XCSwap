@@ -52,17 +52,18 @@ module.exports = async function(deployer, _, accounts){
 
   await deployer.deploy(TokenRegistrar, {overwrite: overwritable});
 
-  await deployer.deploy(Mixer, TokenRegistrar.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address, {overwrite: overwritable});
-
-  await deployer.deploy(MixerFactory, Mixer.address, {overwrite: overwritable});
+  await deployer.deploy(MixerFactory, {overwrite: overwritable});
 
   await deployer.deploy(RelayRegistry, {overwrite: overwritable});
 
   await deployer.deploy(NFTFactory, {overwrite: overwritable});
   
-  /* Create MixerX, Y by Clone Factory pattern */
+  /* Create MixerX, Y */
   const mf = await MixerFactory.deployed();
-  // await mf.createCopy(); 
+  await deployer.deploy(Mixer, TokenRegistrar.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address, {overwrite: overwritable});
+  const mixerX = await Mixer.deployed();
+  await mf.addMixer(mixerX.address);
+
   await deployer.deploy(Mixer, TokenRegistrar.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address, {overwrite: overwritable});
   const mixerY = await Mixer.deployed();
   await mf.addMixer(mixerY.address);

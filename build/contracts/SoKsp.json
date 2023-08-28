@@ -41321,14 +41321,14 @@
     "5777": {
       "events": {},
       "links": {
-        "alt_bn128": "0x0B6fE46e00F678A16821D8747eb0449228859612"
+        "alt_bn128": "0xc5607b2F346e001643Dbb916681E5323541F9233"
       },
-      "address": "0xeB15Bf63cf86bD3fFD144B9ece74D88aFe6ad6b9",
-      "transactionHash": "0x060cdae115a072e56ba7f45dbdec7110ba5ea2ced4c7da382d50db817a4e90ea"
+      "address": "0x070bF595701f7677ce0c6daF98e361311f29A269",
+      "transactionHash": "0x235240c576bb4b2bef935f7a7024aeb2c78f53925d6565f1f054763aff7f147f"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-27T07:43:33.757Z",
+  "updatedAt": "2023-08-27T15:58:14.822Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

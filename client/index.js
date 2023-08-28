@@ -27,10 +27,19 @@ var pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y;
 /* common inputs */
 var ci=false, valx, valy, T1, T2, T3, Tmax, s;
 
+var attrP_By, P_By, attrP_Bx;
+var attrP_Ax, P_Ax, attrP_Ay;
+
 const mintB = async () => {
   if (ci == false) {
-    alert("Please submit common inputs");
+    alert("Please submit common inputs"); 
     return;
+  }
+
+  const val = document.getElementById('mtinput').value;
+  if (BigInt(val) != valy) { 
+    alert("Please input correct value"); 
+    return; 
   }
 
   try {
@@ -56,6 +65,12 @@ const mintA = async () => {
     return;
   }
 
+  const val = document.getElementById('mtinput').value;
+  if (BigInt(val) != valx) { 
+    alert("Please input correct value"); 
+    return; 
+  }
+
   try {
     await x.methods.mint(account, valx).send(
     {from: account, gas: 6721975, gasPrice: 20000000000});
@@ -68,20 +83,32 @@ const mintA = async () => {
   if (x_owner != account) {
     alert("Minting failed");
     return;
-  } else {
-    console.log("Minting successful");
   }
+  alert("Minting successful");
 }
 
-var attrP_By;
-var attrP_Ax;
+const approveA = async () => {
+  const addr = document.getElementById('approveaddr').value;
+  const ty = document.getElementById('approvety').value;
+  if (BigInt(ty) != valx || addr != mixerX.options.address) {
+    alert("Please input correct value");
+    return;
+  }
+  try {
+    await x.methods.approve(mixerX.options.address, valx).send({from : account, gas: 6721975, gasPrice: 20000000000});
+  } catch(err) {
+    alert(err.message);
+  }
+  alert("Approve successful");
+}
 
-const depositB = async () => {
-  const attrP_By = [BigInt(ty_y), valy, 0, Tmax, rand(), rand(), rand()];
-  const onetP_By = await pp.methods.onetAcc(attrP_By).call();
-
-  const tx_dp = [onetP_By, [...attrP_By.slice(0,4)]];
-
+const approveB = async () => {
+  const addr = document.getElementById('approveaddr').value;
+  const ty = document.getElementById('approvety').value;
+  if (BigInt(ty) != valy || addr != mixerY.options.address) {
+    alert("Please input correct value");
+    return;
+  }
   try {
     await y.methods.approve(mixerY.options.address, valy).send(
       {from : account, gas: 6721975, gasPrice: 20000000000});
@@ -89,9 +116,21 @@ const depositB = async () => {
     alert(err.message);
   } 
   alert ("Approve successful")
+}
 
-  const sig = await mixerY.methods.deposit(tx_dp, [...attrP_By.slice(4)]).call();
-  // console.log(sig);
+
+const depositB = async () => {
+  const dpinput = document.getElementById('dp-input-Y').value;
+  if (BigInt(dpinput) != valy) {
+    alert("Please input correct value");
+  }
+
+  attrP_By = [BigInt(ty_y), valy, 0, Tmax, rand(), rand(), rand()];
+  const onetP_By = await pp.methods.onetAcc(attrP_By).call();
+
+  const tx_dp = [onetP_By, attrP_By.slice(0,4)];
+
+  const sig = await mixerY.methods.deposit(tx_dp, attrP_By.slice(4)).call();
 
   try {
     await mixerY.methods.process_dp(tx_dp, sig).send({
@@ -107,19 +146,21 @@ const depositB = async () => {
   } else {
     alert("Deposit successful");
   }
+
+  P_By = await pp.methods.Com(attrP_By).call();
+  const pacc = document.getElementById('pacc');
+  pacc.appendChild(lib.createElementFromString(`<p>${P_By.X},<br>${P_By.Y} <b>Minted</b></p>`));
 }
 
 const depositA = async () => {
+  const dpinput = document.getElementById('dp-input-X').value;
+  if (BigInt(dpinput) != valx) {
+    alert("Please input correct value");
+  }
   attrP_Ax = [ty_x, valx, 0, Tmax, rand(), rand(), rand()];
   const onetP_Ax = await pp.methods.onetAcc(attrP_Ax).call();
 
   const tx_dp = [onetP_Ax, attrP_Ax.slice(0,4)];
-
-  try {
-    await x.methods.approve(mixerX.options.address, valx).send({from : account, gas: 6721975, gasPrice: 20000000000});
-  } catch(err) {
-    alert(err.message);
-  }
 
   const sig = await mixerX.methods.deposit(tx_dp, attrP_Ax.slice(4,7)).call();
   try {
@@ -134,9 +175,57 @@ const depositA = async () => {
     alert("Deposit failed");
     return;
   }
+
+  P_Ax = await pp.methods.Com(attrP_Ax).call();
+  const pacc = document.getElementById('pacc');
+  pacc.appendChild(lib.createElementFromString(`<p>${P_Ax.X},<br>${P_Ax.Y} <b>Minted</b></p>`));
 }
 
-var beta, pky, tcomE_Ay, ocomE_Bx, R_By;
+const preswapB = async () => {
+  if (beta == null) {
+    alert("Please setup with your partner first");
+  }
+
+  const attrE = [ty_y, valy, T2, T3, beta[0], beta[0]+s, beta[3]];
+  const attrR_By = [ty_y, valy, T3, Tmax, beta[0], beta[1], beta[2]];
+
+  const ps_input = document.getElementById('ps-input-Y').value;
+  if (ps_input != P_By) {
+    alert("Please input correct value");
+    return;
+  }
+
+  // const P_By = await pp.methods.Com(attrP_By).call();
+
+  const R = Array.from(await mixerY.methods.get_accs().call()).slice(0, ring_size);
+
+  const theta = rand() % ring_size;
+  R[theta] = P_By;
+
+  const gs = R.slice(-Math.log2(ring_size));
+
+  const tagy = await pp.methods.TagEval(attrP_By[4]);
+
+  const tcom_T = [tcomE_Ay, await pp.methods.tCom(attrR_By).call()];
+  const ocom_T = [ocomE_Ay, await pp.methods.oCom(attrR_By).call()];
+  const attrTs = [attrE.slice(2,4).concat([6,7]), [T3, Tmax, beta[1], beta[2]]];
+
+  const tx_ps = [R, gs, tagy, [attrP_By[5], 0, Tmax], pky,  tcom_T, ocom_T];
+
+  const wit = [theta, [ty_y, valy, attrP_By[4], attrP_By[6]], beta[0], attrTs];
+
+  const sig = await mixerY.methods.spend(tx_ps, wit).call();
+
+  try {
+    await mixerY.methods.process_ps(tx_ps, sig).send({
+      from: account, gas: 6721975, gasPrice: 20000000000});
+  } catch(err) {
+    alert(err.message);
+  }
+
+}
+
+var beta = null, pky, tcomE_Ay, ocomE_Bx, R_By;
 var setupBsucc = false;
 
 const setupB = async () => {
@@ -175,9 +264,13 @@ const setupB = async () => {
   
   const sigbox = document.getElementById('sigbox');
   sigbox.appendChild(lib.createElementFromString(`<p>${encode}</p>`));
+
+  const racc = document.getElementById('racc');
+  racc.appendChild(lib.createElementFromString(`<p>${R_By.X},<br>${R_By.Y}</p>`));
+
 }
 
-var alpha, pkx, tcomE_Bx, ocomE_Ay, R_Ax;
+var alpha=null, pkx, tcomE_Bx, ocomE_Ay, R_Ax;
 var setupAsucc = false;
 
 const setupA = async () => {
@@ -210,14 +303,17 @@ const setupA = async () => {
 
   const setupbutton = document.getElementById('setupbutton');
   setupbutton.onclick = null;
-  setupBsucc = true;
+  setupAsucc = true;
 
   const sigbox = document.getElementById('sigbox');
   sigbox.appendChild(lib.createElementFromString(`<p>${encode}</p>`));
 
   const eacc = document.getElementById('eacc');
   const unmintedEacc = await pp.methods.com([[...tcomE_Ay], [...ocomE_Ay]]).call();
-  eacc.appendChild(lib.createElementFromString(`<p>${unmintedEacc.X}<br>${unmintedEacc.Y}</p>`));
+  eacc.appendChild(lib.createElementFromString(`<p>${unmintedEacc.X},<br>${unmintedEacc.Y} <b>to check</b></p>`));
+
+  const racc = document.getElementById('racc');
+  racc.appendChild(lib.createElementFromString(`<p>${R_Ax.X},<br>${R_Ax.Y} </p>`));
 }
 
 const verify = async () => {
@@ -253,7 +349,7 @@ const verify = async () => {
     const eacc = document.getElementById('eacc');
     const arg = [tcomE_Bx, [...ocomE_Bx]];
     const unmintedEacc = await pp.methods.com(arg).call();
-    eacc.appendChild(lib.createElementFromString(`<p>${unmintedEacc.X}<br>${unmintedEacc.Y}</p>`));
+    eacc.appendChild(lib.createElementFromString(`<p>${unmintedEacc.X},<br>${unmintedEacc.Y} <b>to check</b></p>`));
   }
 
   const verifybutton = document.getElementById('verifybutton');
@@ -262,14 +358,16 @@ const verify = async () => {
   verifybutton.classList.add("is-success");
 }
 
-
+const redeem = async () => {
+  console.log("redeem");
+}
 
 const init = async (platform) =>{
   const page = document.getElementById('page');
   const newpage = lib.createElementFromString(
     `<div class="container" id="page2">
       <div class = "content" id="step1">
-        <h4>1. Deploy contracts to ` + platform + ` and Connect wallet</h4>
+        <h4>1. Connect Metamask wallet to ${platform}</h4>
         <div class="field has-text-centered">
           <button class="button is-primary" id="connect">
             <b> Connect to Metamask </b> 
@@ -278,18 +376,42 @@ const init = async (platform) =>{
       </div>
       <div class = "content" id="step2">
         <h4>2. Common Inputs </h4>
-        <div class = "field has-addons">
-          <input type="text" class="input" id="setup" placeholder="Enter valx, valy, T1, T2, T3, Tmax, s" multiple>
-          <button class="button is-primary" id="ci"> 
-          <b> Submit </b>  
-          </button>
+        <div class = "box">
+          <div class = "field has-addons">
+            <input type="text" class="input" id="setup" placeholder="Enter valx, valy, T1, T2, T3, Tmax, s" multiple>
+            <button class="button is-primary" id="ci"> 
+            <b> Submit </b>  
+            </button>
+          </div>
         </div>
       </div>
       <div class = "content" id="step3">
         <h4>3. Mint your token </h4>
-        <button class="button is-primary" id="mt">
-          <b> Mint </b>
-        </button>
+        <box class="box" id="mintbox">
+          <h4> Token ${(user == 'A'? 'X' : 'Y')} </h4>
+          <p> Address : ${user == 'A'? x.options.address : y.options.address} </p>
+          <div class="field has-addons">
+            <div class="control is-expanded">
+              <input class="input" type="text" placeholder="Enter token value to mint (valx for A, valy for B)" id="mtinput">
+            </div>
+            <button class="button is-primary" id="mt">
+            <b> Mint </b>
+            </button>
+          </div>
+
+          <div class="field has-addons">
+            <div class="control is-expanded">
+              <input class="input" type="text" placeholder="Enter token value to approve (valx for A, valy for B)" id=approvety>
+            </div>
+            <div class="control is-expanded">
+              <input class="input" type="text" placeholder="Enter approve address (Mixer X for A, Mixer Y for B)" id=approveaddr>
+            </div>
+            <button class="button is-primary" id="approve">
+            <b> Approve </b>
+            </button>
+          </div>
+
+        </box>
       </div>
 
       <div class="content mt-2">
@@ -299,22 +421,22 @@ const init = async (platform) =>{
             <div class = "box wrap" id="mixerX">
             <h4> Mixer X </h4>
             <p> Address : ${mixerX.options.address} </p>
-            <img src="http://127.0.0.1:8080/mixer.jpg" width="100" height="100">
-            
             </div>
           </div>
           <div class = "column">
             <div class = "box wrap" id="mixerY">
             <h4> Mixer Y </h4>
             <p> Address : ${mixerY.options.address} </p>
-            <img src="http://127.0.0.1:8080/mixer.jpg" width="100" height="100">
             </div>
           </div>
         </div>
       </div>
       
-      <div class = "box">
+      <div class="content mt-2">
         <h4> Your one-time accounts </h4>
+      </div>
+      <div class = "box">
+        
         <div class="row" id="pacc">
           <p><b> P account: </b></p>
         </div>
@@ -332,56 +454,90 @@ const init = async (platform) =>{
   page.replaceWith(newpage);
 
   const step3 = document.getElementById('step3');
-  const mixerXbox = document.getElementById('mixerX');
-  const mixerYbox = document.getElementById('mixerY');
   const setupbutton = lib.createElementFromString(
     `<div class="box wrap" id="sigbox">
       <button class="button is-primary" id="setupbutton">
-        <b> Setup and Send to your partner: </b>
+        <b> Send encoded commitments and signature to your partner: </b>
       </button>
     </div>`);
-  const inputfield = lib.createElementFromString(
-    `<div class="field is-grouped">
-    <textarea class="textarea" placeholder="Paste your partner's encoded signature here" id="verify"></textarea>
-    <button class="button is-primary is-pulled-right" id="verifybutton">
-      <b> Verify </b>
-    </button>
+  const verifyfield = lib.createElementFromString(
+    `<div class="box mb-5">
+      <textarea class="textarea" placeholder="Paste your partner's encoded commitments and signature here" id="verify">
+      </textarea>
+      <br>
+      <button class="button is-primary is-pulled-right" id="verifybutton">
+        <b> Verify </b>
+      </button> <br>
     </div>`);
-  const mixerfield = lib.createElementFromString(
-    `<div>
-    <div class="field has-addons">
-      <div class="control is-expanded">
-        <input class="input" type="text" placeholder="Enter token value to deposit">
+  const createMixerfield = (isX) => {
+    const name = isX ? "X" : "Y";
+    const disabledBX = user == 'B' && isX ? "disabled" : "";
+    const disabledBY = user == 'B' && !isX ? "disabled" : "";
+    const disabledAX = user == 'A' && isX ? "disabled" : "";
+    const disabledAY = user == 'A' && !isX ? "disabled" : "";
+    const mixerfield = lib.createElementFromString(
+      `<div>
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <input class="input" type="text" placeholder="Enter token value to deposit" ${disabledBX + disabledAY} id="dp-input-${name}">
+        </div>
+        <button class="btn btn-primary" id="deposit-button-${name}" ${disabledBX + disabledAY}>
+          Deposit
+        </button>
       </div>
-      <button class="btn btn-primary" id="deposit-button">
-        Deposit
-      </button>
-    </div>
-    <div class="field has-addons">
-      <div class="control is-expanded">
-        <input class="input" type="text" placeholder="Enter P-account to withdraw">
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <input class="input" type="text" placeholder="Enter P-account to withdraw" ${disabledBX + disabledAY} id="wd-input-${name}">
+        </div>
+        <button class="btn btn-primary" id="withdraw-button-${name}" ${disabledBX + disabledAY}>
+          Withdraw
+        </button>
       </div>
-      <button class="btn btn-primary" id="withdraw-button">
-        Withdraw
-      </button>
-    </div>
-    <div class="field has-addons">
-      <div class="control is-expanded">
-        <input class="input" type="text" placeholder="Enter P-account for preswap">
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <input class="input" type="text" placeholder="Enter P-account for preswap" ${disabledBX + disabledAY} id="ps-input-${name}">
+        </div>
+        <button class="btn btn-primary" id="preswap-button-${name}" ${disabledBX + disabledAY}>
+          PreSwap
+        </button>
       </div>
-      <button class="btn btn-primary" id="preswap-button">
-        PreSwap
-      </button>
-    </div>
-    <div class="field has-addons">
-      <div class="control is-expanded">
-        <input class="input" type="text" placeholder="Enter R-account for redeem">
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <input class="input" type="text" placeholder="Enter E-account for exchange"  ${disabledBY + disabledAX} id="ex-input-${name}">
+        </div>
+        <button class="btn btn-primary" id="exchange-button-${name}" ${disabledBY + disabledAX}>
+          Exchange
+        </button>
       </div>
-      <button class="btn btn-primary" id="redeem-button">
-        Redeem
-      </button>
-    </div>
-    </div>`);
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <input class="input" type="text" placeholder="Enter R-account for redeem" ${disabledBX + disabledAY} id="rd-input-${name}">
+        </div>
+        <button class="btn btn-primary" id="redeem-button-${name}" ${disabledBX + disabledAY}>
+          Redeem
+        </button>
+      </div>
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <input class="input" type="text" placeholder="Enter E-account for checking" ${disabledBY + disabledAX} id="wd-input-${name}">
+        </div>
+        <button class="btn btn-primary" id="isin-button-${name}" ${disabledBY + disabledAX}>
+          CheckAccount
+        </button>
+      </div>
+      </div>`);
+      return mixerfield;
+    }
+  const mixerXbox = document.getElementById('mixerX');
+  const mixerYbox = document.getElementById('mixerY');
+  mixerXbox.appendChild(createMixerfield(true));
+  mixerYbox.appendChild(createMixerfield(false));
+
+  const dpX = document.getElementById('deposit-button-X');
+  const dpY = document.getElementById('deposit-button-Y');
+  dpX.onclick = depositA;
+  dpY.onclick = depositB;
+
   var step4, step5;
   if (user == "B") {
     step4 = lib.createElementFromString(
@@ -396,10 +552,9 @@ const init = async (platform) =>{
       `);
     setupbutton.onclick = setupB;
     step4.appendChild(setupbutton);
-    step5.appendChild(inputfield);
-    mixerYbox.appendChild(mixerfield);
-    const dpbutton = document.getElementById('deposit-button');
-    dpbutton.onclick = depositB;
+    step5.appendChild(verifyfield);
+    
+
   } else {
     step4 = lib.createElementFromString(
       `<div class = "content" id="step4">
@@ -411,7 +566,7 @@ const init = async (platform) =>{
         <h4>5. Set up with your transaction partner </h4>
       </div>
       `);
-    step4.appendChild(inputfield);
+    step4.appendChild(verifyfield);
     setupbutton.onclick = setupA;
     step5.appendChild(setupbutton);
   }
@@ -438,13 +593,10 @@ const init = async (platform) =>{
   }
 
   const inputHandler = async (b) => {
-    if (account == null) {
-      alert("Please connect wallet");
-      return;
-    }
+    if (account == null) { alert("Please connect wallet"); return; }
     const inputs = [];
     document.getElementById('setup').value.split(",").forEach(element => {
-      inputs.push(parseInt(element));
+      inputs.push(BigInt(element));
     });
     if (inputs.length != 7) {
       alert("Please input 7 values");
@@ -467,6 +619,9 @@ const init = async (platform) =>{
   const mt = document.getElementById('mt');
   mt.onclick = user == "A" ? mintA : mintB;
 
+  const approve = document.getElementById('approve');
+  approve.onclick = user == "A" ? approveA : approveB;
+
   const vb = document.getElementById('verifybutton');
   vb.onclick = verify;
 };
@@ -474,7 +629,6 @@ const init = async (platform) =>{
 
 
 const main = async () => {
-  /* setup contracts */
   const setup = async () => {
     if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
       try{
@@ -490,7 +644,6 @@ const main = async () => {
     ab = new web3.eth.Contract(SoKab.abi, SoKab.networks[5777].address);
     const mixerFactory = new web3.eth.Contract(MFArt.abi, MFArt.networks[5777].address);
     const mixerAddrs = await mixerFactory.methods.getMixers().call();
-    console.log(mixerAddrs);
     mixerX = new web3.eth.Contract(Mixer.abi, mixerAddrs[0]);
     mixerY = new web3.eth.Contract(Mixer.abi, mixerAddrs[1]);
   
@@ -539,7 +692,7 @@ const main = async () => {
   }
   const next = document.getElementById('next');
   next.onclick = () => {
-    console.log(chains, user);
+    // console.log(chains, user);
     if (chains[0] == null || chains[1] == null || user == null) {
       alert("Please select all options");
       return;
