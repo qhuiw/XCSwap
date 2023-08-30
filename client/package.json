@@ -19,7 +19,9 @@
   },
   "dependencies": {
     "@truffle/contract": "^4.6.28",
+    "abi-decoder": "^2.4.0",
     "bootstrap": "^5.3.1",
-    "bulma": "^0.9.4"
+    "bulma": "^0.9.4",
+    "js-sha3": "^0.8.0"
   }
 }

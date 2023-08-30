@@ -8,15 +8,6 @@ function insertAfter(newNode, existingNode) {
   existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
 }
 
-function getRPCErrorMessage(err){
-  // var open = err.stack.indexOf('{')
-  // var close = err.stack.lastIndexOf('}')
-  // var j_s = err.stack.substring(open, close + 1);
-  // var j = JSON.parse(j_s);
-  // var reason = j.data[Object.keys(j.data)[0]].reason;
-  // return reason;
-}
-
 const net = {
   "truffle": 5777,
   "ropsten": 3,
@@ -34,4 +25,8 @@ const rand = () => {
   return BigInt(Math.floor(Math.random() * max) + 1);
 } 
 
-module.exports = { createElementFromString, insertAfter, net, rand, getRPCErrorMessage };
+module.exports = { 
+  createElementFromString, 
+  insertAfter, 
+  net, 
+  rand};

@@ -1,7 +1,6 @@
-const lib = require("./lib.js");
-const rand = lib.rand;
-const assert = require("assert");
-import Web3 from "web3";
+const lib = require("./utils/lib.js");
+const tx = require("./utils/tx.js");
+const decoder = require("./utils/decoder.js");
 const PPArt = require("../build/contracts/PubParam.json");
 const Mixer = require("../build/contracts/Mixer.json");
 const MFArt = require("../build/contracts/MixerFactory.json");
@@ -14,403 +13,13 @@ const TokenReg = require("../build/contracts/TokenRegistrar.json");
 /* state */
 var web3 = null, account= null;
 var user = null;
-const ring_size = 16;
 
 var pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y;
-/* common inputs */
-var ci=false, valx, valy, T1, T2, T3, Tmax, s;
+window.ci = false;
 
-var attrP_By, P_By, attrP_Bx;
-var attrP_Ax, P_Ax, attrP_Ay;
-
-const mint = async () => {
-  if (ci == false) {
-    alert("Please submit common inputs"); 
-    return;
-  }
-
-  const valtk = user == 'A'? valx : valy;
-  const tk = user == 'A'? x : y;
-
-  const val = document.getElementById('mtinput').value;
-  if (BigInt(val) != valtk) { 
-    alert("Please input correct value"); 
-    return; 
-  }
-
-  try {
-    await tk.methods.mint(account, valtk).send({
-      from: account, gas: 6721975, gasPrice: 20000000000});
-  } catch(err) {
-    console.log(err.message);
-    alert(err.message);
-    return;
-  }
-  
-  const tk_owner = await tk.methods.ownerOf(valtk).call();
-  if (tk_owner != account) {
-    alert("Minting failed");
-    return;
-  }
-  alert("Minting successful");
-}
-
-const approve = async () => {
-  const addr = document.getElementById('approveaddr').value;
-  const ty = document.getElementById('approvety').value;
-
-  const valtk = user == 'A'? valx : valy;
-  const mixer = user == 'A'? mixerX : mixerY;
-  const tk = user == 'A'? x : y;
-
-  if (BigInt(ty) != valtk || addr != mixer.options.address) {
-    alert("Please input correct value");
-    return;
-  }
-  try {
-    await tk.methods.approve(mixer.options.address, valtk).send({from : account, gas: 6721975, gasPrice: 20000000000});
-  } catch(err) {
-    alert(err.message);
-  }
-  alert("Approve successful");
-}
-
-const deposit = async () => {
-  const name = user == 'A'? "X" : "Y";
-  const valtk = user == 'A'? valx : valy;
-  const tytk = user == 'A'? ty_x : ty_y;
-  const mixer = user == 'A'? mixerX : mixerY;
-  const tk = user == 'A'? x : y;
-
-  const dpinput = document.getElementById(`dp-input-${name}`).value;
-  if (BigInt(dpinput) != valtk) {
-    alert("Please input correct value");
-  }
-  const attrP = [tytk, valtk, 0, Tmax, rand(), rand(), rand()];
-
-  if (user == 'A') {
-    attrP_Ax = attrP;
-  } else {
-    attrP_By = attrP;
-  }
-
-  const onetP = await pp.methods.onetAcc(attrP).call();
-
-  const tx_dp = [onetP, attrP.slice(0,4)];
-
-  const sig = await mixer.methods.deposit(tx_dp, attrP.slice(4)).call();
-
-  try {
-    await mixer.methods.process_dp(tx_dp, sig).send({
-      from: account, gas: 6721975, gasPrice: 20000000000});
-  } catch(err) {
-    alert(err.message);
-    return;
-  }
-
-  const tk_ownerAfter = await tk.methods.ownerOf(valtk).call();
-  if (tk_ownerAfter != mixer.options.address) {
-    alert("Deposit failed");
-    return;
-  }
-  alert("Deposit successful");
-
-  const P = await pp.methods.Com(attrP).call();
-  if (user == 'A') {
-    P_Ax = P;
-  } else {
-    P_By = P;
-  }
-  const pacc = document.getElementById('pacc');
-  pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Minted</b></p>`));
-}
-
-const preswapB = async () => {
-  if (beta == null) {
-    alert("Please setup with your partner first");
-  }
-
-  const attrE = [ty_y, valy, T2, T3, beta[0], beta[0]+s, beta[3]];
-  const attrR_By = [ty_y, valy, T3, Tmax, beta[0], beta[1], beta[2]];
-
-  const ps_input = document.getElementById('ps-input-Y').value.split(',').map(x => x.trim());
-
-  if (ps_input[0] != P_By.X || ps_input[1] != P_By.Y) {
-    alert("Please input correct value");
-    return;
-  }
-
-  const R = Array.from(await mixerY.methods.get_accs().call()).slice(0, ring_size);
-
-  const theta = 4;
-  R[theta] = P_By;
-
-  const gs = R.slice(-Math.log2(ring_size));
-
-  const tagy = await pp.methods.TagEval(attrP_By[4]).call();
-
-  const tcom_T = [tcomE_Ay, await pp.methods.tCom(attrR_By).call()];
-  const ocom_T = [ocomE_Ay, await pp.methods.oCom(attrR_By).call()];
-
-  const attrTs = [attrE.slice(2,4).concat([rand(), rand()]), [T3, Tmax, beta[1], beta[2]]];
-
-  const tx_sp = [R, gs, tagy, [attrP_By[5], BigInt(0), Tmax], pky,  tcom_T, ocom_T];
-
-  const wit = [theta, [ty_y, valy, attrP_By[4], attrP_By[6]], beta[0], attrTs];
-
-  const sig = await mixerY.methods.spend(tx_sp, wit).call();
-
-  try {
-    await mixerY.methods.process_sp(tx_sp, sig).send({
-      from: account, gas: 6721975, gasPrice: 20000000000});
-  } catch(err) {
-    alert(err.message);
-  }
-  alert ("PreSwap successful");
-  attrP_By = null;
-}
-
-const preswapA = async () => {
-  if (alpha == null) {
-    alert("Please setup with your partner first");
-  }
-
-  const attrE = [ty_x, valx, T1, T2, alpha[0], alpha[1], alpha[2]];
-  const attrR_Ax = [ty_x, valx, T2, Tmax, alpha[0], alpha[3], alpha[4]];
-
-  const ps_input = document.getElementById('ps-input-X').value.split(',').map(x => x.trim());
-
-  if (ps_input[0] != P_Ax.X || ps_input[1] != P_Ax.Y) {
-    alert("Please input correct value");
-    return;
-  }
-
-  const R = Array.from(await mixerX.methods.get_accs().call()).slice(0, ring_size);
-
-  const theta = 4;
-  R[theta] = P_Ax;
-
-  const gs = R.slice(-Math.log2(ring_size));
-
-  const tagx = await pp.methods.TagEval(attrP_Ax[4]).call();
-
-  const tcom_T = [tcomE_Bx, await pp.methods.tCom(attrR_Ax).call()];
-  const ocom_T = [ocomE_Bx, await pp.methods.oCom(attrR_Ax).call()];
-
-  const attrTs = [attrE.slice(2,4).concat([rand(), rand()]), [T2, Tmax, alpha[3], alpha[4]]];
-
-  const tx_sp = [R, gs, tagx, [attrP_Ax[5], BigInt(0), Tmax], pkx,  tcom_T, ocom_T];
-
-  const wit = [theta, [ty_x, valx, attrP_Ax[4], attrP_Ax[6]], alpha[0], attrTs];
-
-  const sig = await mixerX.methods.spend(tx_sp, wit).call();
-
-  try {
-    await mixerX.methods.process_sp(tx_sp, sig).send({
-      from: account, gas: 6721975, gasPrice: 20000000000});
-  } catch(err) {
-    alert(err.message);
-  }
-  alert ("PreSwap successful");
-  attrP_Ax = null;
-}
-
-const isin = async (isX) => {
-  const mixer = isX? mixerX : mixerY;
-  const name = isX? "X" : "Y";
-  const acc = document.getElementById(`isin-input-${name}`).value.split().map(elt => elt.trim());
-  const res = await mixer.methods.inAcc(acc).call();
-  if (res != true) {
-    alert("The account is not in the pool, please redeem");
-  }
-  alert("Successful");
-}
-const exchangeA = async () => {
-
-
-}
-
-var beta = null, pky, tcomE_Ay, ocomE_Bx, R_By;
-var setupBsucc = false;
-
-const setupB = async () => {
-  if (ci == false) {
-    alert("Please submit common inputs");
-    return;
-  }
-
-  if (setupBsucc) {return;}
-
-  beta = [rand(), rand(), rand(), rand()];
-
-  pky = await pp.methods.TagKGen(beta[0]).call();
-
-  const attrE = [ty_y, valy, T2, T3, beta[0], beta[0]+s, beta[3]];
-
-  tcomE_Ay = await pp.methods.tCom(attrE).call();
-
-  ocomE_Bx = await pp.methods.oCom(attrE).call();
-
-  const attrR_By = [ty_y, valy, T3, Tmax, beta[0], beta[1], beta[2]];
-  
-  R_By = await pp.methods.Com(attrR_By).call();
-
-  const c = [ty_y, valy, T2, T3, Tmax, s];
-  const tx_ba = [c, pky, tcomE_Ay, ocomE_Bx, R_By];
-  const wit = [parseInt(s)].concat(beta);
-
-  const sig_ba = await ba.methods.sign(tx_ba, wit).call();
-
-  const encode = btoa(JSON.stringify([pky, tcomE_Ay, ocomE_Bx, R_By, sig_ba]));
-
-  const setupbutton = document.getElementById('setupbutton');
-  setupbutton.onclick = null;
-  setupBsucc = true;
-  
-  const sigbox = document.getElementById('sigbox');
-  sigbox.appendChild(lib.createElementFromString(`<p>${encode}</p>`));
-
-  const racc = document.getElementById('racc');
-  racc.appendChild(lib.createElementFromString(`<p>${R_By.X},<br>${R_By.Y}</p>`));
-
-}
-
-var alpha=null, pkx, tcomE_Bx, ocomE_Ay, R_Ax;
-var setupAsucc = false;
-
-const setupA = async () => {
-  if (ci == false) {
-    alert("Please submit common inputs");
-    return;
-  }
-
-  if (setupAsucc) {return;}
-
-  alpha = [rand(), rand(), rand(), rand(), rand()];
-
-  pkx = await pp.methods.TagKGen(alpha[0]).call();
-
-  const attrE = [ty_x, valx, T1, T2, alpha[0], alpha[1], alpha[2]];
-
-  tcomE_Bx = await pp.methods.tCom(attrE).call();
-  ocomE_Ay = await pp.methods.oCom(attrE).call();
-
-  const attrR_Ax = [ty_x, valx, T2, Tmax, alpha[0], alpha[3], alpha[4]];
-  R_Ax = await pp.methods.Com(attrR_Ax).call();
-
-  const c = [ty_x, valx, T1, T2, Tmax];
-  const tx_ab = [c, pkx, tcomE_Bx, ocomE_Ay, R_Ax];
-  const wit = alpha;
-
-  const sig_ab = await ab.methods.sign(tx_ab, wit).call();
-
-  const encode = btoa(JSON.stringify([pkx, tcomE_Bx, ocomE_Ay, R_Ax, sig_ab]));
-
-  const setupbutton = document.getElementById('setupbutton');
-  setupbutton.onclick = null;
-  setupAsucc = true;
-
-  const sigbox = document.getElementById('sigbox');
-  sigbox.appendChild(lib.createElementFromString(`<p>${encode}</p>`));
-
-  const eacc = document.getElementById('eacc');
-  const unmintedEacc = await pp.methods.com([[...tcomE_Ay], [...ocomE_Ay]]).call();
-  eacc.appendChild(lib.createElementFromString(`<p>${unmintedEacc.X},<br>${unmintedEacc.Y} <b>to check</b></p>`));
-
-  const racc = document.getElementById('racc');
-  racc.appendChild(lib.createElementFromString(`<p>${R_Ax.X},<br>${R_Ax.Y} </p>`));
-}
-
-const verify = async () => {
-  const encode = document.getElementById('verify').value;
-  const decode = JSON.parse(atob(encode));
-
-  if (decode.length != 5) {
-    alert("Verify failed");
-    return;
-  }
-
-  if (user == "A") {
-    var sig_ba;
-    [pky, tcomE_Ay, ocomE_Bx, R_By, sig_ba] = decode;
-    const c = [ty_y, valy, T2, T3, Tmax, s];
-    const tx_ba = [c, pky, tcomE_Ay, ocomE_Bx, R_By];
-    const res = await ba.methods.verify(tx_ba, sig_ba).call();
-    if (res == false) {
-      alert("Verify failed");
-      return;
-    }
-  } else {
-    var sig_ab;
-    [pkx, tcomE_Bx, ocomE_Ay, R_Ax, sig_ab] = decode;
-    const c = [ty_x, valx, T1, T2, Tmax];
-    const tx_ab = [c, pkx, tcomE_Bx, ocomE_Ay, R_Ax];
-    const res = await ab.methods.verify(tx_ab, sig_ab).call();
-    if (res == false) {
-      alert("Verify failed");
-      return;
-    }
-    const eacc = document.getElementById('eacc');
-    const arg = [tcomE_Bx, [...ocomE_Bx]];
-    const unmintedEacc = await pp.methods.com(arg).call();
-    eacc.appendChild(lib.createElementFromString(`<p>${unmintedEacc.X},<br>${unmintedEacc.Y} <b>to check</b></p>`));
-  }
-
-  const verifybutton = document.getElementById('verifybutton');
-  verifybutton.onclick = null;
-  verifybutton.innerHTML = "<b>Verified!</b>";
-  verifybutton.classList.add("is-success");
-}
-
-const redeem = async () => {
-  console.log("redeem");
-}
-
-
-
-const withdraw = async (isX) => {
-  var attrP, mixer;
-  if (user == 'A') {
-    attrP = isX? attrP_Ax : attrP_Ay;
-  } else {
-    attrP = isX? attrP_Bx : attrP_By;
-  }
-  if (attrP == null) {
-    alert("No P-account to withdraw");
-    return;
-  }
-
-  mixer = isX? mixerX : mixerY;
-
-  const P = await pp.methods.Com(attrP).call();
-  const tag = await pp.methods.TagEval(attrP[4]).call();
-
-  const R = Array.from(await mixer.methods.get_accs().call()).slice(0, ring_size);
-  const theta = 4;
-  R[theta] = P;
-
-  const gs = R.slice(-Math.log2(ring_size));
-
-  const tx_wd = [R, gs, tag, attrP.slice(0,4), account];
-
-  const wit = [theta].concat(attrP.slice(4));
-
-  const sig = await mixer.methods.withdraw(tx_wd, wit).call();
-
-  try {
-    await mixer.methods.process_wd(tx_wd, sig).send({
-      from: account, gas: 6721975, gasPrice: 20000000000});
-  } catch(err) {
-    alert(err.message);
-  }
-  alert ("Withdraw successful");
-  const pacc = document.getElementById('pacc');
-  console.log(pacc.children);
-  pacc.lastChild.remove();
-}
-
-
+/* new page */
 const init = async (platform) =>{
+
   const page = document.getElementById('page');
   const newpage = lib.createElementFromString(
     `<div class="container" id="page2">
@@ -506,7 +115,7 @@ const init = async (platform) =>{
   page.replaceWith(newpage);
 
   const step3 = document.getElementById('step3');
-  const setupbutton = lib.createElementFromString(
+  const setupfield = lib.createElementFromString(
     `<div class="box wrap" id="sigbox">
       <button class="button is-primary" id="setupbutton">
         <b> Send encoded commitments and signature to your partner: </b>
@@ -573,9 +182,18 @@ const init = async (platform) =>{
           <input class="input" type="text" placeholder="Enter E-account for checking" ${disabledBY + disabledAX} id="isin-input-${name}">
         </div>
         <button class="btn btn-primary" id="isin-button-${name}" ${disabledBY + disabledAX}>
-          CheckAccount
+          CheckAcc
         </button>
       </div>
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <input class="input" type="text" placeholder="Enter private key for checking" ${disabledBX + disabledBY + disabledAY} id="isintag-input-${name}">
+        </div>
+        <button class="btn btn-primary" id="isintag-button-${name}" ${disabledBX + disabledBY + disabledAY}>
+          CheckTag
+        </button>
+      </div>
+
       </div>`);
       return mixerfield;
     }
@@ -586,24 +204,35 @@ const init = async (platform) =>{
 
   const dpX = document.getElementById('deposit-button-X');
   const dpY = document.getElementById('deposit-button-Y');
-  dpX.onclick = deposit;
-  dpY.onclick = deposit;
+  dpX.onclick = tx.deposit;
+  dpY.onclick = tx.deposit;
   const psX = document.getElementById('preswap-button-X');
   const psY = document.getElementById('preswap-button-Y');
-  psX.onclick = preswapA;
-  psY.onclick = preswapB;
+  psX.onclick = tx.preswapA;
+  psY.onclick = tx.preswapB;
   const wdX = document.getElementById('withdraw-button-X');
   const wdY = document.getElementById('withdraw-button-Y');
-  wdX.onclick = withdraw.bind(null, true);
-  wdY.onclick = withdraw.bind(null, false);
+  wdX.onclick = tx.withdraw.bind(null, true);
+  wdY.onclick = tx.withdraw.bind(null, false);
+  const reX = document.getElementById('redeem-button-X');
+  const reY = document.getElementById('redeem-button-Y');
+  reX.onclick = tx.redeem.bind(null, true);
+  reY.onclick = tx.redeem.bind(null, false);
+  const exX = document.getElementById('exchange-button-X');
+  const exY = document.getElementById('exchange-button-Y');
+  exX.onclick = tx.exchange;
+  exY.onclick = tx.exchange;
 
   const isinX = document.getElementById('isin-button-X');
   const isinY = document.getElementById('isin-button-Y');
-  isinX.onclick = isin.bind(null, true);
-  isinY.onclick = isin.bind(null, false);
+  isinX.onclick = tx.isin.bind(null, true);
+  isinY.onclick = tx.isin.bind(null, false);
 
-  const offchain = document.getElementById('offchain');
-  var step4, step5, alphabox;
+  const isinTagX = document.getElementById('isintag-button-X');
+  isinTagX.onclick = tx.isinTagA;
+
+  const skcom = document.getElementById('offchain');
+  var step4, step5, skbox;
   if (user == "B") {
     step4 = lib.createElementFromString(
       `<div class = "content" id="step4">
@@ -615,21 +244,23 @@ const init = async (platform) =>{
         <h4>5. Verify your partner's setup signature </h4>
       </div>
       `);
-    setupbutton.onclick = setupB;
-    step4.appendChild(setupbutton);
+    step4.appendChild(setupfield);
     step5.appendChild(verifyfield);
-    alphabox = lib.createElementFromString(
-      `<div class="box" id="alphabox">
+    skbox = lib.createElementFromString(
+      `<div class="box" id="skbox">
         <div class="field has-addons">
           <div class="control is-expanded">
-            <input class="input" type="text" placeholder="Enter your partner's private key" id="alpha">
+            <input class="input" type="text" placeholder="Enter your partner's private key" id="alpha-input">
           </div>
           <button class="btn btn-primary" id="alpha-button">
             Submit
           </button>
         </div>
       </div>`);
-    offchain.appendChild(alphabox);
+    skcom.appendChild(skbox);
+
+    const alphabutton = document.getElementById('alpha-button');
+    alphabutton.onclick = tx.checkAlphaB;
   } else {
     step4 = lib.createElementFromString(
       `<div class = "content" id="step4">
@@ -642,104 +273,54 @@ const init = async (platform) =>{
       </div>
       `);
     step4.appendChild(verifyfield);
-    setupbutton.onclick = setupA;
-    step5.appendChild(setupbutton);
-    alphabox = lib.createElementFromString(
-      `<div class="box" id="alphabox">
+    step5.appendChild(setupfield);
+    skbox = lib.createElementFromString(
+      `<div class="box" id="skbox">
         <b> Send private key to your partner: </b>
+        <br>
+        <div class="field has-addons">
+          <div class="control is-expanded">
+            <input class="input" type="text" placeholder="Enter B's exchange transaction hash" id="txhash">
+          </div>
+          <button class="btn btn-primary" id="txhash-button">
+            <b>Submit</b>
+          </button>
       </div>`);
-    offchain.appendChild(alphabox);
+    skcom.appendChild(skbox);
+
+    const txhashbutton = document.getElementById('txhash-button');
+    txhashbutton.onclick = tx.checkBetaA;
   }
   lib.insertAfter(step4, step3);
   lib.insertAfter(step5, step4);
 
-  const connectWallet = async () => {
-    try {
-      await window.ethereum.request({ method: "eth_requestAccounts" })
-      const accounts = await web3.eth.getAccounts();
-      account = accounts[0];
-    } catch(err) {
-      alert(err.message);
-      return;
-    }
-    const btn = document.getElementById('connect');
-    btn.onclick = null;
-    btn.innerHTML = "<b>You are Connected!</b>";
-    btn.classList.add("is-success");
-    const acc = lib.createElementFromString(
-      "<p class='is-pulled-right'>Account: " + account + "</p>"
-    );
-    lib.insertAfter(acc, btn);
-  }
-
-  const inputHandler = async (b) => {
-    if (account == null) { alert("Please connect wallet"); return; }
-    const inputs = document.getElementById('setup').value.split(",").map(element => BigInt(element));
-    if (inputs.length != 7) {
-      alert("Please input 7 values");
-      return;
-    }
-    [valx, valy, T1, T2, T3, Tmax, s] = inputs;
-    ci = true;
-  
-    b.onclick = null;
-    b.innerHTML = "<b>Submitted!</b>";
-    b.classList.add("is-success");
-  }
-
   const connect = document.getElementById('connect');
-  connect.onclick = connectWallet;
+  connect.onclick = tx.connectWallet;
 
   const cibutton = document.getElementById('ci'); 
-  cibutton.onclick = inputHandler.bind(null, cibutton);
+  cibutton.onclick = tx.inputHandler.bind(null, cibutton);
 
   const mt = document.getElementById('mt');
-  mt.onclick = mint;
+  mt.onclick = tx.mint;
 
   const approvebtn = document.getElementById('approve');
-  approvebtn.onclick = approve;
+  approvebtn.onclick = tx.approve;
+
+  const setupbutton = document.getElementById('setupbutton');
+  setupbutton.onclick = (user == 'A')? tx.setupA : tx.setupB;
 
   const vb = document.getElementById('verifybutton');
-  vb.onclick = verify;
+  vb.onclick = tx.verify;
 };
 
 
 
 const main = async () => {
-  const setup = async () => {
-    if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
-      try{
-        web3 = new Web3(window.ethereum);
-      } catch(err) {
-        alert("Please install metamask");
-      }
-    }
-
-    // change to base chain 
-    pp = new web3.eth.Contract(PPArt.abi, PPArt.networks[5777].address);
-    ba = new web3.eth.Contract(SoKba.abi, SoKba.networks[5777].address);
-    ab = new web3.eth.Contract(SoKab.abi, SoKab.networks[5777].address);
-    const mixerFactory = new web3.eth.Contract(MFArt.abi, MFArt.networks[5777].address);
-    const mixerAddrs = await mixerFactory.methods.getMixers().call();
-    mixerX = new web3.eth.Contract(Mixer.abi, mixerAddrs[0]);
-    mixerY = new web3.eth.Contract(Mixer.abi, mixerAddrs[1]);
-  
-    const NFTFactory = new web3.eth.Contract(NFTFArt.abi, NFTFArt.networks[5777].address);
-    const tokenAddrs = await NFTFactory.methods.getTokens().call();
-    x = new web3.eth.Contract(NFTArt.abi, tokenAddrs[0]);
-    y = new web3.eth.Contract(NFTArt.abi, tokenAddrs[1]);
-  
-    reg = new web3.eth.Contract(TokenReg.abi, TokenReg.networks[5777].address);
-  
-    ty_x = BigInt(await reg.methods.getTy(tokenAddrs[0]).call());
-    ty_y = BigInt(await reg.methods.getTy(tokenAddrs[1]).call());
-  }
-  setup();
-
+  [web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y] = await tx.setup(window);
 
   var chains = [null,null];
   var nids = [null,null];
-  var baseChain = null;
+  var baseNid = null;
 
   const config = async (opt, idx) => {
     if (chains[idx] == opt.getAttribute("value")) {
@@ -765,6 +346,7 @@ const main = async () => {
   for (const role of roles) {
     role.onclick = () => {
       user = role.value;
+      tx.set_user(user);
     }
   }
   const next = document.getElementById('next');
@@ -774,7 +356,7 @@ const main = async () => {
       return;
     }
     init(chains[0]);
-    baseChain = user == "A"? chains[0] : chains[1];
+    baseNid = user == "A"? chains[0] : chains[1];
     next.style.visibility = "hidden";
     next.onclick = () => {
       if (ci == false) {
@@ -783,6 +365,16 @@ const main = async () => {
       }
     }
   }
+  // const transaction = await web3.eth.getTransaction("0xe0e0dfff459135bea682d30cee0e29e022715beb0ee9d4c1c9ab4aa77d10c9ff");
+
+
+  decoder.addABI(Mixer.abi);
+
+  // decoder.decodeMethod(transaction.input);
+
+  // console.log(decoder.decodeMethod(transaction.input));
+
+
 }
 
 export default main();
