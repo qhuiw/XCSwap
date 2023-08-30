@@ -4866,12 +4866,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xBe9aD94AA12e9a11c8499C768950f84ab0593399",
-      "transactionHash": "0xb271d26cb92767766c1245be764eabaa79ce09bb930fcc5182a65555a9cb6613"
+      "address": "0xDe546BCEB9c06E224D1472a5eAA894DdEAB5db3F",
+      "transactionHash": "0x32377e2ed4bf7c05c50900a93952404070e9cf0c16dc2ce28ee255b6f93ded9e"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-28T06:06:14.802Z",
+  "updatedAt": "2023-08-30T07:54:27.808Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Token Registrar",

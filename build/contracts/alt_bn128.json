@@ -11669,12 +11669,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x3161ddF34b25e39c5c4415189c98B1Eabc09e200",
-      "transactionHash": "0xc7ae3112343d0c9584dc9591df033d3044023ab83938a7e0f3386856fadbdedc"
+      "address": "0xA6358B51c26842c1799d052030ACEDDBB3a2ccc6",
+      "transactionHash": "0xb5bf61680e20094301bd82a7708171a55f9f1f1cd0d26d2d205bfa5814827ca5"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-28T06:06:14.724Z",
+  "updatedAt": "2023-08-30T07:54:27.747Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "arithmetic operations over elliptic curve alt_bn128",

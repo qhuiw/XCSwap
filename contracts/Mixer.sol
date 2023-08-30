@@ -63,12 +63,6 @@ contract Mixer {
 
     sig = dp.sign(tx_dp, wit);
   }
-  // function deposit(SoKdp.TX memory tx_dp, uint256[3] memory wit) public view returns (SoKdp.TX memory){
-  //   address t = r.getToken(tx_dp.attrS[0]);
-  //   // sig = dp.sign(tx_dp, wit);
-  //   // return true;
-  //   return tx_dp;
-  // }
 
   /// @dev mixer process deposit request
   /// @param tx_dp deposit transaction statement
@@ -114,7 +108,7 @@ contract Mixer {
 
     /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)
     // uint256 time = block.timestamp;
-    uint256 time = tx_wd.attrS[2]+1; // for testing
+    uint256 time = tx_wd.attrS[2]; // for testing
     bool b0 = tx_wd.attrS[2] <= time && time < tx_wd.attrS[3];
     require(b0, "Withdraw: invalid transaction time");
 
@@ -146,7 +140,7 @@ contract Mixer {
     // uint256 time = 5; // for testing
     /// @dev b0 ≜ T_now ∈ [T_begS ,T_endS)
     // uint256 time = block.timestamp;
-    uint256 time = tx_sp.attrS[1] + 1; // for testing
+    uint256 time = tx_sp.attrS[1]; // for testing
     bool b0 = tx_sp.attrS[1] <= time && time < tx_sp.attrS[2]; 
     require (b0, "Spend: invalid transaction time");
 
@@ -206,8 +200,6 @@ contract Mixer {
 
 }
 
-// import "@optionality.io/clone-factory/contracts/CloneFactory.sol";
-
 contract MixerFactory {
   address[] _mixers;
 
@@ -218,6 +210,5 @@ contract MixerFactory {
   function getMixers() public view returns (address[] memory) {
     return _mixers;
   }
-
   
 }
