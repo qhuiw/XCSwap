@@ -246,6 +246,7 @@ const withdraw = async (isX) => {
       from: account, gas: 6721975, gasPrice: 20000000000});
   } catch(err) {
     alert(err.message);
+    return;
   }
   alert ("Withdraw successful");
   const pacc = document.getElementById('pacc');
@@ -256,7 +257,6 @@ const withdraw = async (isX) => {
   } else {
     if (isX) {attrP_Bx = null;} else {attrP_By = null;}
   }
-
 }
 
 const setupB = async () => {
