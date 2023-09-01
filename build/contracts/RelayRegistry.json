@@ -1979,12 +1979,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xFd863BA438b6f4dcE1FEe03c673C5518D12c4B38",
-      "transactionHash": "0xcc7b45807959ba0e3c076fa90e55940bd0a5990e387b89c1186fcebd0af95161"
+      "address": "0x9b0b3325b68A83865e8e93ceDff0C47F03c686B4",
+      "transactionHash": "0x4231139ca2f32dc482450c8d7b1f442c1394eb9e8c6ede2e2c45fd46317a01a1"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-30T07:54:27.991Z",
+  "updatedAt": "2023-09-01T04:45:20.217Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

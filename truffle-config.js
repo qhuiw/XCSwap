@@ -42,15 +42,13 @@ module.exports = {
       network_id: "*",
       port: 7545,
       host: "127.0.0.1",
-      gas : 6721975, //(default)
+      gas : 6721975,
       websockets: true
     },
     develop : {
       network_id: "5777",
       host: "127.0.0.1",
-      port: 9545,
-      // gas : 6721975, //(default)
-      // gasPrice : 1000000000, // 1 Gwei = 1000000000 (default: 100 gwei)
+      port: 9545
     },
     baobab: {
       networkCheckTimeout: 10000000, // timeout

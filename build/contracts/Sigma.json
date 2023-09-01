@@ -16903,14 +16903,14 @@
     "5777": {
       "events": {},
       "links": {
-        "alt_bn128": "0xA6358B51c26842c1799d052030ACEDDBB3a2ccc6"
+        "alt_bn128": "0x8F3ca9C26E27969b2F8452173613085fBe019529"
       },
-      "address": "0x74a71f0923ddeB529bE596537B3E2C55bc81d0cE",
-      "transactionHash": "0xca039d8330e3d00fcdf11c9ff7082024fd0d174faa673f747b768eec7dc118a8"
+      "address": "0x011b26A23981165Bac187E1193EE234D605082F9",
+      "transactionHash": "0xa60c506528fad6bfdcd440eef75e84fcdf373b34253e16c5be7e48f038512841"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-08-30T07:54:27.883Z",
+  "updatedAt": "2023-09-01T04:45:20.102Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
