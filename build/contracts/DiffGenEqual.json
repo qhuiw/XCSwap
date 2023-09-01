@@ -11130,14 +11130,14 @@
     "5777": {
       "events": {},
       "links": {
-        "alt_bn128": "0x94f80b3C423F3Ed994c912a87c5a342Febe1b6aC"
+        "alt_bn128": "0xAbd7A2dfD9bEc9d71764E19dBD4Eb57E7Dae6be5"
       },
-      "address": "0x1FAb7fB9E1F9829B1eB89CF9e479287DB72C7AE7",
-      "transactionHash": "0xc4b508cafa441dc27ec94ec6d86cbdb2a5872ebf8e9aab77823c58dea837d830"
+      "address": "0xFCc18967b0Dad0D03A3101AE10b90d3dd93D1DFB",
+      "transactionHash": "0x17294acad2789ec24d801d7f5b9b66790e3483bb3c72c3af3de665b51c9191a4"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-09-01T16:17:15.972Z",
+  "updatedAt": "2023-09-01T16:52:33.719Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

@@ -1,4 +1,5 @@
 const abiCoder = require("web3-eth-abi");
+const { sha3, BN } = require("web3-utils");
 
 const state = {
   savedABIs: [],
@@ -8,6 +9,8 @@ const state = {
 function _typeToString(input) {
   if (input.type === "tuple") {
     return "(" + input.components.map(_typeToString).join(",") + ")";
+  } else if (input.type === "tuple[]") {
+    return "(" + input.components.map(_typeToString).join(",") + ")[]";
   }
   return input.type;
 }
@@ -17,7 +20,22 @@ function _addABI(abiArray) {
     // Iterate new abi to generate method id"s
     abiArray.map(function(abi) {
       if (abi.name) {
-        const signature = abi.signature;
+        const signature = sha3(
+          abi.name +
+            "(" +
+            abi.inputs
+              .map(_typeToString)
+              .join(",") +
+            ")"
+        );
+        console.log(abi.name +
+          "(" +
+          abi.inputs
+            .map(_typeToString)
+            .join(",") +
+          ")");
+        console.log(abi.name , signature);
+        // const signature = abi.signature;
         if (abi.type === "event") {
           state.methodIDs[signature.slice(2)] = abi;
         } else {

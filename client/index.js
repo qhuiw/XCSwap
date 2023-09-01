@@ -336,7 +336,7 @@ const main = async () => {
     chains[1] = document.getElementById('pnet').value;
     nids[0] = lib.net[chains[0]];
     nids[1] = lib.net[chains[1]];
-    // console.log(chains);
+    baseNid = user == "A"? nids[0] : nids[1];
 
     if (chains[0] == null || chains[1] == null || user == null) {
       alert("Please select all options");
@@ -345,8 +345,7 @@ const main = async () => {
 
     [web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y] = await tx.setup(window, nids, baseNid);
 
-    init(chains[0]);
-    baseNid = user == "A"? nids[0] : nids[1];
+    await init(chains[0]);
     next.style.visibility = "hidden";
     next.onclick = () => {
       if (ci == false) {

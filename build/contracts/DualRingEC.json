@@ -21900,14 +21900,14 @@
     "5777": {
       "events": {},
       "links": {
-        "alt_bn128": "0x94f80b3C423F3Ed994c912a87c5a342Febe1b6aC"
+        "alt_bn128": "0xAbd7A2dfD9bEc9d71764E19dBD4Eb57E7Dae6be5"
       },
-      "address": "0x393814230ef2093a47Df87792D1fD20f6E5DB0d8",
-      "transactionHash": "0x0ddec9e8967248dc1534aeb258054fe8a04a412e015ea542451e7442e30ffe8b"
+      "address": "0xDBd239e5Ab9109cF0e59861F60540d84dA712a1c",
+      "transactionHash": "0x1c0f9e31c2733ba6c2ed636bcbaf2a83ef4248828dd52c244df9d873e9c3e151"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-09-01T16:17:15.941Z",
+  "updatedAt": "2023-09-01T16:52:33.685Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
