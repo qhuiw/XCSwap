@@ -1,21 +1,14 @@
 const lib = require("./utils/lib.js");
 const tx = require("./utils/tx.js");
 const decoder = require("./utils/decoder.js");
-const PPArt = require("../build/contracts/PubParam.json");
 const Mixer = require("../build/contracts/Mixer.json");
-const MFArt = require("../build/contracts/MixerFactory.json");
-const SoKab = require("../build/contracts/SoKab.json");
-const SoKba = require("../build/contracts/SoKba.json");
-const NFTArt = require("../build/contracts/TokenNFT.json");
-const NFTFArt = require("../build/contracts/NFTFactory.json");
-const TokenReg = require("../build/contracts/TokenRegistrar.json");
 
 /* state */
-var web3 = null, account= null;
-var user = null;
+var web3, account;
+var user;
 
 var pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y;
-window.ci = false;
+// window.ci = false;
 
 /* new page */
 const init = async (platform) =>{

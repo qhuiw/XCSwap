@@ -15,6 +15,7 @@ const TokenReg = require("../../build/contracts/TokenRegistrar.json");
 var web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y;
 var valx, valy, T1, T2, T3, Tmax, s;
 var account, user;
+var ci = false;
 
 var attrP_By, P_By, attrP_Bx;
 var attrP_Ax, P_Ax, attrP_Ay;
@@ -92,7 +93,7 @@ const inputHandler = async (b) => {
     return;
   }
   [valx, valy, T1, T2, T3, Tmax, s] = inputs;
-  window.ci = true;
+  ci = true;
 
   b.onclick = null;
   b.innerHTML = "<b>Submitted!</b>";
@@ -102,7 +103,7 @@ const inputHandler = async (b) => {
 
 
 const mint = async () => {
-  if (window.ci == false) {
+  if (ci == false) {
     alert("Please submit common inputs"); 
     return;
   }
@@ -260,7 +261,7 @@ const withdraw = async (isX) => {
 }
 
 const setupB = async () => {
-  if (window.ci == false) {
+  if (ci == false) {
     alert("Please submit common inputs");
     return;
   }
@@ -302,7 +303,7 @@ const setupB = async () => {
 }
 
 const setupA = async () => {
-  if (window.ci == false) {
+  if (ci == false) {
     alert("Please submit common inputs");
     return;
   }
@@ -581,7 +582,7 @@ const redeem = async (isX) => {
   const mixer = isX? mixerX : mixerY;
   
   const sk = isX? alpha[0] : beta[0];
-  const Tstart = isX? T1 : T2;
+  const Tstart = isX? T2 : T3;
   const valtk = isX? valx : valy;
   const tytk = isX? ty_x : ty_y;
   const opn = isX? alpha[3] : beta[1];
