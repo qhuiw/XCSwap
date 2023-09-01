@@ -35,7 +35,7 @@ const set_user = (u) => {
   user = u;
 }
 
-const setup = async (window) => {
+const setup = async (window, nids, baseNid) => {
   if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
     try{
       web3 = new Web3(window.ethereum);
@@ -44,21 +44,38 @@ const setup = async (window) => {
     }
   }
 
+  const mnid = nids[0];
+  const pnid = nids[1];
+
+  const xnid = (user == 'A')? mnid : pnid;
+  const ynid = (user == 'A')? pnid : mnid;
+
   // change to base chain 
-  pp = new web3.eth.Contract(PPArt.abi, PPArt.networks[5777].address);
-  ba = new web3.eth.Contract(SoKba.abi, SoKba.networks[5777].address);
-  ab = new web3.eth.Contract(SoKab.abi, SoKab.networks[5777].address);
-  const mixerFactory = new web3.eth.Contract(MFArt.abi, MFArt.networks[5777].address);
-  const mixerAddrs = await mixerFactory.methods.getMixers().call();
-  mixerX = new web3.eth.Contract(Mixer.abi, mixerAddrs[0]);
-  mixerY = new web3.eth.Contract(Mixer.abi, mixerAddrs[1]);
+  pp = new web3.eth.Contract(PPArt.abi, PPArt.networks[baseNid].address);
+  ba = new web3.eth.Contract(SoKba.abi, SoKba.networks[mnid].address);
+  ab = new web3.eth.Contract(SoKab.abi, SoKab.networks[mnid].address);
+  if (mnid == pnid){
+    const mixerFactory = new web3.eth.Contract(MFArt.abi, MFArt.networks[baseNid].address);
+    const mixerAddrs = await mixerFactory.methods.getMixers().call();
+    mixerX = new web3.eth.Contract(Mixer.abi, mixerAddrs[0]);
+    mixerY = new web3.eth.Contract(Mixer.abi, mixerAddrs[1]);
+  } else {
+    mixerX = new web3.eth.Contract(Mixer.abi, Mixer.networks[xnid].address);
+    mixerY = new web3.eth.Contract(Mixer.abi, Mixer.networks[ynid].address);
+  }
+  var tokenAddrs;
+  if (mnid == pnid) {
+    const NFTFactory = new web3.eth.Contract(NFTFArt.abi, NFTFArt.networks[xnid].address);
+    tokenAddrs = await NFTFactory.methods.getTokens().call();
+    x = new web3.eth.Contract(NFTArt.abi, tokenAddrs[0]);
+    y = new web3.eth.Contract(NFTArt.abi, tokenAddrs[1]);
+  } else {
+    x = new web3.eth.Contract(NFTArt.abi, NFTArt.networks[xnid].address);
+    y = new web3.eth.Contract(NFTArt.abi, NFTArt.networks[ynid].address);
+    tokenAddrs = [x.options.address, y.options.address];
+  }
 
-  const NFTFactory = new web3.eth.Contract(NFTFArt.abi, NFTFArt.networks[5777].address);
-  const tokenAddrs = await NFTFactory.methods.getTokens().call();
-  x = new web3.eth.Contract(NFTArt.abi, tokenAddrs[0]);
-  y = new web3.eth.Contract(NFTArt.abi, tokenAddrs[1]);
-
-  reg = new web3.eth.Contract(TokenReg.abi, TokenReg.networks[5777].address);
+  reg = new web3.eth.Contract(TokenReg.abi, TokenReg.networks[baseNid].address);
 
   ty_x = BigInt(await reg.methods.getTy(tokenAddrs[0]).call());
   ty_y = BigInt(await reg.methods.getTy(tokenAddrs[1]).call());

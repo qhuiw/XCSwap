@@ -8,7 +8,6 @@ var web3, account;
 var user;
 
 var pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y;
-// window.ci = false;
 
 /* new page */
 const init = async (platform) =>{
@@ -306,35 +305,24 @@ const init = async (platform) =>{
   vb.onclick = tx.verify;
 };
 
-
-
 const main = async () => {
-  [web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y] = await tx.setup(window);
 
   var chains = [null,null];
   var nids = [null,null];
-  var baseNid = null;
+  var baseNid;
 
-  const config = async (opt, idx) => {
-    if (chains[idx] == opt.getAttribute("value")) {
-      opt.classList.remove("has-background-success");
-      chains[idx] = null;
-      nids[idx] = null;
-    } else if (chains[idx] == null) {
-      opt.classList.add("has-background-success");
-      chains[idx] = opt.getAttribute("value");
-      nids[idx] = lib.net[chains[idx]];
-    }
+  const getOption = async (el, id) => {
+    const network = el.value;
+    const newimg = document.createElement("div");
+    newimg.innerHTML = `<img src = "${lib.img[network]}" alt="${network}" border="0" style="width:50px;height:50px" id="${id}">`;
+    document.getElementById(id).replaceWith(newimg.firstChild);
   }
 
-  const pnets = document.getElementsByName('pnet');
-  const mnets = document.getElementsByName('mnet');
-  for (const pnet of pnets) {
-    pnet.onclick = config.bind(null, pnet, 1);
-  }
-  for (const mnet of mnets) {
-    mnet.onclick = config.bind(null, mnet, 0);
-  }
+  const pnet = document.getElementById("pnet");
+  pnet.onchange=getOption.bind(null, pnet, 'pimg');
+  const mnet = document.getElementById('mnet');
+  mnet.onchange=getOption.bind(null, mnet, 'mimg');
+
   const roles = document.getElementsByName('r');
   for (const role of roles) {
     role.onclick = () => {
@@ -343,13 +331,22 @@ const main = async () => {
     }
   }
   const next = document.getElementById('next');
-  next.onclick = () => {
+  next.onclick = async () => {
+    chains[0] = document.getElementById('mnet').value;
+    chains[1] = document.getElementById('pnet').value;
+    nids[0] = lib.net[chains[0]];
+    nids[1] = lib.net[chains[1]];
+    // console.log(chains);
+
     if (chains[0] == null || chains[1] == null || user == null) {
       alert("Please select all options");
       return;
     }
+
+    [web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y] = await tx.setup(window, nids, baseNid);
+
     init(chains[0]);
-    baseNid = user == "A"? chains[0] : chains[1];
+    baseNid = user == "A"? nids[0] : nids[1];
     next.style.visibility = "hidden";
     next.onclick = () => {
       if (ci == false) {
@@ -360,14 +357,7 @@ const main = async () => {
   }
   // const transaction = await web3.eth.getTransaction("0xe0e0dfff459135bea682d30cee0e29e022715beb0ee9d4c1c9ab4aa77d10c9ff");
 
-
   decoder.addABI(Mixer.abi);
-
-  // decoder.decodeMethod(transaction.input);
-
-  // console.log(decoder.decodeMethod(transaction.input));
-
-
 }
 
 export default main();

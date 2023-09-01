@@ -20,12 +20,6 @@ contract TokenNFT is Token, ERC721 {
   }
 
   function approve(address to, uint256 tokenId) public override(ERC721, Token){
-    // address owner = ownerOf(tokenId);
-    // if (to == owner)  revert ("TokenNFT.approve: Invalid Operator");
-    // /// @dev call chain
-    // if (tx.origin != owner) revert("TokenNFT.approve: Invalid Approver");
-
-    // _tokenApproval[tokenId] = to;
     ERC721.approve(to, tokenId);
   }
 
@@ -36,29 +30,6 @@ contract TokenNFT is Token, ERC721 {
   }
 
   function transfer(address from, address to, uint256 tokenId) public override returns (bool) {
-    /*
-    address operator = msg.sender;
-    address owner = ownerOf(tokenId);
-    if (to == owner) revert("Problem");
-    if (owner != from) revert ("Incorrect From");
-    // if (owner != from || operator != _tokenApproval[tokenId]) revert ("Incorrect From Address");
-    if (to == address(0)) revert ("Invalid Receiver");
-
-    /// @dev could extend to _operatorApproval
-    if (operator == owner || operator == _tokenApproval[tokenId]) {
-      /// @dev Clear approvals from the previous owner
-      delete _tokenApproval[tokenId];
-
-      /// @dev update balance
-      _balances[from] -= 1;
-      _balances[to] += 1;
-
-      /// @dev transfer
-      _owners[tokenId] = to;
-      return true;
-    }
-    return false;
-    */
     ERC721.transferFrom(from, to, tokenId);
     return true;
   }

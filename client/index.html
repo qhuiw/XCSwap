@@ -14,7 +14,7 @@
       overflow: scroll;
     }
   </style>
-  
+
 </head>
 <body>
   <!-- mt-4 mb-4 -->
@@ -42,54 +42,28 @@
     <div class="content">
       <h4>Please select <span class="tag is-primary is-light">your</span> transaction network</h4>
     </div>
-    <div class = "columns">
-      <div class = "column">
-        <div class="box is-clickable" name="mnet" value="truffle">
-          <!-- <button class="button is-primary btn-lg"
-        onclick="window.open(location.protocol+'/userA')"> -->
-          <!-- <button class="button is-primary btn-lg" id="userA"> -->
-          <!-- <b> User A </b>  -->
-          <!-- </button> -->
-            
-            <img src="./images/truffle.png" border="0" style="width:50px;height:50px">
-          <p><b> Truffle </b></p>
-        </div>
-      </div>
-      <div class = "column is-half">
-        <div class="box is-clickable" name="mnet" value="klaytn">
-          <!-- <button class="button is-primary btn-lg" id="userB">
-            <b> User B </b> 
-          </button> -->
-          <img src="./images/klaytn.jpeg" alt="klaytn" border="0" style="width:50px;height:50px">
-          <p><b>Klaytn</b></p>
-        </div>
-      </div>
+    <img src="https://seeklogo.com/images/G/ganache-logo-1EB72084A8-seeklogo.com.png" alt="ganache" border="0" style="width:50px;height:50px" id="mimg">
+    <div class = "select is-rounded is-primary is-medium">
+      <select id="mnet">
+        <option value="ganache">Ganache</option>
+        <option value="klaytn">Klaytn</option>
+      </select>
     </div>
+
+
     <div class="content mt-4">
       <h4>Please select <span class="tag is-primary is-light">your partner</span>'s network</h4>
     </div>
-    <div class="columns">
-      <div class = "column">
-        <div class="box is-clickable" name="pnet" value="truffle">
-          <!-- <button class="button is-primary btn-lg"
-        onclick="window.open(location.protocol+'/userA')"> -->
-          <!-- <button class="button is-primary btn-lg" id="userA">
-          <b> User A </b> 
-          </button> -->
-          <img src="./images/truffle.png" border="0" style="width:50px;height:50px">
-          <p><b> Truffle </b></p>
-          
-        </div>
-      </div>
-      <div class = "column">
-        <div class="box is-clickable" name="pnet" value="klaytn">
-          <img src="./images/klaytn.jpeg" border="0" style="width:50px;height:50px">
-          <p><b>Klaytn</b></p>
-        </div>
-      </div>
+    <img src= "https://seeklogo.com/images/G/ganache-logo-1EB72084A8-seeklogo.com.png" alt="truffle" border="0" style="width:50px;height:50px" id="pimg">
+    <div class = "select is-rounded is-primary is-medium">     
+      <select id="pnet">
+        <option value="ganache">Ganache</option>
+        <option value="klaytn">Klaytn</option>
+      </select>
     </div>
 
-    <div class="content">
+
+    <div class="content mt-4">
       <h4>Are you setting up first?</h4>
     </div>
     <div class="field is-grouped is-grouped-centered">
@@ -104,7 +78,6 @@
     </div>
   </div>
   
-
   <div class="container mt-4">
     <button class="button is-medium is-primary is-light is-pulled-right" id="next">
       <span>
@@ -112,8 +85,7 @@
       </span>
       <i>→</i>
     </button>
-</div>
-
+  </div>
 
   <script type = "module" src="index.js"></script>
 

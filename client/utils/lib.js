@@ -9,7 +9,7 @@ function insertAfter(newNode, existingNode) {
 }
 
 const net = {
-  "truffle": 5777,
+  "ganache": 5777,
   "ropsten": 3,
   "rinkeby": 4,
   "goerli": 5,
@@ -20,6 +20,11 @@ const net = {
   "klaytn" : 1001
 }
 
+const img = {
+  "ganache": "https://seeklogo.com/images/G/ganache-logo-1EB72084A8-seeklogo.com.png",
+  "klaytn": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9U94zW4NDEbnNRpm_0RM2zubdKjyCt8NuIHV5wSgPZg&s"
+}
+
 const rand = () => {
   const max = 1000000;
   return BigInt(Math.floor(Math.random() * max) + 1);
@@ -28,5 +33,5 @@ const rand = () => {
 module.exports = { 
   createElementFromString, 
   insertAfter, 
-  net, 
+  net, img,
   rand};

@@ -26850,12 +26850,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x14767c8a80C9Af9EeEc17A30E89aff821dB5856f",
-      "transactionHash": "0x8cd9d32cb9b94268571c6e4b1f1eee2b99380f1cf42e26ec07947a4930c54376"
+      "address": "0xDe1F43f210A95261136b1Cc92cDCd0c46D096255",
+      "transactionHash": "0x6875132168d8d963a33e4c0389f9697043082185aa0633ffa6e0b294610f7237"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-09-01T04:45:20.193Z",
+  "updatedAt": "2023-09-01T16:17:16.069Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
