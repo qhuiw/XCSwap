@@ -14,13 +14,16 @@ const init = async (platform) =>{
 
   const page = document.getElementById('page');
   const newpage = lib.createElementFromString(
-    `<div class="container" id="page2">
+`<div class="container" id="page2">
+    <div class="columns">
+    <div class="column is-four-fifths">
       <div class = "content" id="step1">
-        <h4>1. Connect Metamask wallet to ${platform}</h4>
-        <div class="field has-text-centered">
+        <h4>1. Connect Metamask Wallet to ${platform[0].toUpperCase()+platform.slice(1)}</h4>
+        <div class="box">
           <button class="button is-primary" id="connect">
             <b> Connect to Metamask </b> 
           </button>
+          <b class="is-pulled-right"> Account: NULL </b>
         </div>
       </div>
       <div class = "content" id="step2">
@@ -100,9 +103,26 @@ const init = async (platform) =>{
           <p><b> R account: </b></p>
         </div>
       </div>
-      
     </div>
-  `);  
+      
+    <div class="column">
+      <div class="box wrap" style="height:100%" id="actlog">
+        <div class="content">
+          <h4> Activity History </h4>
+        </div>
+        <div class="wrap">
+        ${lib.datetime() +"<br> User " + user + " Initialized contracts"}
+        </div>
+      </div>
+    </div>
+  </div> 
+
+  <div class= "box" id="hist">
+    <div class="content>
+      <h4> Transaction History </h4>
+    </div> 
+  </div>
+</div>`);
 
   page.replaceWith(newpage);
 
@@ -185,7 +205,6 @@ const init = async (platform) =>{
           CheckTag
         </button>
       </div>
-
       </div>`);
       return mixerfield;
     }
@@ -217,8 +236,8 @@ const init = async (platform) =>{
 
   const isinX = document.getElementById('isin-button-X');
   const isinY = document.getElementById('isin-button-Y');
-  isinX.onclick = tx.isin.bind(null, true);
-  isinY.onclick = tx.isin.bind(null, false);
+  isinX.onclick = tx.isinAcc.bind(null, true);
+  isinY.onclick = tx.isinAcc.bind(null, false);
 
   const isinTagX = document.getElementById('isintag-button-X');
   isinTagX.onclick = tx.isinTagA;
@@ -354,7 +373,6 @@ const main = async () => {
       }
     }
   }
-  // const transaction = await web3.eth.getTransaction("0xe0e0dfff459135bea682d30cee0e29e022715beb0ee9d4c1c9ab4aa77d10c9ff");
 
   decoder.addABI(Mixer.abi);
 }

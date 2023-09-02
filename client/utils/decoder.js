@@ -28,14 +28,6 @@ function _addABI(abiArray) {
               .join(",") +
             ")"
         );
-        console.log(abi.name +
-          "(" +
-          abi.inputs
-            .map(_typeToString)
-            .join(",") +
-          ")");
-        console.log(abi.name , signature);
-        // const signature = abi.signature;
         if (abi.type === "event") {
           state.methodIDs[signature.slice(2)] = abi;
         } else {

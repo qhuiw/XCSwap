@@ -30,8 +30,23 @@ const rand = () => {
   return BigInt(Math.floor(Math.random() * max) + 1);
 } 
 
+const datetime = () => {
+  const today = new Date();
+  var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  var dateTime = date+' '+time;
+  return dateTime;
+}
+
+const log = (msg) => {
+  const el = document.getElementById("actlog");
+  el.appendChild(createElementFromString(`<p>${datetime()} <br> ${msg}</p>`));
+}
+
 module.exports = { 
   createElementFromString, 
   insertAfter, 
   net, img,
-  rand};
+  rand,
+  datetime, log
+};

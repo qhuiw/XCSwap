@@ -97,9 +97,11 @@ const connectWallet = async () => {
   btn.innerHTML = "<b>You are Connected!</b>";
   btn.classList.add("is-success");
   const acc = lib.createElementFromString(
-    "<p class='is-pulled-right'>Account: " + account + "</p>"
+    "<b class='is-pulled-right'>Account: " + account + "</b>"
   );
-  lib.insertAfter(acc, btn);
+  btn.nextElementSibling.replaceWith(acc);
+
+  lib.log(`User ${user} connected wallet at address ${account}`);
 }
 
 const inputHandler = async (b) => {
@@ -115,9 +117,10 @@ const inputHandler = async (b) => {
   b.onclick = null;
   b.innerHTML = "<b>Submitted!</b>";
   b.classList.add("is-success");
+  lib.log(`User ${user} submitted common inputs 
+  <br> valx: ${valx}, valy: ${valy}, T1: ${T1}, T2: ${T2}, T3: ${T3}, Tmax: ${Tmax}, s: ${s}
+  `);
 }
-
-
 
 const mint = async () => {
   if (ci == false) {
@@ -127,6 +130,7 @@ const mint = async () => {
 
   const valtk = user == 'A'? valx : valy;
   const tk = user == 'A'? x : y;
+  const name = user == 'A'? "x" : "y";
 
   const val = document.getElementById('mtinput').value;
   if (BigInt(val) != valtk) { 
@@ -141,13 +145,38 @@ const mint = async () => {
     alert(err.message);
     return;
   }
-  
+
   const tk_owner = await tk.methods.ownerOf(valtk).call();
   if (tk_owner != account) {
     alert("Minting failed");
     return;
   }
   alert("Minting successful");
+  lib.log(`User ${user} initiated Mint action: <br> minted ${valtk} ${name}`);
+
+  // try {
+  //   const wasAdded = await ethereum.request({
+  //     method: 'wallet_watchAsset',
+  //     params: {
+  //       type: 'ERC721',
+  //       options: {
+  //         address: tk.options.address,
+  //         tokenId: valtk,
+  //         symbol: name,
+  //         image: "https://foo.io/token-image.svg"
+  //       },
+  //     },
+  //   });
+  
+  //   if (wasAdded) {
+  //     console.log('User successfully added the token!');
+  //   } else {
+  //     console.log('User did not add the token.');
+  //   }
+  // } catch (error) {
+  //   console.log("here?"+ error);
+  // }
+  
 }
 
 const approve = async () => {
@@ -169,6 +198,7 @@ const approve = async () => {
     return;
   }
   alert("Approve successful");
+  lib.log(`User ${user} initiated Approve action: <br> approved account ${mixer.options.address} to have access to token ${user == 'A'? "x" : "y"} id ${valtk}`);
 }
 
 
@@ -192,9 +222,7 @@ const deposit = async () => {
   }
 
   const onetP = await pp.methods.onetAcc(attrP).call();
-
   const tx_dp = [onetP, attrP.slice(0,4)];
-
   const sig = await mixer.methods.deposit(tx_dp, attrP.slice(4)).call();
 
   try {
@@ -218,6 +246,9 @@ const deposit = async () => {
   } else {
     P_By = P;
   }
+
+  lib.log(`User ${user} initiated Deposit action: <br> deposited ${valtk} ${name} to Mixer ${name}`);
+
   const pacc = document.getElementById('pacc');
   pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Mixer ${name}</b></p>`));
 }
@@ -267,14 +298,17 @@ const withdraw = async (isX) => {
     return;
   }
   alert ("Withdraw successful");
-  const pacc = document.getElementById('pacc');
-  pacc.lastChild.remove();
 
   if (user == 'A') {
     if (isX) {attrP_Ax = null;} else {attrP_Ay = null;}
   } else {
     if (isX) {attrP_Bx = null;} else {attrP_By = null;}
   }
+
+  lib.log(`User ${user} initiated Withdraw action: <br> withdrew token ${name.toLowerCase()} id ${attrP[1]} from Mixer ${name}`);
+
+  const pacc = document.getElementById('pacc');
+  pacc.lastChild.remove();
 }
 
 const setupB = async () => {
@@ -311,8 +345,11 @@ const setupB = async () => {
   setupbutton.onclick = null;
   setupBsucc = true;
   
+  /// change here
   const sigbox = document.getElementById('sigbox');
   sigbox.appendChild(lib.createElementFromString(`<p>${encode}</p>`));
+
+  lib.log(`User ${user} transmitted setup signatures`);
 
   const racc = document.getElementById('racc');
   racc.appendChild(lib.createElementFromString(`<p>${R_By.X},<br>${R_By.Y}</p>`));
@@ -351,8 +388,11 @@ const setupA = async () => {
   setupbutton.onclick = null;
   setupAsucc = true;
 
+  /// change here
   const sigbox = document.getElementById('sigbox');
   sigbox.appendChild(lib.createElementFromString(`<p>${encode}</p>`));
+
+  lib.log(`User ${user} transmitted setup signatures`); 
 
   const eacc = document.getElementById('eacc');
   E_Ay = await pp.methods.com([tcomE_Ay, [...ocomE_Ay]]).call();
@@ -363,6 +403,7 @@ const setupA = async () => {
 }
 
 const verify = async () => {
+  /// change here
   const encode = document.getElementById('verify').value;
   const decode = JSON.parse(atob(encode));
 
@@ -401,6 +442,8 @@ const verify = async () => {
   verifybutton.onclick = null;
   verifybutton.innerHTML = "<b>Verified!</b>";
   verifybutton.classList.add("is-success");
+
+  lib.log(`User ${user} verified setup signatures`);
 }
 
 const preswapB = async () => {
@@ -447,6 +490,8 @@ const preswapB = async () => {
   }
   alert ("PreSwap successful");
   attrP_By = null;
+  lib.log(`User ${user} initiated PreSwap action: <br> PreSwap ${P_By.X}, ${P_By.Y} to Mixer Y`);
+
   const pacc = document.getElementById('pacc');
   pacc.lastChild.remove();
 }
@@ -495,6 +540,7 @@ const preswapA = async () => {
   }
   alert ("PreSwap successful");
   attrP_Ax = null;
+  lib.log(`User ${user} initiated PreSwap action: <br> PreSwap ${P_Ax.X}, ${P_Ax.Y} to Mixer X`);
 
   const pacc = document.getElementById('pacc');
   pacc.lastChild.remove();
@@ -573,6 +619,8 @@ const exchange = async () => {
     attrP_Bx = attrP;
   }
 
+  lib.log(`User ${user} initiated Exchange action: <br> exchanged ${Eacc.X}, ${Eacc.Y} to ${P.X}, ${P.Y}`);
+
   const eacc = document.getElementById('eacc');
   eacc.lastChild.remove();
   const racc = document.getElementById('racc');
@@ -634,14 +682,6 @@ const redeem = async (isX) => {
     return;
   }
   alert("Redeem successful");
-  const racc = document.getElementById('racc');
-  racc.lastChild.remove();
-  const eacc = document.getElementById('eacc');
-  eacc.lastChild.remove();
-
-  const pacc = document.getElementById('pacc');
-  const P = await pp.methods.Com(attrP).call();
-  pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Mixer ${name}</b></p>`));  
 
   if (isX) {
     R_Ax = null;
@@ -652,11 +692,22 @@ const redeem = async (isX) => {
     attrP_By = attrP;
     P_By = P;
   }
+
+  lib.log(`User ${user} initiated Redeem action: <br> redeemed ${Racc.X}, ${Racc.Y} to ${P.X}, ${P.Y}`);
+
+  const racc = document.getElementById('racc');
+  racc.lastChild.remove();
+  const eacc = document.getElementById('eacc');
+  eacc.lastChild.remove();
+
+  const pacc = document.getElementById('pacc');
+  const P = await pp.methods.Com(attrP).call();
+  pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Mixer ${name}</b></p>`));
 }
 
 var isinChecked = false; // use in exchange
 
-const isin = async (isX) => {
+const isinAcc = async (isX) => {
   const mixer = isX? mixerX : mixerY;
   const name = isX? "X" : "Y";
   const inputs = document.getElementById(`isin-input-${name}`).value.split(",").map(elt => elt.trim());
@@ -675,6 +726,8 @@ const isin = async (isX) => {
   }
   alert("E-account in pool, you may exchange");
   isinChecked = true;
+
+  lib.log(`User ${user} checked that E-account ${Eacc.X}, ${Eacc.Y} is in Mixer${name}'s pool`);
 
   if (user == 'A') {
     const skbox = document.getElementById('skbox');
@@ -702,6 +755,9 @@ const isinTagA = async () => {
   }
   alert("Tag in pool, you may exchange");
   isinTag = true;
+
+  lib.log(`User ${user} checked if tag corresponding to private key ${alpha[0]} is in MixerX's pool`);
+
 }
 
 const checkAlphaB = async () => {
@@ -715,6 +771,8 @@ const checkAlphaB = async () => {
   }
   alpha = alpha_input;
   alert ("Successful");
+
+  lib.log(`User ${user} checked that partner's private key is ${alpha_input}`);
 }
 
 const checkBetaA = async () => {
@@ -734,6 +792,8 @@ const checkBetaA = async () => {
   }
   beta = b;
   alert ("Successful");
+
+  lib.log(`User ${user} checked that partner's private key is ${b}`);
 }
 
 
@@ -748,6 +808,6 @@ module.exports = {
   setupB, setupA, verify,
   preswapB, preswapA,
   redeem, exchange,
-  isin, isinTagA,
+  isinAcc, isinTagA,
   checkAlphaB, checkBetaA
 };
