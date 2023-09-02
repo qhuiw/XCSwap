@@ -15,8 +15,8 @@ const init = async (platform) =>{
   const page = document.getElementById('page');
   const newpage = lib.createElementFromString(
 `<div class="container" id="page2">
-    <div class="columns">
-    <div class="column is-four-fifths">
+  <div class="columns">
+    <div class="column is-four-fifths" style="height:100%;">
       <div class = "content" id="step1">
         <h4>1. Connect Metamask Wallet to ${platform[0].toUpperCase()+platform.slice(1)}</h4>
         <div class="box">
@@ -106,12 +106,12 @@ const init = async (platform) =>{
     </div>
       
     <div class="column">
-      <div class="box wrap" style="height:100%" id="actlog">
+      <div class="box wrap" style="height:100%;" id="actlog">
         <div class="content">
           <h4> Activity History </h4>
         </div>
         <div class="wrap">
-        ${lib.datetime() +"<br> User " + user + " Initialized contracts"}
+        ${lib.datetime() +"<br> User " + user + " Initialized"}
         </div>
       </div>
     </div>
@@ -120,7 +120,7 @@ const init = async (platform) =>{
   <div class= "box" id="hist">
     <div class="content>
       <h4> Transaction History </h4>
-    </div> 
+    </div>
   </div>
 </div>`);
 
@@ -147,90 +147,42 @@ const init = async (platform) =>{
     const disabledBY = user == 'B' && !isX ? "disabled" : "";
     const disabledAX = user == 'A' && isX ? "disabled" : "";
     const disabledAY = user == 'A' && !isX ? "disabled" : "";
-    const mixerfield = lib.createElementFromString(
-      `<div>
-      <div class="field has-addons">
-        <div class="control is-expanded">
-          <input class="input" type="text" placeholder="Enter token value to deposit" ${disabledBX + disabledAY} id="dp-input-${name}">
-        </div>
-        <button class="btn btn-primary" id="deposit-button-${name}" ${disabledBX + disabledAY}>
-          Deposit
-        </button>
-      </div>
-      <div class="field has-addons">
-        <div class="control is-expanded">
-          <input class="input" type="text" placeholder="Enter P-account to withdraw" id="wd-input-${name}">
-        </div>
-        <button class="btn btn-primary" id="withdraw-button-${name}">
-          Withdraw
-        </button>
-      </div>
-      <div class="field has-addons">
-        <div class="control is-expanded">
-          <input class="input" type="text" placeholder="Enter P-account for preswap" ${disabledBX + disabledAY} id="ps-input-${name}">
-        </div>
-        <button class="btn btn-primary" id="preswap-button-${name}" ${disabledBX + disabledAY}>
-          PreSwap
-        </button>
-      </div>
-      <div class="field has-addons">
-        <div class="control is-expanded">
-          <input class="input" type="text" placeholder="Enter E-account for exchange"  ${disabledBY + disabledAX} id="ex-input-${name}">
-        </div>
-        <button class="btn btn-primary" id="exchange-button-${name}" ${disabledBY + disabledAX}>
-          Exchange
-        </button>
-      </div>
-      <div class="field has-addons">
-        <div class="control is-expanded">
-          <input class="input" type="text" placeholder="Enter R-account for redeem" ${disabledBX + disabledAY} id="rd-input-${name}">
-        </div>
-        <button class="btn btn-primary" id="redeem-button-${name}" ${disabledBX + disabledAY}>
-          Redeem
-        </button>
-      </div>
-      <div class="field has-addons">
-        <div class="control is-expanded">
-          <input class="input" type="text" placeholder="Enter E-account for checking" ${disabledBY + disabledAX} id="isin-input-${name}">
-        </div>
-        <button class="btn btn-primary" id="isin-button-${name}" ${disabledBY + disabledAX}>
-          CheckAcc
-        </button>
-      </div>
-      <div class="field has-addons">
-        <div class="control is-expanded">
-          <input class="input" type="text" placeholder="Enter private key for checking" ${disabledBX + disabledBY + disabledAY} id="isintag-input-${name}">
-        </div>
-        <button class="btn btn-primary" id="isintag-button-${name}" ${disabledBX + disabledBY + disabledAY}>
-          CheckTag
-        </button>
-      </div>
-      </div>`);
-      return mixerfield;
-    }
+    const mixerfield = document.createElement("div");
+    mixerfield.appendChild(lib.createField(name, disabledBX + disabledAY, "dp", "Deposit", "Enter token value to deposit"));
+    mixerfield.appendChild(lib.createField(name, "", "wd", "Withdraw", "Enter P-account to withdraw"));
+    mixerfield.appendChild(lib.createField(name, disabledBX + disabledAY, "ps", "PreSwap", 
+    "Enter P-account for preswap"));
+    mixerfield.appendChild(lib.createField(name, disabledBY + disabledAX, "ex", "Exchange",
+    "Enter E-account for exchange"));
+    mixerfield.appendChild(lib.createField(name, disabledBX + disabledAY, "rd", "Redeem", "Enter R-account for redeem"));
+    mixerfield.appendChild(lib.createField(name, disabledBY + disabledAX, "isin", "CheckAcc", "Enter E-account for checking"));
+    mixerfield.appendChild(lib.createField(name, disabledBX + disabledBY + disabledAY, "isintag", "CheckTag","Enter private key for checking"));
+
+    return mixerfield;
+  }
   const mixerXbox = document.getElementById('mixerX');
   const mixerYbox = document.getElementById('mixerY');
   mixerXbox.appendChild(createMixerfield(true));
   mixerYbox.appendChild(createMixerfield(false));
 
-  const dpX = document.getElementById('deposit-button-X');
-  const dpY = document.getElementById('deposit-button-Y');
+  const dpX = document.getElementById('dp-button-X');
+  const dpY = document.getElementById('dp-button-Y');
   dpX.onclick = tx.deposit;
   dpY.onclick = tx.deposit;
-  const psX = document.getElementById('preswap-button-X');
-  const psY = document.getElementById('preswap-button-Y');
+  const psX = document.getElementById('ps-button-X');
+  const psY = document.getElementById('ps-button-Y');
   psX.onclick = tx.preswapA;
   psY.onclick = tx.preswapB;
-  const wdX = document.getElementById('withdraw-button-X');
-  const wdY = document.getElementById('withdraw-button-Y');
+  const wdX = document.getElementById('wd-button-X');
+  const wdY = document.getElementById('wd-button-Y');
   wdX.onclick = tx.withdraw.bind(null, true);
   wdY.onclick = tx.withdraw.bind(null, false);
-  const reX = document.getElementById('redeem-button-X');
-  const reY = document.getElementById('redeem-button-Y');
+  const reX = document.getElementById('rd-button-X');
+  const reY = document.getElementById('rd-button-Y');
   reX.onclick = tx.redeem.bind(null, true);
   reY.onclick = tx.redeem.bind(null, false);
-  const exX = document.getElementById('exchange-button-X');
-  const exY = document.getElementById('exchange-button-Y');
+  const exX = document.getElementById('ex-button-X');
+  const exY = document.getElementById('ex-button-Y');
   exX.onclick = tx.exchange;
   exY.onclick = tx.exchange;
 

@@ -43,8 +43,21 @@ const log = (msg) => {
   el.appendChild(createElementFromString(`<p>${datetime()} <br> ${msg}</p>`));
 }
 
+const createField = (name, disabled, id, buttonName, placeholder) => {
+  return createElementFromString(
+    `<div class="field has-addons">
+      <div class="control is-expanded">
+        <input class="input" type="text" placeholder="${placeholder}" id="${id}-input-${name}" ${disabled}>
+      </div>
+      <button class="btn btn-primary" id="${id}-button-${name}" ${disabled}>
+        ${buttonName}
+      </button>
+    </div>`);
+}
+
 module.exports = { 
   createElementFromString, 
+  createField,
   insertAfter, 
   net, img,
   rand,
