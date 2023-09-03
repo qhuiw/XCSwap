@@ -2,6 +2,7 @@ const alt_bn128 = artifacts.require("alt_bn128");
 const Mixer = artifacts.require("Mixer");
 const TokenRegistrar = artifacts.require("TokenRegistrar");
 const TokenNFT = artifacts.require("TokenNFT");
+const TokenFT = artifacts.require("TokenFT");
 
 const SoKdp = artifacts.require("SoKdp");
 const SoKwd = artifacts.require("SoKwd");
@@ -31,13 +32,18 @@ module.exports = async function(deployer, _, accounts){
   const reg_addr = TokenRegistrar.networks[baseNid].address;
   
   /* Create Mixer */
-  await deployer.deploy(Mixer, reg_addr, pp_addr, SoKdp.address, SoKwd.address, SoKsp.address, {overwrite: overwritable});
+  await deployer.deploy(Mixer, reg_addr, pp_addr, SoKdp.address, SoKwd.address, SoKsp.address);
 
-  /* Create NFT x */
-  await deployer.deploy(TokenNFT, "x", "x", {overwrite: overwritable});
+  /* Create NFT */
+  await deployer.deploy(TokenNFT, "y", "y");
 
-  /* register token x */
+  /* Create FT */
+  await deployer.deploy(TokenFT, "b", "b", {overwrite: overwritable});
+
+  /* register token */
   const reg = await TokenRegistrar.at(reg_addr);
-  const x = await TokenNFT.deployed();
-  await reg.register(x.address);
+  const y = await TokenNFT.deployed();
+  const b = await TokenFT.deployed();
+  await reg.register(y.address);
+  await reg.register(b.address);
 }

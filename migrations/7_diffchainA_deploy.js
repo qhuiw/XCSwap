@@ -8,7 +8,7 @@ const SoKdp = artifacts.require("SoKdp");
 const SoKwd = artifacts.require("SoKwd");
 const SoKsp = artifacts.require("SoKsp");
 
-const overwritable = true;
+const overwritable = false;
 
 const argv = process.argv.slice(2)[0].split(" ");
 
@@ -32,16 +32,18 @@ module.exports = async function(deployer, _, accounts){
   const reg_addr = TokenRegistrar.networks[baseNid].address;
   
   /* Create Mixer */
-  await deployer.deploy(Mixer, reg_addr, pp_addr, SoKdp.address, SoKwd.address, SoKsp.address, {overwrite: overwritable});
+  await deployer.deploy(Mixer, reg_addr, pp_addr, SoKdp.address, SoKwd.address, SoKsp.address);
 
-  /* Create NFT */
-  await deployer.deploy(TokenNFT, "y", "y", {overwrite: overwritable});
+  /* Create NFT x */
+  await deployer.deploy(TokenNFT, "x", "x");
 
   /* Create FT */
-  await deployer.deploy(TokenFT, "b", "b", {overwrite: overwritable});
+  await deployer.deploy(TokenFT, "a", "a", {overwrite: overwritable});
 
-  /* register token */
+  /* register token x */
   const reg = await TokenRegistrar.at(reg_addr);
-  const tk = await TokenNFT.deployed();
-  await reg.register(tk.address);
+  const x = await TokenNFT.deployed();
+  const a = await TokenFT.deployed();
+  await reg.register(x.address);
+  await reg.register(a.address);
 }

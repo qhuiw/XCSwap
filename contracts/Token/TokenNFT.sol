@@ -19,7 +19,7 @@ contract TokenNFT is Token, ERC721 {
     return super.symbol();
   }
 
-  function approve(address to, uint256 tokenId) public override(ERC721, Token){
+  function approve(address to, uint256 tokenId) public override(ERC721){
     ERC721.approve(to, tokenId);
   }
 
@@ -38,26 +38,18 @@ contract TokenNFT is Token, ERC721 {
   /// @param to account address
   /// @param tokenId token ID
   function mint(address to, uint256 tokenId) public override {
-    // if (_exists(tokenId)) revert("Mint: Token ID exists");
-    // if (to == address(0)) revert("Mint: Invalid receiver address");
-    // _balances[to] += 1;
-    // _owners[tokenId] = to;
     ERC721._mint(to, tokenId);
   }
 
   function ownerOf(uint256 tokenId) public view override returns (address) {
-    // return _owners[tokenId];
     return ERC721.ownerOf(tokenId);
   }
 
   function balanceOf(address owner) public view override returns (uint256) {
-  //   if (owner == address(0)) revert ("Invalid Owner");
-  //   return _balances[owner];
     return ERC721.balanceOf(owner);
   }
 
   function _exists(uint256 tokenId) internal view override returns (bool) {
-    // return _owners[tokenId] != address(0);
     return ERC721._exists(tokenId);
   }
 }

@@ -8,13 +8,14 @@ const MFArt = require("../../build/contracts/MixerFactory.json");
 const SoKab = require("../../build/contracts/SoKab.json");
 const SoKba = require("../../build/contracts/SoKba.json");
 const NFTArt = require("../../build/contracts/TokenNFT.json");
+const FTArt = require("../../build/contracts/TokenFT.json");
 const NFTFArt = require("../../build/contracts/NFTFactory.json");
 const TokenReg = require("../../build/contracts/TokenRegistrar.json");
 
 
 var web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y;
 var valx, valy, T1, T2, T3, Tmax, s;
-var account, user;
+var account, user, tktype;
 var ci = false;
 
 var attrP_By, P_By, attrP_Bx;
@@ -44,7 +45,11 @@ const set_user = (u) => {
   user = u;
 }
 
-const setup = async (window, nids, baseNid) => {
+const set_tkty = (t) => {
+  tktype = t;
+}
+
+const setup = async (window, mnid, pnid, baseNid) => {
   if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
     try{
       web3 = new Web3(window.ethereum);
@@ -54,11 +59,8 @@ const setup = async (window, nids, baseNid) => {
     }
   }
 
-  const mnid = nids[0];
-  const pnid = nids[1];
-
-  const xnid = (user == 'A')? nids[0] : nids[1];
-  const ynid = (user == 'A')? nids[1] : nids[0];
+  const xnid = (user == 'A')? mnid : pnid;
+  const ynid = (user == 'A')? pnid : mnid;
 
   gasPrice = await web3.eth.getGasPrice();
 
@@ -217,6 +219,36 @@ const approve = async () => {
   lib.log(`User ${user} initiated Approve action: <br> approved account ${mixer.options.address} to have access to token ${tknames[user]} value ${valtk}`);
 }
 
+const checkBal = async (isX) => {
+  const tk = isX? x : y;
+  const name = isX? "X" : "Y";
+
+  const input = document.getElementById(`bal-input-${name}`).value.trim();
+
+  const baltag = document.getElementById(`bal-${name}`);
+
+  const str = tktype == "ERC721"? "Owner" : "Balance";
+
+  var output;
+
+
+  try {
+    if (tktype == "ERC721") {
+      output = await tk.methods.ownerOf(input).call();
+    } else {
+      output = await tk.methods.balanceOf(input).call();
+    }
+  } catch(err) {
+    baltag.innerHTML = `<b>${str}: </b>`;
+    alert(err.message);
+    return;
+  }
+
+  lib.log(`User ${user} initiated Check ${str} action at token ${tknames[name]}: checked ${str} of ${input} to be ${output}`)
+
+  baltag.innerHTML = `<b>${str}: ${output}</b>`;
+}
+
 
 const deposit = async () => {
   const name = user == 'A'? "X" : "Y";
@@ -250,10 +282,12 @@ const deposit = async () => {
     return;
   }
 
-  const tk_ownerAfter = await tk.methods.ownerOf(valtk).call();
-  if (tk_ownerAfter != mixer.options.address) {
-    alert("Deposit failed");
-    return;
+  if (tktype == "ERC721") {
+    const tk_ownerAfter = await tk.methods.ownerOf(valtk).call();
+    if (tk_ownerAfter != mixer.options.address) {
+      alert("Deposit failed");
+      return;
+    }
   }
   alert("Deposit successful");
 
@@ -787,13 +821,12 @@ const checkBetaA = async () => {
 
 
 module.exports = { 
-  set_user, setup, 
+  set_user, set_tkty,
+  setup, 
   connectWallet,
   inputHandler,
-  mint,
-  approve,
-  deposit,
-  withdraw,
+  mint, approve, checkBal,
+  deposit, withdraw,
   setupB, setupA, verify,
   preswap, redeem, exchange,
   isinAcc, isinTagA,

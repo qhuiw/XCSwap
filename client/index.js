@@ -6,7 +6,7 @@ const PPArt = require("../build/contracts/PubParam.json");
 
 /* state */
 var web3, account;
-var user;
+var user, tktype;
 
 var pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y;
 
@@ -21,7 +21,7 @@ const init = async (platform) =>{
   const newpage = lib.createElementFromString(
 `<div class="container" id="page2">
   <div class="columns">
-    <div class="column is-four-fifths" style="height:100%;">
+    <div class="column is-four-fifths">
       <div class = "content" id="step1">
         <h4>1. Connect Metamask Wallet to ${platform[0].toUpperCase()+platform.slice(1)}</h4>
         <div class="box">
@@ -44,7 +44,7 @@ const init = async (platform) =>{
       </div>
       <div class = "content" id="step3">
         <h4>3. Mint your token </h4>
-        <box class="box" id="mintbox">
+        <div class="box" id="mtkbox">
           <h4> Token ${tknames[user].toUpperCase()} </h4>
           <p> Address : ${user == 'A'? x.options.address : y.options.address} </p>
           <div class="field has-addons">
@@ -55,7 +55,6 @@ const init = async (platform) =>{
             <b> Mint </b>
             </button>
           </div>
-
           <div class="field has-addons">
             <div class="control is-expanded">
               <input class="input" type="text" placeholder="Enter token value to approve (valx for A, valy for B)" id=approvety>
@@ -67,8 +66,12 @@ const init = async (platform) =>{
             <b> Approve </b>
             </button>
           </div>
+        </div>
 
-        </box>
+        <div class="box" id="ptkbox">
+          <h4> Token ${tknames[user == 'A' ? 'B' : 'A'].toUpperCase()} </h4>
+          <p> Address : ${user == 'A'? y.options.address : x.options.address} </p>
+        </div>
       </div>
 
       <div class="content mt-2">
@@ -129,21 +132,23 @@ const init = async (platform) =>{
 
   page.replaceWith(newpage);
 
-  const step3 = document.getElementById('step3');
-  const setupfield = lib.createElementFromString(
-    `<div class="box wrap" id="sigbox">
-      <button class="button is-primary" id="setupbutton">
-        <b> Send encoded commitments and signature to your partner: </b>
-      </button>
-    </div>`);
-  const verifyfield = lib.createElementFromString(
-    `<div class="box mb-5">
-      <textarea class="textarea" placeholder="Paste your partner's encoded commitments and signature here" id="verify"></textarea>
-      <br>
-      <button class="button is-primary is-pulled-right" id="verifybutton">
-        <b> Verify </b>
-      </button> <br>
-    </div>`);
+  
+  const mtkbox = document.getElementById('mtkbox');
+  const ptkbox = document.getElementById('ptkbox');
+  const mname = user == 'A' ? 'X' : 'Y';
+  const pname = user == 'A' ? 'Y' : 'X';
+  const btnstr = tktype == "ERC20" ? "Balance" : "Owner";
+  const placeholder = tktype == "ERC20" ? "Enter account to check balance" : "Enter token value to check owner";
+  mtkbox.appendChild(lib.createField(mname, "", "bal", btnstr+"Of", placeholder));
+  ptkbox.appendChild(lib.createField(pname, "", "bal", btnstr+"Of", placeholder));
+  mtkbox.appendChild(lib.createElementFromString(`<p id="bal-${mname}"> <b> ${btnstr}: </b> </p>`));
+  ptkbox.appendChild(lib.createElementFromString(`<p id="bal-${pname}"> <b> ${btnstr}: </b> </p>`));
+
+  const balX = document.getElementById('bal-button-X');
+  const balY = document.getElementById('bal-button-Y');
+  balX.onclick = tx.checkBal.bind(null, true);
+  balY.onclick = tx.checkBal.bind(null, false);
+  
   const createMixerfield = (isX) => {
     const name = isX ? "X" : "Y";
     const disabledBX = user == 'B' && isX ? "disabled" : "";
@@ -196,6 +201,24 @@ const init = async (platform) =>{
 
   const isinTagX = document.getElementById('isintag-button-X');
   isinTagX.onclick = tx.isinTagA;
+
+
+  const step3 = document.getElementById('step3');
+  const setupfield = lib.createElementFromString(
+    `<div class="box wrap" id="sigbox">
+      <button class="button is-primary" id="setupbutton">
+        <b> Send encoded commitments and signature to your partner: </b>
+      </button>
+    </div>`);
+  const verifyfield = lib.createElementFromString(
+    `<div class="box mb-5">
+      <textarea class="textarea" placeholder="Paste your partner's encoded commitments and signature here" id="verify"></textarea>
+      <br>
+      <button class="button is-primary is-pulled-right" id="verifybutton">
+        <b> Verify </b>
+      </button> <br>
+    </div>`);
+
 
   const skcom = document.getElementById('offchain');
   var step4, step5, skbox;
@@ -281,8 +304,7 @@ const init = async (platform) =>{
 
 const main = async () => {
 
-  var chains = [null,null];
-  var nids = [null,null];
+  var mnid, pnid;
   var baseNid;
 
   const getOption = async (el, id) => {
@@ -304,31 +326,31 @@ const main = async () => {
       tx.set_user(user);
     }
   }
+
+  const t = document.getElementsByName('tkty');
+  for (const tk of t) {
+    tk.onclick = () => {
+      tktype = tk.value;
+      tx.set_tkty(tktype);
+    }
+  }
+
   const next = document.getElementById('next');
   next.onclick = async () => {
-    chains[0] = document.getElementById('mnet').value;
-    chains[1] = document.getElementById('pnet').value;
-    nids[0] = lib.net[chains[0]];
-    nids[1] = lib.net[chains[1]];
-    baseNid = user == "A"? nids[0] : nids[1];
+    const mchain = document.getElementById('mnet').value;
+    mnid = lib.net[mchain];
+    pnid = lib.net[document.getElementById('pnet').value];
+    baseNid = user == "A"? mnid : pnid;
 
-    if (chains[0] == null || chains[1] == null || user == null) {
+    if (mnid == null || pnid == null || user == null || tktype == null) {
       alert("Please select all options");
       return;
     }
 
-    [web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y] = await tx.setup(window, nids, baseNid);
+    [web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y] = await tx.setup(window, mnid, pnid, baseNid);
 
-    await init(chains[0]);
-    next.style.visibility = "hidden";
-    next.onclick = () => {
-      if (ci == false) {
-        alert("Please submit common inputs");
-        return;
-      }
-    }
+    await init(mchain);
   }
-
   decoder.addABI(Mixer.abi);
 }
 

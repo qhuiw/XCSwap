@@ -79,30 +79,50 @@
     
 
     <div class="box">
-    <div class="content">
-      <h4>Are you setting up first?</h4>
+      <div class="content">
+        <h4>Are you setting up first?</h4>
+      </div>
+      <div class="field is-grouped is-grouped-centered">
+        <label class="box control">
+          <input type="radio" name="r" value="B">
+          <b>Yes</b>
+        </label>
+        <label class="box control">
+          <input type="radio" name="r" value="A">
+          <b>No</b>
+        </label>
+      </div>
     </div>
-    <div class="field is-grouped is-grouped-centered">
-      <label class="box control">
-        <input type="radio" name="r" value="B">
-        <b>Yes</b>
-      </label>
-      <label class="box control">
-        <input type="radio" name="r" value="A">
-        <b>No</b>
-      </label>
+
+
+    <div class="box">
+      <div class="content">
+        <h4>Choose your intended token type for trading</h4>
+      </div>
+      <div class="field is-grouped is-grouped-centered">
+        <label class="box control">
+          <input type="radio" name="tkty" value="ERC20">
+          <b>ERC20</b>
+        </label>
+        <label class="box control">
+          <input type="radio" name="tkty" value="ERC721">
+          <b>ERC721</b>
+        </label>
+      </div>
     </div>
-  </div>
+
+    <div class="container mt-4">
+      <button class="button is-medium is-primary is-light is-pulled-right" id="next">
+        <span>
+          <strong>Next</strong>
+        </span>
+        <i>→</i>
+      </button>
+    </div>
+
+
   </div>
   
-  <div class="container mt-4">
-    <button class="button is-medium is-primary is-light is-pulled-right" id="next">
-      <span>
-        <strong>Next</strong>
-      </span>
-      <i>→</i>
-    </button>
-  </div>
 
   <script type = "module" src="index.js"></script>
 

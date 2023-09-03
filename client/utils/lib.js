@@ -50,7 +50,7 @@ const createField = (name, disabled, id, buttonName, placeholder) => {
         <input class="input" type="text" placeholder="${placeholder}" id="${id}-input-${name}" ${disabled}>
       </div>
       <button class="btn btn-primary" id="${id}-button-${name}" ${disabled}>
-        ${buttonName}
+        <b>${buttonName}</b>
       </button>
     </div>`);
 }

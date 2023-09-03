@@ -20,24 +20,9 @@ const RelayRegistry = artifacts.require("RelayRegistry");
 
 const overwritable = true;
 
-/* for same chain transaction */
-
 module.exports = async function(deployer, _, accounts){
 
-  await deployer.deploy(MixerFactory, {overwrite: overwritable});
   await deployer.deploy(NFTFactory, {overwrite: overwritable});
-  
-  /* Create MixerX, Y */
-  const mf = await MixerFactory.deployed();
-
-  await deployer.deploy(Mixer, TokenRegistrar.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address, {overwrite: overwritable});
-  const mixerX = await Mixer.deployed();
-  await mf.addMixer(mixerX.address);
-
-  await deployer.deploy(Mixer, TokenRegistrar.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address, {overwrite: overwritable});
-  const mixerY = await Mixer.deployed();
-  await mf.addMixer(mixerY.address);
-
 
   /* Create NFTs x, y by Factory pattern */
   const nftf = await NFTFactory.deployed();
