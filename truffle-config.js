@@ -54,12 +54,11 @@ module.exports = {
       networkCheckTimeout: 10000000, // timeout
       pollingInterval:30000, 
       provider: () => {
-        // return new HDWalletProvider(mnemonic, "https://public-en-baobab.klaytn.net/");
         return new HDWalletProviderK(mnemonic, "https://api.baobab.klaytn.net:8651");
       },
-      network_id: "1001", //Klaytn baobab testnet
-      gas: "8500000",
-      gasPrice: null,
+      network_id: "1001",
+      // gas: "8500000",
+      gas : 6721975,
       timeoutBlocks: 200,
       skipDryRun: true
     },

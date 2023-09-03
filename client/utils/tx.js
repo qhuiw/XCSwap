@@ -30,6 +30,7 @@ var alpha, pkx, tcomE_Bx, ocomE_Ay, R_Ax;
 var setupAsucc = false;
 const ring_size = 16;
 
+var gasPrice;
 
 const set_user = (u) => {
   user = u;
@@ -49,6 +50,8 @@ const setup = async (window, nids, baseNid) => {
 
   const xnid = (user == 'A')? mnid : pnid;
   const ynid = (user == 'A')? pnid : mnid;
+
+  gasPrice = await web3.eth.getGasPrice();
 
   // change to base chain 
   pp = new web3.eth.Contract(PPArt.abi, PPArt.networks[baseNid].address);
@@ -101,7 +104,7 @@ const connectWallet = async () => {
   );
   btn.nextElementSibling.replaceWith(acc);
 
-  lib.log(`User ${user} connected wallet at address ${account}`);
+  lib.log(`User ${user} connected to wallet at address ${account}`);
 }
 
 const inputHandler = async (b) => {
@@ -117,8 +120,7 @@ const inputHandler = async (b) => {
   b.onclick = null;
   b.innerHTML = "<b>Submitted!</b>";
   b.classList.add("is-success");
-  lib.log(`User ${user} submitted common inputs 
-  <br> valx: ${valx}, valy: ${valy}, T1: ${T1}, T2: ${T2}, T3: ${T3}, Tmax: ${Tmax}, s: ${s}
+  lib.log(`User ${user} submitted common inputs: valx: ${valx}, valy: ${valy}, T1: ${T1}, T2: ${T2}, T3: ${T3}, Tmax: ${Tmax}, s: ${s}
   `);
 }
 
@@ -140,7 +142,7 @@ const mint = async () => {
 
   try {
     await tk.methods.mint(account, valtk).send({
-      from: account, gas: 6721975, gasPrice: 20000000000});
+      from: account, gas: 6721975, gasPrice: gasPrice});
   } catch(err) {
     alert(err.message);
     return;
@@ -192,7 +194,7 @@ const approve = async () => {
     return;
   }
   try {
-    await tk.methods.approve(mixer.options.address, valtk).send({from : account, gas: 6721975, gasPrice: 20000000000});
+    await tk.methods.approve(mixer.options.address, valtk).send({from : account, gas: 6721975, gasPrice: gasPrice});
   } catch(err) {
     alert(err.message);
     return;
@@ -212,6 +214,7 @@ const deposit = async () => {
   const dpinput = document.getElementById(`dp-input-${name}`).value;
   if (BigInt(dpinput) != valtk) {
     alert("Please input correct value");
+    return;
   }
   const attrP = [tytk, valtk, 0, Tmax, rand(), rand(), rand()];
 
@@ -227,7 +230,7 @@ const deposit = async () => {
 
   try {
     await mixer.methods.process_dp(tx_dp, sig).send({
-      from: account, gas: 6721975, gasPrice: 20000000000});
+      from: account, gas: 6721975, gasPrice: gasPrice});
   } catch(err) {
     alert(err.message);
     return;
@@ -292,7 +295,7 @@ const withdraw = async (isX) => {
 
   try {
     await mixer.methods.process_wd(tx_wd, sig).send({
-      from: account, gas: 6721975, gasPrice: 20000000000});
+      from: account, gas: 6721975, gasPrice: gasPrice});
   } catch(err) {
     alert(err.message);
     return;
@@ -483,7 +486,7 @@ const preswapB = async () => {
 
   try {
     await mixerY.methods.process_sp(tx_sp, sig).send({
-      from: account, gas: 6721975, gasPrice: 20000000000});
+      from: account, gas: 6721975, gasPrice: gasPrice});
   } catch(err) {
     alert(err.message);
     return;
@@ -533,7 +536,7 @@ const preswapA = async () => {
 
   try {
     await mixerX.methods.process_sp(tx_sp, sig).send({
-      from: account, gas: 6721975, gasPrice: 20000000000});
+      from: account, gas: 6721975, gasPrice: gasPrice});
   } catch(err) {
     alert(err.message);
     return;
@@ -601,7 +604,7 @@ const exchange = async () => {
 
   try {
     await mixer.methods.process_sp(tx_sp, sig).send({
-      from: account, gas: 6721975, gasPrice: 20000000000});
+      from: account, gas: 6721975, gasPrice: gasPrice});
   } catch(err) {
     alert(err.message);
     return;
@@ -675,7 +678,7 @@ const redeem = async (isX) => {
 
   try {
     await mixer.methods.process_sp(tx_sp, sig).send({
-      from: account, gas: 6721975, gasPrice: 20000000000});
+      from: account, gas: 6721975, gasPrice: gasPrice});
   }
   catch(err) {
     alert(err.message);

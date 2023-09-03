@@ -1,17 +1,28 @@
-## Dependencies
+### Dependencies
 
 ```
-npm i bulma node-sass bootstrap parcel @truffle/contract http-server
+npm install bulma bootstrap parcel websocket
 ```
 
-## Command
-Go to the image folder and start http-server by 
+### Command
+<!-- Go to the image folder and start http-server by 
 ```
 http-server ./
-```
+``` -->
 ```
 npm run start
 ```
+The script will ask [`parceljs.org`](https://parceljs.org/) generate a SSL certificate for HTTPS connection to localhost. For mac user, you might need to [add the certificate file](https://support.apple.com/en-au/guide/keychain-access/kyca2431/mac) `xx.crt` to `Keychain Access` under `System Keychains` and change under the `Trust` section the permissions to `always trust`.
+
+Or download a local CA (e.g. [`mkcert`](https://github.com/FiloSottile/mkcert)) to certify domain names. On mac, open terminal, and 
+```
+brew install mkcert
+brew install nss # if you use Firefox
+mkcert localhost 127.0.0.1
+```
+
+### Instructions
+
 
 
 <!-- 1) Open your terminal and type

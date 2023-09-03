@@ -11666,6 +11666,12 @@
     "version": "0.8.19+commit.7dd6d404.Emscripten.clang"
   },
   "networks": {
+    "1001": {
+      "events": {},
+      "links": {},
+      "address": "0xDa421cC3541Df8347d85f98bf72C974bB1b390a4",
+      "transactionHash": "0x1c12410d1be176a2385574bd625f5cca0bf39da6cdb9634ae810ba8b556e6a99"
+    },
     "5777": {
       "events": {},
       "links": {},
@@ -11674,7 +11680,7 @@
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-09-01T16:52:33.566Z",
+  "updatedAt": "2023-09-03T05:58:59.607Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "arithmetic operations over elliptic curve alt_bn128",

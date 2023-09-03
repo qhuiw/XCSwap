@@ -3,6 +3,6 @@ node_modules/
 .deps/
 client/dist/
 client/.parcel-cache/
-client-app/
+client/.cert/
 client/node_modules1/
 .env

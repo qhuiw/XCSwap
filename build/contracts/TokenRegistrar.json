@@ -4863,6 +4863,12 @@
     "version": "0.8.19+commit.7dd6d404.Emscripten.clang"
   },
   "networks": {
+    "1001": {
+      "events": {},
+      "links": {},
+      "address": "0xf970F65c5b9B1c5521AdfE9b5acaAD38BE76c772",
+      "transactionHash": "0x079ebdf104b6c6d147012628c287d8b32b87eac751292a50cf9a08862a09781f"
+    },
     "5777": {
       "events": {},
       "links": {},
@@ -4871,7 +4877,7 @@
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-09-01T16:52:33.644Z",
+  "updatedAt": "2023-09-03T05:58:59.675Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Token Registrar",

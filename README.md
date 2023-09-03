@@ -13,7 +13,9 @@ Sepolia: {
   gas: 4465030,
 }
 ```
-Provide your MNEMONIC and INFURA_API_KEY in `.env` file, make sure you gitignore for privacy protection
+Provide your MNEMONIC and INFURA_API_KEY in `.env` file, make sure you gitignore for privacy protection.
+
+To use local development blockchain [Ganache](https://trufflesuite.com/ganache/), download and configure the project link to `truffle-config.js`.
 
 ### Wallet Configuration
 If you would like to use the local development blockchain Ganache, after launching the blockchain, import one account into your wallet for swap.

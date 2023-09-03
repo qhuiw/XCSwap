@@ -18,7 +18,7 @@ const SoKab = artifacts.require("SoKab");
 const PubParam = artifacts.require("PubParam");
 const RelayRegistry = artifacts.require("RelayRegistry");
 
-const overwritable = true;
+const overwritable = false;
 
 module.exports = async function(deployer, _, accounts){
   
@@ -53,16 +53,16 @@ module.exports = async function(deployer, _, accounts){
 
   await deployer.deploy(TokenRegistrar, {overwrite: overwritable});
   await deployer.deploy(RelayRegistry, {overwrite: overwritable});
-  await deployer.deploy(MixerFactory, {overwrite: overwritable});
-  await deployer.deploy(NFTFactory, {overwrite: overwritable});
+  await deployer.deploy(MixerFactory);
+  await deployer.deploy(NFTFactory);
   
   /* Create MixerX, Y */
   const mf = await MixerFactory.deployed();
-  await deployer.deploy(Mixer, TokenRegistrar.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address, {overwrite: overwritable});
+  await deployer.deploy(Mixer, TokenRegistrar.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address);
   const mixerX = await Mixer.deployed();
   await mf.addMixer(mixerX.address);
 
-  await deployer.deploy(Mixer, TokenRegistrar.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address, {overwrite: overwritable});
+  await deployer.deploy(Mixer, TokenRegistrar.address, PubParam.address, SoKdp.address, SoKwd.address, SoKsp.address);
   const mixerY = await Mixer.deployed();
   await mf.addMixer(mixerY.address);
 

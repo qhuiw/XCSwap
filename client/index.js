@@ -110,15 +110,13 @@ const init = async (platform) =>{
         <div class="content">
           <h4> Activity History </h4>
         </div>
-        <div class="wrap">
-        ${lib.datetime() +"<br> User " + user + " Initialized"}
-        </div>
+        <p>${lib.datetime() +"<br> User " + user + " Initialized"}</p>
       </div>
     </div>
   </div> 
-
+  
   <div class= "box" id="hist">
-    <div class="content>
+    <div class="content">
       <h4> Transaction History </h4>
     </div>
   </div>
