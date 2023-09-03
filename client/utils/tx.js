@@ -20,8 +20,9 @@ var ci = false;
 var attrP_By, P_By, attrP_Bx;
 var attrP_Ax, P_Ax, attrP_Ay;
 
-var E_Bx;
-var E_Ay;
+var E_Bx, attrR_By;
+var E_Ay, attrR_Ax;
+var attrE;
 
 var beta, pky, tcomE_Ay, ocomE_Bx, R_By;
 var setupBsucc = false;
@@ -31,6 +32,13 @@ var setupAsucc = false;
 const ring_size = 16;
 
 var gasPrice;
+
+var tknames = {
+  "A" : "",
+  "B" : "",
+  "X" : "",
+  "Y" : ""
+};
 
 const set_user = (u) => {
   user = u;
@@ -42,14 +50,15 @@ const setup = async (window, nids, baseNid) => {
       web3 = new Web3(window.ethereum);
     } catch(err) {
       alert("Please install metamask");
+      return;
     }
   }
 
   const mnid = nids[0];
   const pnid = nids[1];
 
-  const xnid = (user == 'A')? mnid : pnid;
-  const ynid = (user == 'A')? pnid : mnid;
+  const xnid = (user == 'A')? nids[0] : nids[1];
+  const ynid = (user == 'A')? nids[1] : nids[0];
 
   gasPrice = await web3.eth.getGasPrice();
 
@@ -82,6 +91,11 @@ const setup = async (window, nids, baseNid) => {
 
   ty_x = BigInt(await reg.methods.getTy(tokenAddrs[0]).call());
   ty_y = BigInt(await reg.methods.getTy(tokenAddrs[1]).call());
+
+  tknames["A"] = await x.methods.name().call();
+  tknames["B"] = await y.methods.name().call();
+  tknames["X"] = await x.methods.name().call();
+  tknames["Y"] = await y.methods.name().call();
 
   return [web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y];
 }
@@ -132,7 +146,7 @@ const mint = async () => {
 
   const valtk = user == 'A'? valx : valy;
   const tk = user == 'A'? x : y;
-  const name = user == 'A'? "x" : "y";
+  const name = await tk.methods.name().call();
 
   const val = document.getElementById('mtinput').value;
   if (BigInt(val) != valtk) { 
@@ -154,30 +168,30 @@ const mint = async () => {
     return;
   }
   alert("Minting successful");
-  lib.log(`User ${user} initiated Mint action: <br> minted ${valtk} ${name}`);
+  lib.log(`User ${user} initiated Mint action: <br> minted value ${valtk} of token ${tknames[user]}`);
 
-  // try {
-  //   const wasAdded = await ethereum.request({
-  //     method: 'wallet_watchAsset',
-  //     params: {
-  //       type: 'ERC721',
-  //       options: {
-  //         address: tk.options.address,
-  //         tokenId: valtk,
-  //         symbol: name,
-  //         image: "https://foo.io/token-image.svg"
-  //       },
-  //     },
-  //   });
+  try {
+    const wasAdded = await ethereum.request({
+      method: 'wallet_watchAsset',
+      params: {
+        type: 'ERC721',
+        options: {
+          address: tk.options.address,
+          tokenId: valtk,
+          symbol: name,
+          image: "https://foo.io/token-image.svg"
+        },
+      },
+    });
   
-  //   if (wasAdded) {
-  //     console.log('User successfully added the token!');
-  //   } else {
-  //     console.log('User did not add the token.');
-  //   }
-  // } catch (error) {
-  //   console.log("here?"+ error);
-  // }
+    if (wasAdded) {
+      console.log('User successfully added the token!');
+    } else {
+      console.log('User did not add the token.');
+    }
+  } catch (error) {
+    console.log("here?"+ error);
+  }
   
 }
 
@@ -200,7 +214,7 @@ const approve = async () => {
     return;
   }
   alert("Approve successful");
-  lib.log(`User ${user} initiated Approve action: <br> approved account ${mixer.options.address} to have access to token ${user == 'A'? "x" : "y"} id ${valtk}`);
+  lib.log(`User ${user} initiated Approve action: <br> approved account ${mixer.options.address} to have access to token ${tknames[user]} value ${valtk}`);
 }
 
 
@@ -250,14 +264,14 @@ const deposit = async () => {
     P_By = P;
   }
 
-  lib.log(`User ${user} initiated Deposit action: <br> deposited ${valtk} ${name} to Mixer ${name}`);
+  lib.log(`User ${user} initiated Deposit action: <br> deposited ${valtk} ${tknames[user]} to Mixer ${tknames[user].toUpperCase()}`);
 
   const pacc = document.getElementById('pacc');
-  pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Mixer ${name}</b></p>`));
+  pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Mixer ${tknames[user].toUpperCase()}</b></p>`));
 }
 
 const withdraw = async (isX) => {
-  var attrP, mixer, name, inputs;
+  var attrP, mixer, name, inputs, valtk;
   if (user == 'A') {
     attrP = isX? attrP_Ax : attrP_Ay;
   } else {
@@ -268,6 +282,7 @@ const withdraw = async (isX) => {
     return;
   }
   name = isX? 'X' : 'Y';
+  valtk = isX? valx : valy;
   inputs = document.getElementById(`wd-input-${name}`).value.split(',').map(x => x.trim());
 
   const P = await pp.methods.Com(attrP).call();
@@ -308,7 +323,7 @@ const withdraw = async (isX) => {
     if (isX) {attrP_Bx = null;} else {attrP_By = null;}
   }
 
-  lib.log(`User ${user} initiated Withdraw action: <br> withdrew token ${name.toLowerCase()} id ${attrP[1]} from Mixer ${name}`);
+  lib.log(`User ${user} initiated Withdraw action: <br> withdrew token ${tknames[name]} id ${valtk} from Mixer ${tknames[name].toUpperCase()}`);
 
   const pacc = document.getElementById('pacc');
   pacc.lastChild.remove();
@@ -326,13 +341,13 @@ const setupB = async () => {
 
   pky = await pp.methods.TagKGen(beta[0]).call();
 
-  const attrE = [ty_y, valy, T2, T3, beta[0], beta[0]+s, beta[3]];
+  attrE = [ty_y, valy, T2, T3, beta[0], beta[0]+s, beta[3]];
 
   tcomE_Ay = await pp.methods.tCom(attrE).call();
 
   ocomE_Bx = await pp.methods.oCom(attrE).call();
 
-  const attrR_By = [ty_y, valy, T3, Tmax, beta[0], beta[1], beta[2]];
+  attrR_By = [ty_y, valy, T3, Tmax, beta[0], beta[1], beta[2]];
   
   R_By = await pp.methods.Com(attrR_By).call();
 
@@ -371,12 +386,12 @@ const setupA = async () => {
 
   pkx = await pp.methods.TagKGen(alpha[0]).call();
 
-  const attrE = [ty_x, valx, T1, T2, alpha[0], alpha[1], alpha[2]];
+  attrE = [ty_x, valx, T1, T2, alpha[0], alpha[1], alpha[2]];
 
   tcomE_Bx = await pp.methods.tCom(attrE).call();
   ocomE_Ay = await pp.methods.oCom(attrE).call();
 
-  const attrR_Ax = [ty_x, valx, T2, Tmax, alpha[0], alpha[3], alpha[4]];
+  attrR_Ax = [ty_x, valx, T2, Tmax, alpha[0], alpha[3], alpha[4]];
   R_Ax = await pp.methods.Com(attrR_Ax).call();
 
   const c = [ty_x, valx, T1, T2, Tmax];
@@ -449,102 +464,73 @@ const verify = async () => {
   lib.log(`User ${user} verified setup signatures`);
 }
 
-const preswapB = async () => {
-  if (beta == null) {
-    alert("Please setup with your partner first");
-  }
+const preswap = async () => {
+  const sks = user == 'A'? alpha : beta;
 
-  const attrE = [ty_y, valy, T2, T3, beta[0], beta[0]+s, beta[3]];
-  const attrR_By = [ty_y, valy, T3, Tmax, beta[0], beta[1], beta[2]];
+  if (sks == null) {
+    alert("Please setup via webRTC first");
+    return;
+  } 
 
-  const ps_input = document.getElementById('ps-input-Y').value.split(',').map(x => x.trim());
+  const name = user == 'A'? "X" : "Y";
+  const P = user == 'A'? P_Ax : P_By;
+  const ps_input = document.getElementById(`ps-input-${name}`).value.split(',').map(x => x.trim());
 
-  if (ps_input[0] != P_By.X || ps_input[1] != P_By.Y) {
+  if (ps_input[0] != P.X || ps_input[1] != P.Y) {
     alert("Please input correct value");
     return;
   }
 
-  const R = Array.from(await mixerY.methods.get_accs().call()).slice(0, ring_size);
+  const attrP = user == 'A'? attrP_Ax : attrP_By;
+  const tstart = user == 'A'? T2 : T3;
+  const opn = user == 'A'? alpha[3] : beta[1];
+  const ok = user == 'A'? alpha[4] : beta[2];
+  const pk = user == 'A'? pkx : pky;
+  const attrR = user == 'A'? attrR_Ax : attrR_By;
+  const tcomE = user == 'A'? tcomE_Bx : tcomE_Ay;
+  const ocomE = user == 'A'? ocomE_Bx : ocomE_Ay;
 
-  const theta = 4;
-  R[theta] = P_By;
-
-  const gs = R.slice(-Math.log2(ring_size));
-
-  const tagy = await pp.methods.TagEval(attrP_By[4]).call();
-
-  const tcom_T = [tcomE_Ay, await pp.methods.tCom(attrR_By).call()];
-  const ocom_T = [ocomE_Ay, await pp.methods.oCom(attrR_By).call()];
-
-  const attrTs = [attrE.slice(2,4).concat([rand(), rand()]), [T3, Tmax, beta[1], beta[2]]];
-
-  const tx_sp = [R, gs, tagy, [attrP_By[5], BigInt(0), Tmax], pky,  tcom_T, ocom_T];
-
-  const wit = [theta, [ty_y, valy, attrP_By[4], attrP_By[6]], beta[0], attrTs];
-
-  const sig = await mixerY.methods.spend(tx_sp, wit).call();
-
-  try {
-    await mixerY.methods.process_sp(tx_sp, sig).send({
-      from: account, gas: 6721975, gasPrice: gasPrice});
-  } catch(err) {
-    alert(err.message);
-    return;
-  }
-  alert ("PreSwap successful");
-  attrP_By = null;
-  lib.log(`User ${user} initiated PreSwap action: <br> PreSwap ${P_By.X}, ${P_By.Y} to Mixer Y`);
-
-  const pacc = document.getElementById('pacc');
-  pacc.lastChild.remove();
-}
-
-const preswapA = async () => {
-  if (alpha == null) {
-    alert("Please setup with your partner first");
-  }
-
-  const attrE = [ty_x, valx, T1, T2, alpha[0], alpha[1], alpha[2]];
-  const attrR_Ax = [ty_x, valx, T2, Tmax, alpha[0], alpha[3], alpha[4]];
-
-  const ps_input = document.getElementById('ps-input-X').value.split(',').map(x => x.trim());
-
-  if (ps_input[0] != P_Ax.X || ps_input[1] != P_Ax.Y) {
-    alert("Please input correct value");
-    return;
-  }
+  const tytk = user == 'A'? ty_x : ty_y;
+  const valtk = user == 'A'? valx : valy;
+  const mixer = user == 'A'? mixerX : mixerY;
 
   const R = Array.from(await mixerX.methods.get_accs().call()).slice(0, ring_size);
 
   const theta = 4;
-  R[theta] = P_Ax;
+  R[theta] = P;
 
   const gs = R.slice(-Math.log2(ring_size));
 
-  const tagx = await pp.methods.TagEval(attrP_Ax[4]).call();
+  const tag = await pp.methods.TagEval(attrP[4]).call();
 
-  const tcom_T = [tcomE_Bx, await pp.methods.tCom(attrR_Ax).call()];
-  const ocom_T = [ocomE_Bx, await pp.methods.oCom(attrR_Ax).call()];
+  const tcom_T = [tcomE, await pp.methods.tCom(attrR).call()];
+  const ocom_T = [ocomE, await pp.methods.oCom(attrR).call()];
 
-  const attrTs = [attrE.slice(2,4).concat([rand(), rand()]), [T2, Tmax, alpha[3], alpha[4]]];
+  const attrTs = [attrE.slice(2,4).concat([rand(), rand()]), [tstart, Tmax, opn, ok]];
 
-  const tx_sp = [R, gs, tagx, [attrP_Ax[5], BigInt(0), Tmax], pkx,  tcom_T, ocom_T];
+  const tx_sp = [R, gs, tag, [attrP[5], BigInt(0), Tmax], pk, tcom_T, ocom_T];
 
-  const wit = [theta, [ty_x, valx, attrP_Ax[4], attrP_Ax[6]], alpha[0], attrTs];
+  const wit = [theta, [tytk, valtk, attrP[4], attrP[6]], sks[0], attrTs];
 
-  const sig = await mixerX.methods.spend(tx_sp, wit).call();
+
+  const sig = await mixer.methods.spend(tx_sp, wit).call();
 
   try {
-    await mixerX.methods.process_sp(tx_sp, sig).send({
+    await mixer.methods.process_sp(tx_sp, sig).send({
       from: account, gas: 6721975, gasPrice: gasPrice});
   } catch(err) {
     alert(err.message);
     return;
   }
   alert ("PreSwap successful");
-  attrP_Ax = null;
-  lib.log(`User ${user} initiated PreSwap action: <br> PreSwap ${P_Ax.X}, ${P_Ax.Y} to Mixer X`);
+  if (user == 'A') {
+    attrP_Ax = null;
+  } else {
+    attrP_By = null;
+  }
 
+  lib.log(`User ${user} initiated PreSwap action: <br> PreSwap ${P.X}, ${P.Y} to Mixer ${tknames[user].toUpperCase()}}`);
+  
   const pacc = document.getElementById('pacc');
   pacc.lastChild.remove();
 }
@@ -630,7 +616,7 @@ const exchange = async () => {
   racc.lastChild.remove();
 
   const pacc = document.getElementById('pacc');
-  pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Mixer ${name}</b></p>`));
+  pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Mixer ${tknames[name].toUpperCase()}</b></p>`));
 }
 
 const redeem = async (isX) => {
@@ -705,7 +691,7 @@ const redeem = async (isX) => {
 
   const pacc = document.getElementById('pacc');
   const P = await pp.methods.Com(attrP).call();
-  pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Mixer ${name}</b></p>`));
+  pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Mixer ${tknames[name].toUpperCase()}</b></p>`));
 }
 
 var isinChecked = false; // use in exchange
@@ -730,7 +716,7 @@ const isinAcc = async (isX) => {
   alert("E-account in pool, you may exchange");
   isinChecked = true;
 
-  lib.log(`User ${user} checked that E-account ${Eacc.X}, ${Eacc.Y} is in Mixer${name}'s pool`);
+  lib.log(`User ${user} checked that E-account ${Eacc.X}, ${Eacc.Y} is in Mixer${tknames[name].toUpperCase()}'s pool`);
 
   if (user == 'A') {
     const skbox = document.getElementById('skbox');
@@ -759,7 +745,7 @@ const isinTagA = async () => {
   alert("Tag in pool, you may exchange");
   isinTag = true;
 
-  lib.log(`User ${user} checked if tag corresponding to private key ${alpha[0]} is in MixerX's pool`);
+  lib.log(`User ${user} checked if tag corresponding to private key ${alpha[0]} is in Mixer ${tknames[user].toUpperCase()}`);
 
 }
 
@@ -809,8 +795,7 @@ module.exports = {
   deposit,
   withdraw,
   setupB, setupA, verify,
-  preswapB, preswapA,
-  redeem, exchange,
+  preswap, redeem, exchange,
   isinAcc, isinTagA,
   checkAlphaB, checkBetaA
 };

@@ -52,7 +52,7 @@ contract TokenRegistrar {
   /// @param tk_addr token address
   function _hash(address tk_addr) private view returns (uint256) {
     Token t = Token(tk_addr);
-    return uint256(keccak256(abi.encodePacked(t.name(), t.symbol())));
+    return uint256(keccak256(abi.encodePacked(t.name(), t.symbol(), tk_addr)));
   }
 
 }

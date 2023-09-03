@@ -2,6 +2,7 @@ const lib = require("./utils/lib.js");
 const tx = require("./utils/tx.js");
 const decoder = require("./utils/decoder.js");
 const Mixer = require("../build/contracts/Mixer.json");
+const PPArt = require("../build/contracts/PubParam.json");
 
 /* state */
 var web3, account;
@@ -11,6 +12,10 @@ var pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y;
 
 /* new page */
 const init = async (platform) =>{
+  const tknames = {
+    "A" : await x.methods.name().call(),
+    "B" : await y.methods.name().call()
+  };
 
   const page = document.getElementById('page');
   const newpage = lib.createElementFromString(
@@ -40,7 +45,7 @@ const init = async (platform) =>{
       <div class = "content" id="step3">
         <h4>3. Mint your token </h4>
         <box class="box" id="mintbox">
-          <h4> Token ${(user == 'A'? 'X' : 'Y')} </h4>
+          <h4> Token ${tknames[user].toUpperCase()} </h4>
           <p> Address : ${user == 'A'? x.options.address : y.options.address} </p>
           <div class="field has-addons">
             <div class="control is-expanded">
@@ -56,7 +61,7 @@ const init = async (platform) =>{
               <input class="input" type="text" placeholder="Enter token value to approve (valx for A, valy for B)" id=approvety>
             </div>
             <div class="control is-expanded">
-              <input class="input" type="text" placeholder="Enter approve address (Mixer X for A, Mixer Y for B)" id=approveaddr>
+              <input class="input" type="text" placeholder="Enter approve address (Mixer ${tknames['A'].toUpperCase()} for A, Mixer ${tknames['B'].toUpperCase()} for B)" id=approveaddr>
             </div>
             <button class="button is-primary" id="approve">
             <b> Approve </b>
@@ -169,8 +174,8 @@ const init = async (platform) =>{
   dpY.onclick = tx.deposit;
   const psX = document.getElementById('ps-button-X');
   const psY = document.getElementById('ps-button-Y');
-  psX.onclick = tx.preswapA;
-  psY.onclick = tx.preswapB;
+  psX.onclick = tx.preswap;
+  psY.onclick = tx.preswap;
   const wdX = document.getElementById('wd-button-X');
   const wdY = document.getElementById('wd-button-Y');
   wdX.onclick = tx.withdraw.bind(null, true);

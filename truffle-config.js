@@ -51,14 +51,12 @@ module.exports = {
       port: 9545
     },
     baobab: {
-      networkCheckTimeout: 10000000, // timeout
+      networkCheckTimeout: 10000000,
       pollingInterval:30000, 
       provider: () => {
         return new HDWalletProviderK(mnemonic, "https://api.baobab.klaytn.net:8651");
       },
       network_id: "1001",
-      // gas: "8500000",
-      gas : 6721975,
       timeoutBlocks: 200,
       skipDryRun: true
     },
