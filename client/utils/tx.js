@@ -409,7 +409,7 @@ const setupB = async () => {
   })
 
   const sigbox = document.getElementById('sigbox');
-  sigbox.appendChild(lib.createElementFromString(`<p>Transmitted</p>`));
+  sigbox.appendChild(lib.createElementFromString(`<p> <b>Transmitted</b> </p>`));
 
   lib.log(`User ${user} transmitted setup signatures`);
 

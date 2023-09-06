@@ -220,7 +220,7 @@ const init = async (platform) =>{
     step5.appendChild(setupfield);
     skbox = lib.createElementFromString(
       `<div class="box" id="skbox">
-        <button id="alpha-button"> 
+        <button class="btn btn-primary" id="alpha-button"> 
           <b>Send private key to your partner</b>
         </button>
         <p id= "skkey">  </p>  

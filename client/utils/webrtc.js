@@ -83,16 +83,12 @@ const init = async () => {
     };
 
     recvChannel.onmessage = async (event) => {
-      // console.log(event);
       const data = JSON.parse(atob(event.data));
-      console.log(data);
       if (data.type == "setup") {
-        // set_encode(data.data);
         encode = data.data;
         const verifyfield = document.getElementById("verifyfield");
         verifyfield.insertBefore(lib.createElementFromString("<p><b>Ready to verify </b></p>"), verifyfield.firstChild);
       } else if (data.type == "alpha") {
-        // set_alpha(data.data);
         alpha = data.data;
         const skbox = document.getElementById("skbox");
         skbox.insertBefore(lib.createElementFromString("<p><b>Ready to verify </b></p>"), skbox.firstChild);
@@ -108,16 +104,15 @@ const init = async () => {
 
   sendChannel.onopen = () => {
     console.log("Send channel open");
-    const obj = { hello: "world" };
-    const data = btoa(JSON.stringify(obj));
-    sendChannel.send(data);
   };
     
   sendChannel.onmessage = (event) => {
     console.log("sendChannel received message:", event.data);
   };
   
-  sendChannel.onclose = () => { console.log("Send channel closed."); };
+  sendChannel.onclose = () => { 
+    console.log("Send channel closed."); 
+  };
 
 }
 
