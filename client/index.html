@@ -10,6 +10,8 @@
 
   <link rel="shortcut icon" href="./images/dapp-icon2.png" />
 
+  <script type="module" src="./utils/lib.js"></script>
+
   <style>
     .wrap {
       overflow-wrap: break-word;
@@ -111,6 +113,23 @@
       </div>
     </div>
 
+    <div class="box wrap" id="rtcbox">
+      <div class="content">
+        <h4> WebRTC </h4>
+        <button class="button is-primary" id="rtc-setup-btn">
+          <b> Setup </b>
+        </button>
+      </div>
+    </div>
+
+    <div class="box mb-5">
+      <textarea class="textarea" placeholder="Paste your partner's SDP here" id="rtc-offer"></textarea>
+      <br>
+      <button class="button is-primary is-pulled-right" id="rtc-offer-btn">
+        <b> Receive </b>
+      </button> <br>
+    </div>
+
     <div class="container mt-4">
       <button class="button is-medium is-primary is-light is-pulled-right" id="next">
         <span>
@@ -119,8 +138,6 @@
         <i>→</i>
       </button>
     </div>
-
-
   </div>
   
 

@@ -1,5 +1,6 @@
 const lib = require("./lib.js");
 const decoder = require("./decoder.js");
+const webRTC = require("./webrtc.js");
 const rand = lib.rand;
 import Web3 from "web3";
 const PPArt = require("../../build/contracts/PubParam.json");
@@ -10,12 +11,13 @@ const SoKba = require("../../build/contracts/SoKba.json");
 const NFTArt = require("../../build/contracts/TokenNFT.json");
 const FTArt = require("../../build/contracts/TokenFT.json");
 const NFTFArt = require("../../build/contracts/NFTFactory.json");
+const FTFArt = require("../../build/contracts/FTFactory.json");
 const TokenReg = require("../../build/contracts/TokenRegistrar.json");
 
 
 var web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y;
 var valx, valy, T1, T2, T3, Tmax, s;
-var account, user, tktype;
+var account, user, tktype, gasPrice;
 var ci = false;
 
 var attrP_By, P_By, attrP_Bx;
@@ -25,14 +27,12 @@ var E_Bx, attrR_By;
 var E_Ay, attrR_Ax;
 var attrE;
 
-var beta, pky, tcomE_Ay, ocomE_Bx, R_By;
+var beta, pky, tcomE_Ay, ocomE_Bx, R_By, sig_ba;
 var setupBsucc = false;
 
-var alpha, pkx, tcomE_Bx, ocomE_Ay, R_Ax;
+var alpha, pkx, tcomE_Bx, ocomE_Ay, R_Ax, sig_ab;
 var setupAsucc = false;
 const ring_size = 16;
-
-var gasPrice;
 
 var tknames = {
   "A" : "",
@@ -78,14 +78,16 @@ const setup = async (window, mnid, pnid, baseNid) => {
     mixerY = new web3.eth.Contract(Mixer.abi, Mixer.networks[ynid].address);
   }
   var tokenAddrs;
+  const FactArt = tktype == "ERC20" ? FTFArt : NFTFArt;
+  const TokenArt = tktype == "ERC20" ? FTArt : NFTArt;
   if (mnid == pnid) {
-    const NFTFactory = new web3.eth.Contract(NFTFArt.abi, NFTFArt.networks[xnid].address);
-    tokenAddrs = await NFTFactory.methods.getTokens().call();
-    x = new web3.eth.Contract(NFTArt.abi, tokenAddrs[0]);
-    y = new web3.eth.Contract(NFTArt.abi, tokenAddrs[1]);
+    const Fact = new web3.eth.Contract(FactArt.abi, FactArt.networks[xnid].address);
+    tokenAddrs = await Fact.methods.getTokens().call();
+    x = new web3.eth.Contract(TokenArt.abi, tokenAddrs[0]);
+    y = new web3.eth.Contract(TokenArt.abi, tokenAddrs[1]);
   } else {
-    x = new web3.eth.Contract(NFTArt.abi, NFTArt.networks[xnid].address);
-    y = new web3.eth.Contract(NFTArt.abi, NFTArt.networks[ynid].address);
+    x = new web3.eth.Contract(TokenArt.abi, TokenArt.networks[xnid].address);
+    y = new web3.eth.Contract(TokenArt.abi, TokenArt.networks[ynid].address);
     tokenAddrs = [x.options.address, y.options.address];
   }
 
@@ -126,11 +128,16 @@ const connectWallet = async () => {
 const inputHandler = async (b) => {
   if (account == null) { alert("Please connect wallet"); return; }
   const inputs = document.getElementById('setup').value.split(",").map(element => BigInt(element));
-  if (inputs.length != 7) {
-    alert("Please input 7 values");
+  if (inputs.length != lib.inputpars[tktype]) {
+    alert(`Please submit ${lib.inputpars[tktype]} values`);
     return;
   }
-  [valx, valy, T1, T2, T3, Tmax, s] = inputs;
+  if (tktype == "ERC721") {
+    [valx, valy, T1, T2, T3, Tmax, s] = inputs;
+  } else  {
+    [T1, T2, T3, Tmax, s] = inputs;
+  }
+  if (tktype == "ERC20") valx = valy = 1;
   ci = true;
 
   b.onclick = null;
@@ -151,7 +158,7 @@ const mint = async () => {
   const name = await tk.methods.name().call();
 
   const val = document.getElementById('mtinput').value;
-  if (BigInt(val) != valtk) { 
+  if (BigInt(val) != valtk && tktype == "ERC721") { 
     alert("Please input correct value"); 
     return; 
   }
@@ -164,37 +171,40 @@ const mint = async () => {
     return;
   }
 
-  const tk_owner = await tk.methods.ownerOf(valtk).call();
-  if (tk_owner != account) {
-    alert("Minting failed");
-    return;
-  }
   alert("Minting successful");
   lib.log(`User ${user} initiated Mint action: <br> minted value ${valtk} of token ${tknames[user]}`);
 
+  displaytk(tk, name, valtk);
+}
+
+const displaytk = async (tk, name, valtk) => {
   try {
-    const wasAdded = await ethereum.request({
+    const options = tktype == "ERC20" ? {
+      address : tk.options.address,
+      symbol : name.toUpperCase(),
+      decimals : 18,
+      image : "../images/dapp-icon2.png"
+    } :
+    {
+      address : tk.options.address,
+      tokenId : valtk
+    };
+    
+    const wasAdded = await window.ethereum.request({
       method: 'wallet_watchAsset',
       params: {
-        type: 'ERC721',
-        options: {
-          address: tk.options.address,
-          tokenId: valtk,
-          symbol: name,
-          image: "https://foo.io/token-image.svg"
-        },
+        type: tktype,
+        options: options
       },
     });
   
     if (wasAdded) {
-      console.log('User successfully added the token!');
-    } else {
-      console.log('User did not add the token.');
+      alert("Token added on Metamask");
     }
-  } catch (error) {
-    console.log("here?"+ error);
+  } catch (err) {
+    alert(err.msg);
+    return;
   }
-  
 }
 
 const approve = async () => {
@@ -255,7 +265,6 @@ const deposit = async () => {
   const valtk = user == 'A'? valx : valy;
   const tytk = user == 'A'? ty_x : ty_y;
   const mixer = user == 'A'? mixerX : mixerY;
-  const tk = user == 'A'? x : y;
 
   const dpinput = document.getElementById(`dp-input-${name}`).value;
   if (BigInt(dpinput) != valtk) {
@@ -282,13 +291,6 @@ const deposit = async () => {
     return;
   }
 
-  if (tktype == "ERC721") {
-    const tk_ownerAfter = await tk.methods.ownerOf(valtk).call();
-    if (tk_ownerAfter != mixer.options.address) {
-      alert("Deposit failed");
-      return;
-    }
-  }
   alert("Deposit successful");
 
   const P = await pp.methods.Com(attrP).call();
@@ -305,7 +307,7 @@ const deposit = async () => {
 }
 
 const withdraw = async (isX) => {
-  var attrP, mixer, name, inputs, valtk;
+  var attrP, mixer, name, inputs, valtk, tk;
   if (user == 'A') {
     attrP = isX? attrP_Ax : attrP_Ay;
   } else {
@@ -317,6 +319,7 @@ const withdraw = async (isX) => {
   }
   name = isX? 'X' : 'Y';
   valtk = isX? valx : valy;
+  tk = isX? x : y;
   inputs = document.getElementById(`wd-input-${name}`).value.split(',').map(x => x.trim());
 
   const P = await pp.methods.Com(attrP).call();
@@ -361,6 +364,8 @@ const withdraw = async (isX) => {
 
   const pacc = document.getElementById('pacc');
   pacc.lastChild.remove();
+
+  displaytk(tk, name, valtk);
 }
 
 const setupB = async () => {
@@ -389,7 +394,7 @@ const setupB = async () => {
   const tx_ba = [c, pky, tcomE_Ay, ocomE_Bx, R_By];
   const wit = [parseInt(s)].concat(beta);
 
-  const sig_ba = await ba.methods.sign(tx_ba, wit).call();
+  sig_ba = await ba.methods.sign(tx_ba, wit).call();
 
   const encode = btoa(JSON.stringify([pky, tcomE_Ay, ocomE_Bx, R_By, sig_ba]));
 
@@ -398,8 +403,13 @@ const setupB = async () => {
   setupBsucc = true;
   
   /// change here
+  webRTC.send({
+    "type" : "setup",
+    "data" : encode
+  })
+
   const sigbox = document.getElementById('sigbox');
-  sigbox.appendChild(lib.createElementFromString(`<p>${encode}</p>`));
+  sigbox.appendChild(lib.createElementFromString(`<p>Transmitted</p>`));
 
   lib.log(`User ${user} transmitted setup signatures`);
 
@@ -432,7 +442,7 @@ const setupA = async () => {
   const tx_ab = [c, pkx, tcomE_Bx, ocomE_Ay, R_Ax];
   const wit = alpha;
 
-  const sig_ab = await ab.methods.sign(tx_ab, wit).call();
+  sig_ab = await ab.methods.sign(tx_ab, wit).call();
 
   const encode = btoa(JSON.stringify([pkx, tcomE_Bx, ocomE_Ay, R_Ax, sig_ab]));
 
@@ -441,8 +451,12 @@ const setupA = async () => {
   setupAsucc = true;
 
   /// change here
+  webRTC.send({
+    "type" : "setup",
+    "data" : encode
+  });
   const sigbox = document.getElementById('sigbox');
-  sigbox.appendChild(lib.createElementFromString(`<p>${encode}</p>`));
+  sigbox.appendChild(lib.createElementFromString(`<p>transmitted</p>`));
 
   lib.log(`User ${user} transmitted setup signatures`); 
 
@@ -455,8 +469,19 @@ const setupA = async () => {
 }
 
 const verify = async () => {
-  /// change here
-  const encode = document.getElementById('verify').value;
+
+  const encode = webRTC.get_encode();
+
+  if (encode == null) {
+    alert("Please wait for your partner to transmit setup signatures");
+    return;
+  }
+
+  if (ci == false) {
+    alert("Please submit common inputs first");
+    return;
+  }
+
   const decode = JSON.parse(atob(encode));
 
   if (decode.length != 5) {
@@ -465,7 +490,6 @@ const verify = async () => {
   }
 
   if (user == "A") {
-    var sig_ba;
     [pky, tcomE_Ay, ocomE_Bx, R_By, sig_ba] = decode;
     const c = [ty_y, valy, T2, T3, Tmax, s];
     const tx_ba = [c, pky, tcomE_Ay, ocomE_Bx, R_By];
@@ -475,7 +499,6 @@ const verify = async () => {
       return;
     }
   } else {
-    var sig_ab;
     [pkx, tcomE_Bx, ocomE_Ay, R_Ax, sig_ab] = decode;
     const c = [ty_x, valx, T1, T2, Tmax];
     const tx_ab = [c, pkx, tcomE_Bx, ocomE_Ay, R_Ax];
@@ -528,7 +551,7 @@ const preswap = async () => {
   const valtk = user == 'A'? valx : valy;
   const mixer = user == 'A'? mixerX : mixerY;
 
-  const R = Array.from(await mixerX.methods.get_accs().call()).slice(0, ring_size);
+  const R = Array.from(await mixer.methods.get_accs().call()).slice(0, ring_size);
 
   const theta = 4;
   R[theta] = P;
@@ -571,12 +594,12 @@ const preswap = async () => {
 
 const exchange = async () => {
   if (!isinChecked) {
-    alert("Please check if E-account is in pool");
+    alert(`Please check if E-account is in Mixer ${tknames[user == "A" ? "Y" : "X"].toUpperCase()}`);
     return;
   }
 
   if (user == 'A' && !isinTag) {
-    alert("Please use your private key to check if tag is in pool");
+    alert(`Please use your private key to check if tag is in Mixer ${tknames["Y"].toUpperCase()}`);
     return;
   }
 
@@ -750,13 +773,21 @@ const isinAcc = async (isX) => {
   alert("E-account in pool, you may exchange");
   isinChecked = true;
 
-  lib.log(`User ${user} checked that E-account ${Eacc.X}, ${Eacc.Y} is in Mixer${tknames[name].toUpperCase()}'s pool`);
+  lib.log(`User ${user} checked that E-account ${Eacc.X}, ${Eacc.Y} is in Mixer ${tknames[name].toUpperCase()}`);
+}
 
-  if (user == 'A') {
-    const skbox = document.getElementById('skbox');
-    const sk = lib.createElementFromString(`<p><b> Private key: </b> ${alpha[0]}</p>`);
-    skbox.insertBefore(sk, skbox.lastChild);
+const sendskA = async () => {
+  if (!isinChecked) {
+    alert("Please check E-account is in Mixer");
+    return;
   }
+  webRTC.send({
+    "type" : "alpha",
+    "data" : alpha[0]
+  });
+
+  const skkey = document.getElementById("skkey");
+  skkey.innerHTML = `<p><b> Private Key: ${alpha[0]} Transmitted </b> </p>`;
 }
 
 var isinTag = false;
@@ -784,7 +815,13 @@ const isinTagA = async () => {
 }
 
 const checkAlphaB = async () => {
-  const alpha_input = BigInt(document.getElementById('alpha-input').value.trim());
+
+  const alpha_input = webRTC.get_alpha();
+
+  if (alpha_input == null) {
+    alert ("Please wait for your partner to transmit secret key");
+    return;
+  }
 
   const pk = await pp.methods.TagKGen(alpha_input).call();
 
@@ -822,13 +859,13 @@ const checkBetaA = async () => {
 
 module.exports = { 
   set_user, set_tkty,
-  setup, 
+  setup,
   connectWallet,
   inputHandler,
   mint, approve, checkBal,
   deposit, withdraw,
   setupB, setupA, verify,
   preswap, redeem, exchange,
-  isinAcc, isinTagA,
+  isinAcc, isinTagA, sendskA,
   checkAlphaB, checkBetaA
 };

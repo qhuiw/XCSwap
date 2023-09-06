@@ -55,11 +55,43 @@ const createField = (name, disabled, id, buttonName, placeholder) => {
     </div>`);
 }
 
+const createMixerfield = (isX, user) => {
+  const name = isX ? "X" : "Y";
+  const disabledBX = user == 'B' && isX ? "disabled" : "";
+  const disabledBY = user == 'B' && !isX ? "disabled" : "";
+  const disabledAX = user == 'A' && isX ? "disabled" : "";
+  const disabledAY = user == 'A' && !isX ? "disabled" : "";
+  const mixerfield = document.createElement("div");
+  mixerfield.appendChild(createField(name, disabledBX + disabledAY, "dp", "Deposit", "Enter token value to deposit"));
+  mixerfield.appendChild(createField(name, "", "wd", "Withdraw", "Enter P-account to withdraw"));
+  mixerfield.appendChild(createField(name, disabledBX + disabledAY, "ps", "PreSwap", 
+  "Enter P-account for preswap"));
+  mixerfield.appendChild(createField(name, disabledBY + disabledAX, "ex", "Exchange",
+  "Enter E-account for exchange"));
+  mixerfield.appendChild(createField(name, disabledBX + disabledAY, "rd", "Redeem", "Enter R-account for redeem"));
+  mixerfield.appendChild(createField(name, disabledBY + disabledAX, "isin", "CheckAcc", "Enter E-account for checking"));
+  mixerfield.appendChild(createField(name, disabledBX + disabledBY + disabledAY, "isintag", "CheckTag","Enter private key for checking"));
+
+  return mixerfield;
+}
+
+const inputpars = {
+  "ERC20" : 5, //T1, T2, T3, Tmax, s
+  "ERC721" : 7 //valx, valy, T1, T2, T3, Tmax, s
+}
+
+const createTitle = (id, text) => {
+  return createElementFromString(
+    `<div class = "content" id="${id}">
+      <h4>${text}</h4>
+    </div>`
+  )
+}
+
 module.exports = { 
   createElementFromString, 
-  createField,
-  insertAfter, 
-  net, img,
-  rand,
-  datetime, log
+  createField, createMixerfield,
+  insertAfter, createTitle,
+  net, img, inputpars,
+  rand, datetime, log
 };

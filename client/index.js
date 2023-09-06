@@ -1,29 +1,25 @@
 const lib = require("./utils/lib.js");
 const tx = require("./utils/tx.js");
+const webRTC = require("./utils/webrtc.js");
 const decoder = require("./utils/decoder.js");
 const Mixer = require("../build/contracts/Mixer.json");
-const PPArt = require("../build/contracts/PubParam.json");
 
 /* state */
-var web3, account;
-var user, tktype;
+var user, tktype, tknames;
+var mnid, pnid, baseNid;
 
+var web3, account;
 var pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y;
 
 /* new page */
 const init = async (platform) =>{
-  const tknames = {
-    "A" : await x.methods.name().call(),
-    "B" : await y.methods.name().call()
-  };
-
   const page = document.getElementById('page');
   const newpage = lib.createElementFromString(
 `<div class="container" id="page2">
   <div class="columns">
     <div class="column is-four-fifths">
       <div class = "content" id="step1">
-        <h4>1. Connect Metamask Wallet to ${platform[0].toUpperCase()+platform.slice(1)}</h4>
+        <h4>1. Connect Metamask Wallet to ${platform.toUpperCase()}</h4>
         <div class="box">
           <button class="button is-primary" id="connect">
             <b> Connect to Metamask </b> 
@@ -35,7 +31,7 @@ const init = async (platform) =>{
         <h4>2. Common Inputs </h4>
         <div class = "box">
           <div class = "field has-addons">
-            <input type="text" class="input" id="setup" placeholder="Enter valx, valy, T1, T2, T3, Tmax, s" multiple>
+            <input type="text" class="input" id="setup" placeholder="Enter ${(tktype == "ERC721") ? "valx, valy, " : ""}T1, T2, T3, Tmax, s" multiple>
             <button class="button is-primary" id="ci"> 
             <b> Submit </b>  
             </button>
@@ -79,13 +75,13 @@ const init = async (platform) =>{
         <div class = "columns">
           <div class = "column">
             <div class = "box wrap" id="mixerX">
-            <h4> Mixer X </h4>
+            <h4> Mixer ${tknames["A"].toUpperCase()} </h4>
             <p> Address : ${mixerX.options.address} </p>
             </div>
           </div>
           <div class = "column">
             <div class = "box wrap" id="mixerY">
-            <h4> Mixer Y </h4>
+            <h4> Mixer ${tknames["B"].toUpperCase()} </h4>
             <p> Address : ${mixerY.options.address} </p>
             </div>
           </div>
@@ -132,7 +128,6 @@ const init = async (platform) =>{
 
   page.replaceWith(newpage);
 
-  
   const mtkbox = document.getElementById('mtkbox');
   const ptkbox = document.getElementById('ptkbox');
   const mname = user == 'A' ? 'X' : 'Y';
@@ -148,30 +143,11 @@ const init = async (platform) =>{
   const balY = document.getElementById('bal-button-Y');
   balX.onclick = tx.checkBal.bind(null, true);
   balY.onclick = tx.checkBal.bind(null, false);
-  
-  const createMixerfield = (isX) => {
-    const name = isX ? "X" : "Y";
-    const disabledBX = user == 'B' && isX ? "disabled" : "";
-    const disabledBY = user == 'B' && !isX ? "disabled" : "";
-    const disabledAX = user == 'A' && isX ? "disabled" : "";
-    const disabledAY = user == 'A' && !isX ? "disabled" : "";
-    const mixerfield = document.createElement("div");
-    mixerfield.appendChild(lib.createField(name, disabledBX + disabledAY, "dp", "Deposit", "Enter token value to deposit"));
-    mixerfield.appendChild(lib.createField(name, "", "wd", "Withdraw", "Enter P-account to withdraw"));
-    mixerfield.appendChild(lib.createField(name, disabledBX + disabledAY, "ps", "PreSwap", 
-    "Enter P-account for preswap"));
-    mixerfield.appendChild(lib.createField(name, disabledBY + disabledAX, "ex", "Exchange",
-    "Enter E-account for exchange"));
-    mixerfield.appendChild(lib.createField(name, disabledBX + disabledAY, "rd", "Redeem", "Enter R-account for redeem"));
-    mixerfield.appendChild(lib.createField(name, disabledBY + disabledAX, "isin", "CheckAcc", "Enter E-account for checking"));
-    mixerfield.appendChild(lib.createField(name, disabledBX + disabledBY + disabledAY, "isintag", "CheckTag","Enter private key for checking"));
 
-    return mixerfield;
-  }
   const mixerXbox = document.getElementById('mixerX');
   const mixerYbox = document.getElementById('mixerY');
-  mixerXbox.appendChild(createMixerfield(true));
-  mixerYbox.appendChild(createMixerfield(false));
+  mixerXbox.appendChild(lib.createMixerfield(true, user));
+  mixerYbox.appendChild(lib.createMixerfield(false, user));
 
   const dpX = document.getElementById('dp-button-X');
   const dpY = document.getElementById('dp-button-Y');
@@ -211,62 +187,43 @@ const init = async (platform) =>{
       </button>
     </div>`);
   const verifyfield = lib.createElementFromString(
-    `<div class="box mb-5">
-      <textarea class="textarea" placeholder="Paste your partner's encoded commitments and signature here" id="verify"></textarea>
-      <br>
-      <button class="button is-primary is-pulled-right" id="verifybutton">
+    `<div class="box mb-5" id="verifyfield">
+      <button class="button is-primary" id="verifybutton">
         <b> Verify </b>
-      </button> <br>
+      </button>
     </div>`);
-
 
   const skcom = document.getElementById('offchain');
   var step4, step5, skbox;
   if (user == "B") {
-    step4 = lib.createElementFromString(
-      `<div class = "content" id="step4">
-        <h4>4. Set up with your transaction partner </h4>
-      </div>
-      `);
-    step5 = lib.createElementFromString(
-      `<div class = "content" id="step5">
-        <h4>5. Verify your partner's setup signature </h4>
-      </div>
-      `);
+    step4 = lib.createTitle("step4", "4. Set up with your transaction partner");
+    step5 = lib.createTitle("step5", "5. Verify your partner's setup signature");
     step4.appendChild(setupfield);
     step5.appendChild(verifyfield);
     skbox = lib.createElementFromString(
       `<div class="box" id="skbox">
-        <div class="field has-addons">
-          <div class="control is-expanded">
-            <input class="input" type="text" placeholder="Enter your partner's private key" id="alpha-input">
-          </div>
-          <button class="btn btn-primary" id="alpha-button">
-            Submit
-          </button>
+        <div class="content">
+          <b> Wait for your partner to transmit secret key </b>
         </div>
+        <button class="btn btn-primary" id="alpha-button">
+          Verify
+        </button>
       </div>`);
     skcom.appendChild(skbox);
 
     const alphabutton = document.getElementById('alpha-button');
     alphabutton.onclick = tx.checkAlphaB;
   } else {
-    step4 = lib.createElementFromString(
-      `<div class = "content" id="step4">
-        <h4>4. Verify your partner's setup signature </h4>
-      </div>
-      `);
-    step5 = lib.createElementFromString(
-      `<div class = "content" id="step5">
-        <h4>5. Set up with your transaction partner </h4>
-      </div>
-      `);
+    step4 = lib.createTitle("step4", "4. Verify your partner's setup signature");
+    step5 = lib.createTitle("step5", "5. Set up with your transaction partner");
     step4.appendChild(verifyfield);
     step5.appendChild(setupfield);
     skbox = lib.createElementFromString(
       `<div class="box" id="skbox">
-        <b> Send private key to your partner: </b>
-        <br>
+        <button id="alpha-button"> 
+          <b>Send private key to your partner</b>
+        </button>
+        <p id= "skkey">  </p>  
         <div class="field has-addons">
           <div class="control is-expanded">
             <input class="input" type="text" placeholder="Enter B's exchange transaction hash" id="txhash">
@@ -276,6 +233,9 @@ const init = async (platform) =>{
           </button>
       </div>`);
     skcom.appendChild(skbox);
+
+    const alphabutton = document.getElementById('alpha-button');
+    alphabutton.onclick = tx.sendskA;
 
     const txhashbutton = document.getElementById('txhash-button');
     txhashbutton.onclick = tx.checkBetaA;
@@ -304,9 +264,6 @@ const init = async (platform) =>{
 
 const main = async () => {
 
-  var mnid, pnid;
-  var baseNid;
-
   const getOption = async (el, id) => {
     const network = el.value;
     const newimg = document.createElement("div");
@@ -324,6 +281,7 @@ const main = async () => {
     role.onclick = () => {
       user = role.value;
       tx.set_user(user);
+      webRTC.set_user(user);
     }
   }
 
@@ -334,6 +292,13 @@ const main = async () => {
       tx.set_tkty(tktype);
     }
   }
+
+  const rtcsetup = document.getElementById("rtc-setup-btn");
+  rtcsetup.onclick = webRTC.init;
+
+  const rtcoffer = document.getElementById("rtc-offer-btn");
+  rtcoffer.onclick = webRTC.offer;
+
 
   const next = document.getElementById('next');
   next.onclick = async () => {
@@ -347,7 +312,17 @@ const main = async () => {
       return;
     }
 
+    if (!webRTC.get_establish()) {
+      alert("Please establish WebRTC channel with your partner");
+      return;
+    }
+
     [web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y] = await tx.setup(window, mnid, pnid, baseNid);
+
+    tknames = {
+      "A" : await x.methods.name().call(),
+      "B" : await y.methods.name().call()
+    };
 
     await init(mchain);
   }
