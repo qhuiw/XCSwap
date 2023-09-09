@@ -1,10 +1,4 @@
 const alt_bn128 = artifacts.require("alt_bn128");
-const MixerFactory = artifacts.require("MixerFactory");
-const Mixer = artifacts.require("Mixer");
-const TokenRegistrar = artifacts.require("TokenRegistrar");
-const TokenNFT = artifacts.require("TokenNFT");
-const NFTFactory = artifacts.require("NFTFactory");
-const PartEqual = artifacts.require("PartialEquality");
 const DualRing = artifacts.require("DualRingEC");
 const OneofMany = artifacts.require("OneofMany");
 const DiffGenEqual = artifacts.require("DiffGenEqual");
@@ -16,7 +10,6 @@ const SoKsp = artifacts.require("SoKsp");
 const SoKba = artifacts.require("SoKba");
 const SoKab = artifacts.require("SoKab");
 const PubParam = artifacts.require("PubParam");
-const RelayRegistry = artifacts.require("RelayRegistry");
 
 const overwritable = false;
 

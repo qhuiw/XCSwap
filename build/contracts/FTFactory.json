@@ -4820,10 +4820,16 @@
       "links": {},
       "address": "0x6B717Dcf3d429008ed27902B13288DFCf1ab8d05",
       "transactionHash": "0xfba3dac8b8234693614b594475122b2381f5bb59d7ef8923ee93c7eb37255dbf"
+    },
+    "5777": {
+      "events": {},
+      "links": {},
+      "address": "0xFc810b3A648496BC7FD1c64D3bA130df0C70E959",
+      "transactionHash": "0x95fa987421190dfd234b12bc9229c3317e5061d8990be92f908caf78676af58e"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-09-03T20:08:11.795Z",
+  "updatedAt": "2023-09-08T17:14:21.143Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

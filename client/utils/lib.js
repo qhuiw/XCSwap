@@ -22,7 +22,9 @@ const net = {
 
 const img = {
   "ganache": "https://seeklogo.com/images/G/ganache-logo-1EB72084A8-seeklogo.com.png",
-  "klaytn": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9U94zW4NDEbnNRpm_0RM2zubdKjyCt8NuIHV5wSgPZg&s"
+  "klaytn": "https://cdn-images-1.medium.com/max/1200/1*3tSS6q_D-lyttNdlRwqoQw.png",
+  "sepolia" : "https://assets-global.website-files.com/5f973c970bea5548ad4287ef/6222bb0250fe44753a7579cd_starknet-icon.svg",
+  "goerli": "https://assets-global.website-files.com/5f973c97cf5aea614f93a26c/6451a34baee26f54b2419cf3_base-logo.png"
 }
 
 const rand = () => {
@@ -38,9 +40,25 @@ const datetime = () => {
   return dateTime;
 }
 
-const log = (msg) => {
+const actlog = (msg) => {
   const el = document.getElementById("actlog");
   el.appendChild(createElementFromString(`<p>${datetime()} <br> ${msg}</p>`));
+}
+
+const translog = (msg, tx) => {
+  const el = document.getElementById("translog");
+  el.appendChild(createElementFromString(`<p>${datetime()} ${msg}</p>`));
+  el.appendChild(txformat(tx));
+}
+
+const txformat = (tx) => {
+  return createElementFromString(
+    `<p>"transactionHash" : ${tx.transactionHash},<br>
+    "from" : ${tx.from},<br>
+    "to" : ${tx.to},<br>
+    "gasUsed" : ${tx.gasUsed},<br>
+    "blockNumber" : ${tx.blockNumber}
+    </p>`);
 }
 
 const createField = (name, disabled, id, buttonName, placeholder) => {
@@ -88,10 +106,15 @@ const createTitle = (id, text) => {
   )
 }
 
+const username = {
+  "A" : "Alice",
+  "B" : "Bob"
+}
+
 module.exports = { 
   createElementFromString, 
   createField, createMixerfield,
   insertAfter, createTitle,
-  net, img, inputpars,
-  rand, datetime, log
+  net, img, inputpars, username,
+  rand, datetime, actlog, translog
 };

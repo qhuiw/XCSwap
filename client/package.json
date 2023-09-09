@@ -11,17 +11,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "assert": "^2.0.0",
-    "parcel": "^2.9.3",
-    "path-browserify": "^1.0.1",
-    "punycode": "^1.4.1",
-    "stream-browserify": "^3.0.0"
+    "parcel": "^2.9.3"
   },
   "dependencies": {
-    "@truffle/contract": "^4.6.28",
-    "bootstrap": "^5.3.1",
-    "bulma": "^0.9.4",
-    "websocket": "^1.0.34",
-    "ws": "^8.13.0"
+    "web3": "^4.1.1"
   }
 }

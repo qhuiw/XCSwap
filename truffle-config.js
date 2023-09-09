@@ -20,11 +20,9 @@
 
 require('dotenv').config();
 const mnemonic = process.env["MNEMONIC"];
-const INFURA_API_KEY = process.env["INFURA_API_KEY"];
-// const infuraProjectId = process.env["INFURA_PROJECT_ID"];
+const infuraAPIKey = process.env["INFURA_API_KEY"];
  
-const HDWalletProviderK = require("truffle-hdwallet-provider-klaytn");
-// const HDWalletProvider = require("@truffle/hdwallet-provider");
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 
 module.exports = {
   /**
@@ -45,26 +43,25 @@ module.exports = {
       gas : 6721975,
       websockets: true
     },
-    develop : {
-      network_id: "5777",
-      host: "127.0.0.1",
-      port: 9545
-    },
-    baobab: {
-      networkCheckTimeout: 10000000,
-      pollingInterval:30000, 
-      provider: () => {
-        return new HDWalletProviderK(mnemonic, "https://api.baobab.klaytn.net:8651");
-      },
-      network_id: "1001",
-      timeoutBlocks: 200,
+    sepolia: {
+      provider: () => new HDWalletProvider(mnemonic, "https://sepolia.infura.io/v3/"+infuraAPIKey),
+      network_id: "11155111",
+      gas: 4465030,
       skipDryRun: true
     },
-    // sepolia: {
-    //   provider: () => new HDWalletProvider(MNEMONIC, INFURA_API_KEY),
-    //   network_id: "11155111",
-    //   gas: 4465030,
-    // },
+    goerli: {
+      provider: () => new HDWalletProvider(mnemonic, "https://goerli.infura.io/v3/"+infuraAPIKey),
+      network_id: "5",
+      gas: 4465030,
+      skipDryRun: true
+    },
+    baobab: {
+      provider: () => {
+        return new HDWalletProvider(mnemonic, "https://api.baobab.klaytn.net:8651");
+      },
+      network_id: "1001",
+      skipDryRun: true
+    }
   },
   compilers: {
     solc: {
@@ -74,7 +71,6 @@ module.exports = {
           enabled: true,
           runs: 1
         }
-        // viaIR: true
       }
     }
   },

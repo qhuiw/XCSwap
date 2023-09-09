@@ -1,11 +1,9 @@
 const lib = require("./utils/lib.js");
 const tx = require("./utils/tx.js");
-const webRTC = require("./utils/webrtc.js");
-const decoder = require("./utils/decoder.js");
-const Mixer = require("../build/contracts/Mixer.json");
+const webRTC = require("./utils/webRTC.js");
 
 /* state */
-var user, tktype, tknames;
+var user, username, tktype, tknames;
 var mnid, pnid, baseNid;
 
 var web3, account;
@@ -21,7 +19,7 @@ const init = async (platform) =>{
       <div class = "content" id="step1">
         <h4>1. Connect Metamask Wallet to ${platform.toUpperCase()}</h4>
         <div class="box">
-          <button class="button is-primary" id="connect">
+          <button class="btn btn-primary" id="connect">
             <b> Connect to Metamask </b> 
           </button>
           <b class="is-pulled-right"> Account: NULL </b>
@@ -32,7 +30,7 @@ const init = async (platform) =>{
         <div class = "box">
           <div class = "field has-addons">
             <input type="text" class="input" id="setup" placeholder="Enter ${(tktype == "ERC721") ? "valx, valy, " : ""}T1, T2, T3, Tmax, s" multiple>
-            <button class="button is-primary" id="ci"> 
+            <button class="btn btn-primary" id="ci"> 
             <b> Submit </b>  
             </button>
           </div>
@@ -47,7 +45,7 @@ const init = async (platform) =>{
             <div class="control is-expanded">
               <input class="input" type="text" placeholder="Enter token value to mint (valx for A, valy for B)" id="mtinput">
             </div>
-            <button class="button is-primary" id="mt">
+            <button class="btn btn-primary" id="mt">
             <b> Mint </b>
             </button>
           </div>
@@ -58,7 +56,7 @@ const init = async (platform) =>{
             <div class="control is-expanded">
               <input class="input" type="text" placeholder="Enter approve address (Mixer ${tknames['A'].toUpperCase()} for A, Mixer ${tknames['B'].toUpperCase()} for B)" id=approveaddr>
             </div>
-            <button class="button is-primary" id="approve">
+            <button class="btn btn-primary" id="approvebtn">
             <b> Approve </b>
             </button>
           </div>
@@ -119,7 +117,7 @@ const init = async (platform) =>{
     </div>
   </div> 
   
-  <div class= "box" id="hist">
+  <div class= "box wrap" id="translog">
     <div class="content">
       <h4> Transaction History </h4>
     </div>
@@ -182,13 +180,13 @@ const init = async (platform) =>{
   const step3 = document.getElementById('step3');
   const setupfield = lib.createElementFromString(
     `<div class="box wrap" id="sigbox">
-      <button class="button is-primary" id="setupbutton">
+      <button class="btn btn-primary" id="setupbutton">
         <b> Send encoded commitments and signature to your partner: </b>
       </button>
     </div>`);
   const verifyfield = lib.createElementFromString(
     `<div class="box mb-5" id="verifyfield">
-      <button class="button is-primary" id="verifybutton">
+      <button class="btn btn-primary" id="verifybutton">
         <b> Verify </b>
       </button>
     </div>`);
@@ -206,7 +204,7 @@ const init = async (platform) =>{
           <b> Wait for your partner to transmit secret key </b>
         </div>
         <button class="btn btn-primary" id="alpha-button">
-          Verify
+          <b> Verify </b>
         </button>
       </div>`);
     skcom.appendChild(skbox);
@@ -252,7 +250,7 @@ const init = async (platform) =>{
   const mt = document.getElementById('mt');
   mt.onclick = tx.mint;
 
-  const approvebtn = document.getElementById('approve');
+  const approvebtn = document.getElementById('approvebtn');
   approvebtn.onclick = tx.approve;
 
   const setupbutton = document.getElementById('setupbutton');
@@ -262,13 +260,46 @@ const init = async (platform) =>{
   vb.onclick = tx.verify;
 };
 
+const get_tktype = () => {
+  return tktype;
+}
+
 const main = async () => {
 
+  const rtcsetup = document.getElementById("rtc-setup-btn");
+  rtcsetup.onclick = webRTC.init;
+
+  const rtcoffer = document.getElementById("rtc-offer-btn");
+  rtcoffer.onclick = webRTC.offer;
+
   const getOption = async (el, id) => {
+    if (!webRTC.get_establish()) {
+      alert("Please establish WebRTC channel with your partner");
+      return;
+    }
+
     const network = el.value;
     const newimg = document.createElement("div");
     newimg.innerHTML = `<img src = "${lib.img[network]}" alt="${network}" border="0" style="width:50px;height:50px" id="${id}">`;
     document.getElementById(id).replaceWith(newimg.firstChild);
+
+    if (id.startsWith('m')) {
+      webRTC.send({
+        type: "pnid", 
+        data: document.getElementById('mnet').value
+      });
+    } else {
+      pnid = lib.net[document.getElementById('pnet').value];
+      const pnetborder = document.getElementById("pnet-border");
+      if (webRTC.get_pnid() != pnid) {
+        pnetborder.classList.remove("is-primary");
+        pnetborder.classList.add("is-danger");
+      } else {
+        pnetborder.classList.remove("is-danger");
+        pnetborder.classList.add("is-primary");
+      }
+
+    }
   }
 
   const pnet = document.getElementById("pnet");
@@ -282,26 +313,54 @@ const main = async () => {
       user = role.value;
       tx.set_user(user);
       webRTC.set_user(user);
+      document.title = username == null ? `XCSwap ${lib.username[user]}` : document.title;
     }
+  }
+
+  const namebutton = document.getElementById("name-button");
+  namebutton.onclick = () => {
+    username = document.getElementById("name-input").value.trim();
+    document.title = `XCSwap ${username}`;
   }
 
   const t = document.getElementsByName('tkty');
   for (const tk of t) {
     tk.onclick = () => {
+      if (!webRTC.get_establish()) {
+        alert("Please establish WebRTC channel with your partner");
+        return;
+      }
       tktype = tk.value;
       tx.set_tkty(tktype);
+      webRTC.set_tktype(tktype);
+      webRTC.send({
+        type: "tktype",
+        data: tktype
+      })
+      const tktypeborder = document.getElementById("tktype-border");
+      if (tktype != webRTC.get_tktype()) {
+        tktypeborder.classList.remove("has-background-primary-light");
+        tktypeborder.classList.add("has-background-danger-light");
+      } else {
+        tktypeborder.classList.remove("has-background-danger-light");
+        tktypeborder.classList.add("has-background-primary-light");
+      }
     }
   }
 
-  const rtcsetup = document.getElementById("rtc-setup-btn");
-  rtcsetup.onclick = webRTC.init;
-
-  const rtcoffer = document.getElementById("rtc-offer-btn");
-  rtcoffer.onclick = webRTC.offer;
-
-
   const next = document.getElementById('next');
   next.onclick = async () => {
+    if (!webRTC.get_establish()) {
+      alert("Please establish WebRTC channel with your partner");
+      return;
+    }
+
+    if (pnid != webRTC.get_pnid() || tktype != webRTC.get_tktype()) {
+      console.log(pnid, webRTC.get_pnid(), tktype, webRTC.get_tktype());
+      alert("Please match with your partner");
+      return;
+    }
+
     const mchain = document.getElementById('mnet').value;
     mnid = lib.net[mchain];
     pnid = lib.net[document.getElementById('pnet').value];
@@ -312,21 +371,23 @@ const main = async () => {
       return;
     }
 
-    if (!webRTC.get_establish()) {
-      alert("Please establish WebRTC channel with your partner");
+    try {
+      [web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y] = await tx.setup(mnid, pnid, baseNid);
+    } catch (err) {
       return;
     }
-
-    [web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y] = await tx.setup(window, mnid, pnid, baseNid);
 
     tknames = {
       "A" : await x.methods.name().call(),
       "B" : await y.methods.name().call()
     };
 
+    lib.username[user] = username == null ? lib.username[user] : username;
+
     await init(mchain);
+    next.onclick = null;
   }
-  decoder.addABI(Mixer.abi);
 }
+
 
 export default main();

@@ -13,9 +13,9 @@ var user, polite;
 var established = false;
 let makingOffer = false;
 let ignoreOffer = false;
-var pc, sendChannel, recvChannel, hasCand = false; 
+var pc, sendChannel, recvChannel, hasCand = false;
+var pnid, ptktype, mtktype;
 var encode, alpha;
-// signalling channel
 const rtcbox = document.getElementById("rtcbox");
 
 var setupMsg = {
@@ -25,6 +25,10 @@ var setupMsg = {
 
 const set_user = (u) => {
   user = u;
+}
+
+const set_tktype = (t) => {
+  mtktype = t;
 }
 
 const get_establish = () => {
@@ -37,6 +41,14 @@ const get_encode = () => {
 
 const get_alpha = () => {
   return alpha;
+}
+
+const get_pnid = () => {
+  return pnid;
+}
+
+const get_tktype = () => {
+  return ptktype;
 }
 
 const init = async () => {
@@ -77,10 +89,15 @@ const init = async () => {
   }
 
   pc.ondatachannel = (event) =>{
+    alert("WebRTC connection established");
+
+    const roles = document.getElementsByName('r');
+    for (const role of roles) {
+      role.disabled = true;
+      role.onclick = null;
+    }
+
     recvChannel = event.channel;
-    recvChannel.onopen = () => {
-      console.log("Recv channel open");
-    };
 
     recvChannel.onmessage = async (event) => {
       const data = JSON.parse(atob(event.data));
@@ -89,31 +106,48 @@ const init = async () => {
         const verifyfield = document.getElementById("verifyfield");
         verifyfield.insertBefore(lib.createElementFromString("<p><b>Ready to verify </b></p>"), verifyfield.firstChild);
       } else if (data.type == "alpha") {
-        alpha = data.data;
+        alpha = BigInt(data.data);
         const skbox = document.getElementById("skbox");
-        skbox.insertBefore(lib.createElementFromString("<p><b>Ready to verify </b></p>"), skbox.firstChild);
+        skbox.insertBefore(lib.createElementFromString("<p><b>Ready to verify </b></p>"), skbox.lastChild);
+      } else if (data.type == "pnid") {
+        const pchain = data.data;
+        pnid = lib.net[pchain];
+        const pnetbox = document.getElementById("pnetbox");
+        pnetbox.innerHTML = `Partner's Network: ${pchain.toUpperCase()}`;
+        const pnetborder = document.getElementById("pnet-border");
+        if (pnid != lib.net[document.getElementById("pnet").value]) {
+          pnetborder.classList.remove("is-primary");
+          pnetborder.classList.add("is-danger");
+        } else {
+          pnetborder.classList.remove("is-danger");
+          pnetborder.classList.add("is-primary");
+        }
+      } else if (data.type == "tktype") {
+        ptktype = data.data;
+        const tktypebox = document.getElementById("tktypebox");
+        tktypebox.innerHTML = `Transaction Token: Partner has chosen ${ptktype}`;
+        const tktypeborder = document.getElementById("tktype-border");
+        if (ptktype != mtktype) {
+          tktypeborder.classList.remove("has-background-primary-light");
+          tktypeborder.classList.add("has-background-danger-light");
+        } else {
+          tktypeborder.classList.remove("has-background-danger-light");
+          tktypeborder.classList.add("has-background-primary-light");
+        }
       }
     }
-    recvChannel.onclose = () => { 
-      console.log("Recv channel closed."); 
-    };
+
     established = true;
 };
 
   sendChannel = pc.createDataChannel("My Channel", dataChannelOptions);
 
   sendChannel.onopen = () => {
-    console.log("Send channel open");
-  };
-    
-  sendChannel.onmessage = (event) => {
-    console.log("sendChannel received message:", event.data);
-  };
-  
-  sendChannel.onclose = () => { 
-    console.log("Send channel closed."); 
-  };
-
+    send({
+      type: "pnid",
+      data: document.getElementById("mnet").value
+    });
+  }
 }
 
 const send = (data) => {
@@ -121,10 +155,8 @@ const send = (data) => {
   sendChannel.send(btoa(JSON.stringify(data)));
 }
 
-const offer= async () => {
+const offer = async () => {
   const data = JSON.parse(document.getElementById("rtc-offer").value);
-
-  console.log(data);
 
   if (polite == null) {
     alert("Please initiate RTC setup");
@@ -168,11 +200,12 @@ const offer= async () => {
 
 }
 
-
-
 module.exports = {
   set_user, 
   get_establish,
+  get_tktype,
+  set_tktype,
+  get_pnid,
   init, offer, send,
   get_encode,
   get_alpha

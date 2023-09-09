@@ -1,7 +1,7 @@
 ### Dependencies
 
 ```
-npm install bulma bootstrap parcel websocket
+npm install parcel web3
 ```
 
 ### Command

@@ -1,5 +1,8 @@
-const abiCoder = require("web3-eth-abi");
-const { sha3, BN } = require("web3-utils");
+var web3;
+
+const set_web3 = (_web3) => {
+  web3 = _web3;
+}
 
 const state = {
   savedABIs: [],
@@ -20,7 +23,7 @@ function _addABI(abiArray) {
     // Iterate new abi to generate method id"s
     abiArray.map(function(abi) {
       if (abi.name) {
-        const signature = sha3(
+        const signature = web3.utils.sha3(
           abi.name +
             "(" +
             abi.inputs
@@ -28,6 +31,7 @@ function _addABI(abiArray) {
               .join(",") +
             ")"
         );
+        // console.log("signature: " + signature)
         if (abi.type === "event") {
           state.methodIDs[signature.slice(2)] = abi;
         } else {
@@ -46,7 +50,7 @@ function _decodeMethod(data) {
   const methodID = data.slice(2, 10);
   const abiItem = state.methodIDs[methodID];
   if (abiItem) {
-    let decoded = abiCoder.decodeParameters(abiItem.inputs, data.slice(10));
+    let decoded = web3.eth.abi.decodeParameters(abiItem.inputs, data.slice(10));
 
     let retData = {
       name: abiItem.name,
@@ -94,6 +98,7 @@ function _decodeMethod(data) {
 }
 
 module.exports = {
+  set_web3: set_web3,
   addABI: _addABI,
   decodeMethod: _decodeMethod
 };

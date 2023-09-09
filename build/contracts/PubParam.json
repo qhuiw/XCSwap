@@ -12655,14 +12655,22 @@
     "5777": {
       "events": {},
       "links": {
-        "alt_bn128": "0xAbd7A2dfD9bEc9d71764E19dBD4Eb57E7Dae6be5"
+        "alt_bn128": "0x6BF7e7d913D24ab9e2aAF473be738BB4B9864cd2"
       },
-      "address": "0x99f4eD319fD79ed1fF6a163c052d59B879692151",
-      "transactionHash": "0x1e0e7750cd3d7ca117062187e9886543ba6e46275f890b05f7729fbb8a0c26d6"
+      "address": "0x0A9861E4d0990deBE86E5889f71bd8f4524e1f74",
+      "transactionHash": "0xe4a8412f96c64254a768ea189f21dd87619c37c0bd38597322640d1425078671"
+    },
+    "11155111": {
+      "events": {},
+      "links": {
+        "alt_bn128": "0x5F9EC9cE1ADE10A5b41220139fE90631f8070BCA"
+      },
+      "address": "0x6e461454fA74d318F3e56f17A0616C17BfBc67E2",
+      "transactionHash": "0xf135046ebc74546cd3fe12b3e68e5e9a51a8ce81eb023c101a23b1821eff86c7"
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-09-03T20:18:55.793Z",
+  "updatedAt": "2023-09-08T17:56:42.230Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

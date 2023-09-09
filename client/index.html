@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XCSwap</title>
   <link rel="stylesheet" href="https://bulma.io/vendor/fontawesome-free-5.15.2-web/css/all.min.css">
-  <link rel="stylesheet" href="node_modules/bulma/css/bulma.css">
-  <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 
   <link rel="shortcut icon" href="./images/dapp-icon2.png" />
-
-  <script type="module" src="./utils/lib.js"></script>
 
   <style>
     .wrap {
@@ -47,59 +45,96 @@
     </nav>
   </div>
   <div class="container mt-2" id="page">
-    <div class="content">
-      <div class="columns">
-        <div class="column is-half">
-          <div class="box">
-          <h4>Please select <span class="tag is-primary is-light">your</span> transaction network</h4>
-          <div class="field is-grouped is-grouped-centered">
-          <img src="https://seeklogo.com/images/G/ganache-logo-1EB72084A8-seeklogo.com.png" alt="ganache" border="0" style="width:50px;height:50px" id="mimg">
-          <div class = "select is-rounded is-primary is-medium">
-            <select id="mnet">
-              <option value="ganache">Ganache</option>
-              <option value="klaytn">Klaytn</option>
-            </select>
-          </div>
+
+    <div class="box">
+      <div class="content mb-5">
+        <h4> <b> WebRTC </b>: creating a secure peer-to-peer communication channel </h4>
+        <hr>
+        <h4> How should we address you? </h4>
+        <div class="field has-addons">
+          <input class="input" type="text" placeholder="Enter your preferred name" id="name-input">
+          <button class="button is-primary" id="name-button">
+            <b> Enter </b>
+          </button>
+        </div>
+        <br>
+        <h4>Are you setting up first?</h4>
+
+        <div class="field is-grouped is-grouped-centered">
+          <div class="control">
+            <label class="radio box">
+              <input type="radio" name="r" value="B">
+              <b>Yes</b>
+            </label>
+            <label class="radio box">
+              <input type="radio" name="r" value="A">
+              <b>No</b>
+            </label>
           </div>
         </div>
+
+        <h4> Session Description Protocol (SDP) Exchange</h4>
+
+        <div class="field wrap" id="rtcbox">
+          <button class="button is-primary mt" id="rtc-setup-btn">
+            <b> Generate SDP </b>
+          </button>
+          <br> <br>
         </div>
-          <div class="column is-half">
-            <dib class="box">
-            <h4>Please select <span class="tag is-primary is-light">your partner</span>'s transaction network</h4>
-            <div class="field is-grouped is-grouped-centered ">
-            <img src= "https://seeklogo.com/images/G/ganache-logo-1EB72084A8-seeklogo.com.png" alt="truffle" border="0" style="width:50px;height:50px" id="pimg"> <hr>
-            <div class = "select is-rounded is-primary is-medium">     
-              <select id="pnet">
+        
+        <textarea class="textarea" placeholder="Paste your partner's SDP here" id="rtc-offer"></textarea>
+        <br>
+        <button class="button is-primary is-pulled-right" id="rtc-offer-btn">
+          <b> Receive Partner's SDP </b>
+        </button>
+      </div>
+    </div>
+
+  
+    <div class="columns">
+      <div class="column is-half">
+        <div class="box">
+          <div class="content">
+            <h4>Your Network</h4>
+          </div>
+          <div class="field is-grouped is-grouped-centered mb-5">
+            <img src="https://seeklogo.com/images/G/ganache-logo-1EB72084A8-seeklogo.com.png" alt="ganache" border="0" style="width:50px;height:50px" id="mimg">
+            <div class = "select is-rounded is-primary is-medium" id="mnet-border">
+              <select id="mnet">
                 <option value="ganache">Ganache</option>
                 <option value="klaytn">Klaytn</option>
+                <option value="sepolia">Sepolia</option>
+                <option value="goerli">Goerli</option>
               </select>
             </div>
           </div>
-            </div>
         </div>
       </div>
-    
-
-    <div class="box">
-      <div class="content">
-        <h4>Are you setting up first?</h4>
-      </div>
-      <div class="field is-grouped is-grouped-centered">
-        <label class="box control">
-          <input type="radio" name="r" value="B">
-          <b>Yes</b>
-        </label>
-        <label class="box control">
-          <input type="radio" name="r" value="A">
-          <b>No</b>
-        </label>
+      <div class="column is-half" style="height:100%">
+        <div class="box" >
+          <div class="content">
+            <h4 id="pnetbox">Partner's Network</h4>
+          </div>
+          <div class="field is-grouped is-grouped-centered mb-5">
+            <img src= "https://seeklogo.com/images/G/ganache-logo-1EB72084A8-seeklogo.com.png" alt="truffle" border="0" style="width:50px;height:50px" id="pimg">
+            <div class = "select is-rounded is-primary is-medium" id="pnet-border">     
+              <select id="pnet">
+                <option value="ganache">Ganache</option>
+                <option value="klaytn">Klaytn</option>
+                <option value="sepolia">Sepolia</option>
+                <option value="goerli">Goerli</option>
+              </select>
+            </div>
+          </div>
+          <p></p>
+        </div>
       </div>
     </div>
 
 
-    <div class="box">
+    <div class="box" id="tktype-border">
       <div class="content">
-        <h4>Choose your intended token type for trading</h4>
+        <h4 id="tktypebox">Transaction Token</h4>
       </div>
       <div class="field is-grouped is-grouped-centered">
         <label class="box control">
@@ -111,23 +146,6 @@
           <b>ERC721</b>
         </label>
       </div>
-    </div>
-
-    <div class="box wrap" id="rtcbox">
-      <div class="content">
-        <h4> WebRTC </h4>
-        <button class="button is-primary" id="rtc-setup-btn">
-          <b> Setup </b>
-        </button>
-      </div>
-    </div>
-
-    <div class="box mb-5">
-      <textarea class="textarea" placeholder="Paste your partner's SDP here" id="rtc-offer"></textarea>
-      <br>
-      <button class="button is-primary is-pulled-right" id="rtc-offer-btn">
-        <b> Receive </b>
-      </button> <br>
     </div>
 
     <div class="container mt-4">

@@ -1,8 +1,8 @@
-const lib = require("./lib.js");
-const decoder = require("./decoder.js");
-const webRTC = require("./webrtc.js");
-const rand = lib.rand;
 import Web3 from "web3";
+const lib = require("./lib.js");
+const rand = lib.rand;
+const decoder = require("./decoder.js");
+const webRTC = require("./webRTC.js");
 const PPArt = require("../../build/contracts/PubParam.json");
 const Mixer = require("../../build/contracts/Mixer.json");
 const MFArt = require("../../build/contracts/MixerFactory.json");
@@ -13,7 +13,6 @@ const FTArt = require("../../build/contracts/TokenFT.json");
 const NFTFArt = require("../../build/contracts/NFTFactory.json");
 const FTFArt = require("../../build/contracts/FTFactory.json");
 const TokenReg = require("../../build/contracts/TokenRegistrar.json");
-
 
 var web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y;
 var valx, valy, T1, T2, T3, Tmax, s;
@@ -49,15 +48,26 @@ const set_tkty = (t) => {
   tktype = t;
 }
 
-const setup = async (window, mnid, pnid, baseNid) => {
+const setup = async (mnid, pnid, baseNid) => {
   if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
-    try{
-      web3 = new Web3(window.ethereum);
-    } catch(err) {
-      alert("Please install metamask");
+    const currentChainId = await window.ethereum.request({
+      method: 'eth_chainId',
+    });
+
+    if (currentChainId != mnid) {
+      alert("Please change to correct network");
       return;
     }
+
+  } else {
+    alert ("Please install Metamask");
+    return;
   }
+  
+  web3 = new Web3(window.ethereum);
+
+  decoder.set_web3(web3);
+  decoder.addABI(Mixer.abi);
 
   const xnid = (user == 'A')? mnid : pnid;
   const ynid = (user == 'A')? pnid : mnid;
@@ -122,11 +132,14 @@ const connectWallet = async () => {
   );
   btn.nextElementSibling.replaceWith(acc);
 
-  lib.log(`User ${user} connected to wallet at address ${account}`);
+  lib.actlog(`User ${lib.username[user]} connected to wallet at address ${account}`);
 }
 
 const inputHandler = async (b) => {
-  if (account == null) { alert("Please connect wallet"); return; }
+  if (account == null) { 
+    alert("Please connect wallet"); 
+    return; 
+  }
   const inputs = document.getElementById('setup').value.split(",").map(element => BigInt(element));
   if (inputs.length != lib.inputpars[tktype]) {
     alert(`Please submit ${lib.inputpars[tktype]} values`);
@@ -143,7 +156,7 @@ const inputHandler = async (b) => {
   b.onclick = null;
   b.innerHTML = "<b>Submitted!</b>";
   b.classList.add("is-success");
-  lib.log(`User ${user} submitted common inputs: valx: ${valx}, valy: ${valy}, T1: ${T1}, T2: ${T2}, T3: ${T3}, Tmax: ${Tmax}, s: ${s}
+  lib.actlog(`User ${lib.username[user]} submitted common inputs: valx: ${valx}, valy: ${valy}, T1: ${T1}, T2: ${T2}, T3: ${T3}, Tmax: ${Tmax}, s: ${s}
   `);
 }
 
@@ -164,15 +177,16 @@ const mint = async () => {
   }
 
   try {
-    await tk.methods.mint(account, valtk).send({
+    const tx = await tk.methods.mint(account, valtk).send({
       from: account, gas: 6721975, gasPrice: gasPrice});
+    lib.translog(`Mint:`, tx);
   } catch(err) {
     alert(err.message);
     return;
   }
 
   alert("Minting successful");
-  lib.log(`User ${user} initiated Mint action: <br> minted value ${valtk} of token ${tknames[user]}`);
+  lib.actlog(`User ${lib.username[user]} initiated Mint action: <br> minted value ${valtk} of token ${tknames[user]}`);
 
   displaytk(tk, name, valtk);
 }
@@ -208,6 +222,7 @@ const displaytk = async (tk, name, valtk) => {
 }
 
 const approve = async () => {
+  console.log("approve");
   const addr = document.getElementById('approveaddr').value.trim();
   const ty = document.getElementById('approvety').value.trim();
 
@@ -220,13 +235,14 @@ const approve = async () => {
     return;
   }
   try {
-    await tk.methods.approve(mixer.options.address, valtk).send({from : account, gas: 6721975, gasPrice: gasPrice});
+    const tx = await tk.methods.approve(mixer.options.address, valtk).send({from : account, gas: 6721975, gasPrice: gasPrice});
+    lib.translog(`Approve:`, tx);
   } catch(err) {
     alert(err.message);
     return;
   }
   alert("Approve successful");
-  lib.log(`User ${user} initiated Approve action: <br> approved account ${mixer.options.address} to have access to token ${tknames[user]} value ${valtk}`);
+  lib.actlog(`User ${lib.username[user]} initiated Approve action: <br> approved account ${mixer.options.address} to have access to token ${tknames[user]} value ${valtk}`);
 }
 
 const checkBal = async (isX) => {
@@ -254,7 +270,7 @@ const checkBal = async (isX) => {
     return;
   }
 
-  lib.log(`User ${user} initiated Check ${str} action at token ${tknames[name]}: checked ${str} of ${input} to be ${output}`)
+  lib.actlog(`User ${lib.username[user]} initiated Check ${str} action at token ${tknames[name]}: checked ${str} of ${input} to be ${output}`)
 
   baltag.innerHTML = `<b>${str}: ${output}</b>`;
 }
@@ -284,8 +300,9 @@ const deposit = async () => {
   const sig = await mixer.methods.deposit(tx_dp, attrP.slice(4)).call();
 
   try {
-    await mixer.methods.process_dp(tx_dp, sig).send({
+    const tx = await mixer.methods.process_dp(tx_dp, sig).send({
       from: account, gas: 6721975, gasPrice: gasPrice});
+    lib.translog(`Deposit:`, tx);
   } catch(err) {
     alert(err.message);
     return;
@@ -300,7 +317,7 @@ const deposit = async () => {
     P_By = P;
   }
 
-  lib.log(`User ${user} initiated Deposit action: <br> deposited ${valtk} ${tknames[user]} to Mixer ${tknames[user].toUpperCase()}`);
+  lib.actlog(`User ${lib.username[user]} initiated Deposit action: <br> deposited ${valtk} ${tknames[user]} to Mixer ${tknames[user].toUpperCase()}`);
 
   const pacc = document.getElementById('pacc');
   pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Mixer ${tknames[user].toUpperCase()}</b></p>`));
@@ -346,8 +363,9 @@ const withdraw = async (isX) => {
   const sig = await mixer.methods.withdraw(tx_wd, wit).call();
 
   try {
-    await mixer.methods.process_wd(tx_wd, sig).send({
+    const tx = await mixer.methods.process_wd(tx_wd, sig).send({
       from: account, gas: 6721975, gasPrice: gasPrice});
+    lib.translog(`Mixer Process Deposit:`, tx);
   } catch(err) {
     alert(err.message);
     return;
@@ -360,7 +378,7 @@ const withdraw = async (isX) => {
     if (isX) {attrP_Bx = null;} else {attrP_By = null;}
   }
 
-  lib.log(`User ${user} initiated Withdraw action: <br> withdrew token ${tknames[name]} id ${valtk} from Mixer ${tknames[name].toUpperCase()}`);
+  lib.actlog(`User ${lib.username[user]} initiated Withdraw action: <br> withdrew token ${tknames[name]} id ${valtk} from Mixer ${tknames[name].toUpperCase()}`);
 
   const pacc = document.getElementById('pacc');
   pacc.lastChild.remove();
@@ -411,7 +429,7 @@ const setupB = async () => {
   const sigbox = document.getElementById('sigbox');
   sigbox.appendChild(lib.createElementFromString(`<p> <b>Transmitted</b> </p>`));
 
-  lib.log(`User ${user} transmitted setup signatures`);
+  lib.actlog(`User ${lib.username[user]} transmitted setup signatures`);
 
   const racc = document.getElementById('racc');
   racc.appendChild(lib.createElementFromString(`<p>${R_By.X},<br>${R_By.Y}</p>`));
@@ -456,9 +474,9 @@ const setupA = async () => {
     "data" : encode
   });
   const sigbox = document.getElementById('sigbox');
-  sigbox.appendChild(lib.createElementFromString(`<p>transmitted</p>`));
+  sigbox.appendChild(lib.createElementFromString(`<p> <b>Transmitted</b></p>`));
 
-  lib.log(`User ${user} transmitted setup signatures`); 
+  lib.actlog(`User ${lib.username[user]} transmitted setup signatures`); 
 
   const eacc = document.getElementById('eacc');
   E_Ay = await pp.methods.com([tcomE_Ay, [...ocomE_Ay]]).call();
@@ -518,7 +536,7 @@ const verify = async () => {
   verifybutton.innerHTML = "<b>Verified!</b>";
   verifybutton.classList.add("is-success");
 
-  lib.log(`User ${user} verified setup signatures`);
+  lib.actlog(`User ${lib.username[user]} verified setup signatures`);
 }
 
 const preswap = async () => {
@@ -573,8 +591,9 @@ const preswap = async () => {
   const sig = await mixer.methods.spend(tx_sp, wit).call();
 
   try {
-    await mixer.methods.process_sp(tx_sp, sig).send({
+    const tx = await mixer.methods.process_sp(tx_sp, sig).send({
       from: account, gas: 6721975, gasPrice: gasPrice});
+    lib.translog(`Mixer Process Spend (Preswap):`, tx);
   } catch(err) {
     alert(err.message);
     return;
@@ -586,7 +605,7 @@ const preswap = async () => {
     attrP_By = null;
   }
 
-  lib.log(`User ${user} initiated PreSwap action: <br> PreSwap ${P.X}, ${P.Y} to Mixer ${tknames[user].toUpperCase()}}`);
+  lib.actlog(`User ${lib.username[user]} initiated PreSwap action: <br> PreSwap ${P.X}, ${P.Y} to Mixer ${tknames[user].toUpperCase()}}`);
   
   const pacc = document.getElementById('pacc');
   pacc.lastChild.remove();
@@ -646,8 +665,9 @@ const exchange = async () => {
   const sig = await mixer.methods.spend(tx_sp, wit).call();
 
   try {
-    await mixer.methods.process_sp(tx_sp, sig).send({
+    const tx = await mixer.methods.process_sp(tx_sp, sig).send({
       from: account, gas: 6721975, gasPrice: gasPrice});
+    lib.translog(`Mixer Process Spend (Exchange):`, tx);
   } catch(err) {
     alert(err.message);
     return;
@@ -665,7 +685,7 @@ const exchange = async () => {
     attrP_Bx = attrP;
   }
 
-  lib.log(`User ${user} initiated Exchange action: <br> exchanged ${Eacc.X}, ${Eacc.Y} to ${P.X}, ${P.Y}`);
+  lib.actlog(`User ${lib.username[user]} initiated Exchange action: <br> exchanged ${Eacc.X}, ${Eacc.Y} to ${P.X}, ${P.Y}`);
 
   const eacc = document.getElementById('eacc');
   eacc.lastChild.remove();
@@ -720,8 +740,9 @@ const redeem = async (isX) => {
   const sig = await mixer.methods.spend(tx_sp, wit).call();
 
   try {
-    await mixer.methods.process_sp(tx_sp, sig).send({
+    const tx = await mixer.methods.process_sp(tx_sp, sig).send({
       from: account, gas: 6721975, gasPrice: gasPrice});
+    lib.translog(`Mixer Process Spend (Redeem):`, tx);
   }
   catch(err) {
     alert(err.message);
@@ -739,7 +760,7 @@ const redeem = async (isX) => {
     P_By = P;
   }
 
-  lib.log(`User ${user} initiated Redeem action: <br> redeemed ${Racc.X}, ${Racc.Y} to ${P.X}, ${P.Y}`);
+  lib.actlog(`User ${lib.username[user]} initiated Redeem action: <br> redeemed ${Racc.X}, ${Racc.Y} to ${P.X}, ${P.Y}`);
 
   const racc = document.getElementById('racc');
   racc.lastChild.remove();
@@ -773,7 +794,7 @@ const isinAcc = async (isX) => {
   alert("E-account in pool, you may exchange");
   isinChecked = true;
 
-  lib.log(`User ${user} checked that E-account ${Eacc.X}, ${Eacc.Y} is in Mixer ${tknames[name].toUpperCase()}`);
+  lib.actlog(`User ${lib.username[user]} checked that E-account ${Eacc.X}, ${Eacc.Y} is in Mixer ${tknames[name].toUpperCase()}`);
 }
 
 const sendskA = async () => {
@@ -783,7 +804,7 @@ const sendskA = async () => {
   }
   webRTC.send({
     "type" : "alpha",
-    "data" : alpha[0]
+    "data" : alpha[0].toString()
   });
 
   const skkey = document.getElementById("skkey");
@@ -810,7 +831,7 @@ const isinTagA = async () => {
   alert("Tag in pool, you may exchange");
   isinTag = true;
 
-  lib.log(`User ${user} checked if tag corresponding to private key ${alpha[0]} is in Mixer ${tknames[user].toUpperCase()}`);
+  lib.actlog(`User ${lib.username[user]} checked if tag corresponding to private key ${alpha[0]} is in Mixer ${tknames[user].toUpperCase()}`);
 
 }
 
@@ -830,14 +851,18 @@ const checkAlphaB = async () => {
     return;
   }
   alpha = alpha_input;
-  alert ("Successful");
 
-  lib.log(`User ${user} checked that partner's private key is ${alpha_input}`);
+  const alpha_button = document.getElementById('alpha-button');
+  alpha_button.onclick = null;
+  alpha_button.innerHTML = "<b>Verified!</b>";
+
+  lib.actlog(`User ${lib.username[user]} checked that partner's private key is ${alpha_input}`);
 }
 
 const checkBetaA = async () => {
   const txhash = document.getElementById('txhash').value;
   const tx = await web3.eth.getTransaction(txhash);
+  
   const decoded = decoder.decodeMethod(tx.input);
 
   const opn = decoded.params[0].value.attrS[0];
@@ -853,12 +878,13 @@ const checkBetaA = async () => {
   beta = b;
   alert ("Successful");
 
-  lib.log(`User ${user} checked that partner's private key is ${b}`);
+  lib.actlog(`User ${lib.username[user]} checked that partner's private key is ${b}`);
 }
 
 
 module.exports = { 
-  set_user, set_tkty,
+  set_user, 
+  set_tkty,
   setup,
   connectWallet,
   inputHandler,
