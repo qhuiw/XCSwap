@@ -1,7 +1,7 @@
 const TokenRegistrar = artifacts.require("TokenRegistrar");
 const FTFactory = artifacts.require("FTFactory");
 
-const overwritable = false;
+const overwritable = true;
 
 /* for same chain transaction */
 

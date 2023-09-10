@@ -16,7 +16,7 @@ const SoKab = artifacts.require("SoKab");
 const PubParam = artifacts.require("PubParam");
 const RelayRegistry = artifacts.require("RelayRegistry");
 
-const overwritable = false;
+const overwritable = true;
 
 module.exports = async function(deployer, _, accounts){
 

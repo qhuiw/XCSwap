@@ -11675,8 +11675,8 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x6BF7e7d913D24ab9e2aAF473be738BB4B9864cd2",
-      "transactionHash": "0x87f165e5f5fcf151539216b8a330648209499819f3cb0735444bf58173508856"
+      "address": "0x40aa92b8bC7d6640Ce4803DF67dF0CDcbB210016",
+      "transactionHash": "0x06438ffa2709300c2fb16bafafec96eaaf9889418e85bf3757855a1893035f0b"
     },
     "11155111": {
       "events": {},
@@ -11686,7 +11686,7 @@
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-09-08T17:56:41.917Z",
+  "updatedAt": "2023-09-10T07:37:38.638Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "arithmetic operations over elliptic curve alt_bn128",

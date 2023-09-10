@@ -2,9 +2,10 @@ const alt_bn128 = artifacts.require("alt_bn128");
 const DualRing = artifacts.require("DualRingEC");
 const OneofMany = artifacts.require("OneofMany");
 const DiffGenEqual = artifacts.require("DiffGenEqual");
+const PartEqual = artifacts.require("PartialEquality");
 const Sigma = artifacts.require("Sigma");
 
-const overwritable = false;
+const overwritable = true;
 
 module.exports = async function(deployer, _, accounts){
 

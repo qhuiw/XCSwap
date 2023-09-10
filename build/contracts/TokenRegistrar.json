@@ -5037,8 +5037,8 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x2Ba256348eC9EB52b88567B15fbA60723A4bD2C0",
-      "transactionHash": "0x5f736f15350fc0c9aae0b6fe810d81352719878d28c7e2cadc92066f055e9353"
+      "address": "0xf9b6cED66f25cCF476E2272904c0610da94CE106",
+      "transactionHash": "0x5b1cd7198de02d0666dadabf4e8afb761cdebfd3fbf3fcbd983ea7570fdfa977"
     },
     "11155111": {
       "events": {},
@@ -5048,7 +5048,7 @@
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-09-08T17:56:41.977Z",
+  "updatedAt": "2023-09-10T07:37:42.643Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Token Registrar",

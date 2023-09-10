@@ -41329,10 +41329,10 @@
     "5777": {
       "events": {},
       "links": {
-        "alt_bn128": "0x6BF7e7d913D24ab9e2aAF473be738BB4B9864cd2"
+        "alt_bn128": "0x40aa92b8bC7d6640Ce4803DF67dF0CDcbB210016"
       },
-      "address": "0x7E7Db6cA662e4950C0Bde83471947984B54e3B62",
-      "transactionHash": "0xaff4f6d4457cc65e46e27f3b3c9943ba4b5a7b5352ebeca50a5a9837d3dad356"
+      "address": "0xebbf8ff14958F9e293eF5f22Ba92a72E67c569A1",
+      "transactionHash": "0x60ce26fe951e8557ec6b9a75967b0a8243553daf86513d48c4a91dcb0340deae"
     },
     "11155111": {
       "events": {},
@@ -41342,7 +41342,7 @@
     }
   },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-09-08T17:56:42.173Z",
+  "updatedAt": "2023-09-10T07:37:42.688Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
