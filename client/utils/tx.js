@@ -1,4 +1,4 @@
-import Web3 from "web3";
+const Web3 = require("web3");
 const lib = require("./lib.js");
 const rand = lib.rand;
 const decoder = require("./decoder.js");
@@ -40,31 +40,25 @@ var tknames = {
   "Y" : ""
 };
 
-const set_user = (u) => {
-  user = u;
+const set_user = (_u) => {
+  user = _u;
 }
 
-const set_tkty = (t) => {
-  tktype = t;
+const set_tkty = (_t) => {
+  tktype = _t;
+}
+
+const set_s = (_s) => {
+  s = _s;
 }
 
 const setup = async (mnid, pnid, baseNid) => {
   if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
-    const currentChainId = await window.ethereum.request({
-      method: 'eth_chainId',
-    });
-
-    if (currentChainId != mnid) {
-      alert("Please change to correct network");
-      return;
-    }
-
+    web3 = new Web3(window.ethereum);
   } else {
     alert ("Please install Metamask");
     return;
   }
-  
-  web3 = new Web3(window.ethereum);
 
   decoder.set_web3(web3);
   decoder.addABI(Mixer.abi);
@@ -73,7 +67,6 @@ const setup = async (mnid, pnid, baseNid) => {
   const ynid = (user == 'A')? pnid : mnid;
 
   gasPrice = await web3.eth.getGasPrice();
-
   // change to base chain 
   pp = new web3.eth.Contract(PPArt.abi, PPArt.networks[baseNid].address);
   ba = new web3.eth.Contract(SoKba.abi, SoKba.networks[mnid].address);
@@ -111,7 +104,10 @@ const setup = async (mnid, pnid, baseNid) => {
   tknames["X"] = await x.methods.name().call();
   tknames["Y"] = await y.methods.name().call();
 
-  return [web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y];
+  // const {set_up} = require("../index.js");
+  // await set_up(mixerX, mixerY, x, y);
+
+  return [mixerX, mixerY, x, y];
 }
 
 const connectWallet = async () => {
@@ -124,9 +120,7 @@ const connectWallet = async () => {
     return;
   }
   const btn = document.getElementById('connect');
-  btn.onclick = null;
-  btn.innerHTML = "<b>You are Connected!</b>";
-  btn.classList.add("is-success");
+
   const acc = lib.createElementFromString(
     "<b class='is-pulled-right'>Account: " + account + "</b>"
   );
@@ -140,17 +134,29 @@ const inputHandler = async (b) => {
     alert("Please connect wallet"); 
     return; 
   }
-  const inputs = document.getElementById('setup').value.split(",").map(element => BigInt(element));
-  if (inputs.length != lib.inputpars[tktype]) {
-    alert(`Please submit ${lib.inputpars[tktype]} values`);
+  var inputs = [];
+  for (const id of lib.inputpars[tktype]){
+    const m = require("../index.js").get_mci(id);
+    const p = require("./webRTC.js").get_pci(id);
+    if (m != p || m == null) {
+      alert("Please match with your partner");
+      return;
+    }
+    inputs.push(m);
+  }
+
+  if (tktype == "ERC721") {
+    [valx, valy, T1, T2, T3, Tmax] = inputs;
+  } else  {
+    valx = valy = 1;
+    [T1, T2, T3, Tmax] = inputs;
+  }
+
+  if (T1 >= T2 || T2 >= T3 || T3 >= Tmax) {
+    alert("Please input valid transaction times");
     return;
   }
-  if (tktype == "ERC721") {
-    [valx, valy, T1, T2, T3, Tmax, s] = inputs;
-  } else  {
-    [T1, T2, T3, Tmax, s] = inputs;
-  }
-  if (tktype == "ERC20") valx = valy = 1;
+
   ci = true;
 
   b.onclick = null;
@@ -162,7 +168,7 @@ const inputHandler = async (b) => {
 
 const mint = async () => {
   if (ci == false) {
-    alert("Please submit common inputs"); 
+    alert("Please submit transaction times"); 
     return;
   }
 
@@ -188,7 +194,9 @@ const mint = async () => {
   alert("Minting successful");
   lib.actlog(`User ${lib.username[user]} initiated Mint action: <br> minted value ${valtk} of token ${tknames[user]}`);
 
-  displaytk(tk, name, valtk);
+  if (tktype == "ERC20") {
+    displaytk(tk, name, valtk);
+  }
 }
 
 const displaytk = async (tk, name, valtk) => {
@@ -222,7 +230,10 @@ const displaytk = async (tk, name, valtk) => {
 }
 
 const approve = async () => {
-  console.log("approve");
+  if (ci == false) {
+    alert("Please submit transaction times"); 
+    return;
+  }
   const addr = document.getElementById('approveaddr').value.trim();
   const ty = document.getElementById('approvety').value.trim();
 
@@ -383,12 +394,14 @@ const withdraw = async (isX) => {
   const pacc = document.getElementById('pacc');
   pacc.lastChild.remove();
 
-  displaytk(tk, name, valtk);
+  if (tktype == "ERC20") {
+    displaytk(tk, name, valtk);
+  }
 }
 
 const setupB = async () => {
   if (ci == false) {
-    alert("Please submit common inputs");
+    alert("Please submit transaction times");
     return;
   }
 
@@ -422,8 +435,8 @@ const setupB = async () => {
   
   /// change here
   webRTC.send({
-    "type" : "setup",
-    "data" : encode
+    type : "setup",
+    data : encode
   })
 
   const sigbox = document.getElementById('sigbox');
@@ -438,7 +451,7 @@ const setupB = async () => {
 
 const setupA = async () => {
   if (ci == false) {
-    alert("Please submit common inputs");
+    alert("Please submit transaction times");
     return;
   }
 
@@ -470,8 +483,8 @@ const setupA = async () => {
 
   /// change here
   webRTC.send({
-    "type" : "setup",
-    "data" : encode
+    type : "setup",
+    data : encode
   });
   const sigbox = document.getElementById('sigbox');
   sigbox.appendChild(lib.createElementFromString(`<p> <b>Transmitted</b></p>`));
@@ -492,11 +505,6 @@ const verify = async () => {
 
   if (encode == null) {
     alert("Please wait for your partner to transmit setup signatures");
-    return;
-  }
-
-  if (ci == false) {
-    alert("Please submit common inputs first");
     return;
   }
 
@@ -803,8 +811,8 @@ const sendskA = async () => {
     return;
   }
   webRTC.send({
-    "type" : "alpha",
-    "data" : alpha[0].toString()
+    type : "alpha",
+    data : alpha[0].toString()
   });
 
   const skkey = document.getElementById("skkey");
@@ -883,8 +891,7 @@ const checkBetaA = async () => {
 
 
 module.exports = { 
-  set_user, 
-  set_tkty,
+  set_user, set_tkty, set_s,
   setup,
   connectWallet,
   inputHandler,

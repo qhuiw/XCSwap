@@ -5,9 +5,34 @@ const webRTC = require("./utils/webRTC.js");
 /* state */
 var user, username, tktype, tknames;
 var mnid, pnid, baseNid;
+var mixerX, mixerY, x, y;
+var mci = {
+  "valx": null,
+  "valy": null,
+  "T1": null,
+  "T2": null,
+  "T3": null,
+  "Tmax": null
+}
 
-var web3, account;
-var pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y;
+const get_tktype = () => {
+  return tktype;
+}
+
+const get_mci = (id) => {
+  return mci[id];
+}
+
+const set_up = async (mx, my, xx, yy) => {
+  mixerX = mx;
+  mixerY = my;
+  x = xx;
+  y = yy;
+  tknames = {
+    "A" : await x.methods.name().call(),
+    "B" : await y.methods.name().call()
+  };
+}
 
 /* new page */
 const init = async (platform) =>{
@@ -26,12 +51,29 @@ const init = async (platform) =>{
         </div>
       </div>
       <div class = "content" id="step2">
-        <h4>2. Common Inputs </h4>
+        <h4>2. Transaction ${(tktype == "ERC721") ? "Token and " : ""}Times </h4>
         <div class = "box">
-          <div class = "field has-addons">
-            <input type="text" class="input" id="setup" placeholder="Enter ${(tktype == "ERC721") ? "valx, valy, " : ""}T1, T2, T3, Tmax, s" multiple>
+          <div class="field has-addons">
+            ${(tktype == "ERC721") ? 
+            `<b> Valx: </b>
+            <input type="text" class="input" name="ci-setup" placeholder="valx" id="valx">
+            <b> Valy: </b>
+            <input type="text" class="input" name="ci-setup" placeholder="valy" id="valy">` : ``
+            }
+            <b> T1: </b>
+            <input type="text" class="input" name="ci-setup"
+            placeholder="T1" id="T1">
+            <b> T2: </b>
+            <input type="text" class="input" name="ci-setup"
+            placeholder="T2" id="T2">
+            <b> T3: </b>
+            <input type="text" class="input" name="ci-setup"
+            placeholder="T3" id="T3">
+            <b> Tmax: </b>
+            <input type="text" class="input" name="ci-setup"
+            placeholder="Tmax" id="Tmax">
             <button class="btn btn-primary" id="ci"> 
-            <b> Submit </b>  
+              <b> Submit </b>  
             </button>
           </div>
         </div>
@@ -112,7 +154,7 @@ const init = async (platform) =>{
         <div class="content">
           <h4> Activity History </h4>
         </div>
-        <p>${lib.datetime() +"<br> User " + user + " Initialized"}</p>
+        <p>${lib.datetime() +"<br> User " + lib.username[user] + " Initialized"}</p>
       </div>
     </div>
   </div> 
@@ -244,6 +286,19 @@ const init = async (platform) =>{
   const connect = document.getElementById('connect');
   connect.onclick = tx.connectWallet;
 
+  const cisetups = document.getElementsByName('ci-setup');
+  for (const c of cisetups) {
+    c.onchange = () => {
+      webRTC.send({
+        type: "ci",
+        data: c.value,
+        id: c.id
+      });
+      mci[c.id] = BigInt(c.value);
+      lib.matchselect(mci[c.id], webRTC.get_pci(c.id), c);
+    }
+  }
+
   const cibutton = document.getElementById('ci'); 
   cibutton.onclick = tx.inputHandler.bind(null, cibutton);
 
@@ -260,19 +315,14 @@ const init = async (platform) =>{
   vb.onclick = tx.verify;
 };
 
-const get_tktype = () => {
-  return tktype;
-}
-
 const main = async () => {
-
   const rtcsetup = document.getElementById("rtc-setup-btn");
   rtcsetup.onclick = webRTC.init;
 
   const rtcoffer = document.getElementById("rtc-offer-btn");
   rtcoffer.onclick = webRTC.offer;
 
-  const getOption = async (el, id) => {
+  const netOpt = async (el, id) => {
     if (!webRTC.get_establish()) {
       alert("Please establish WebRTC channel with your partner");
       return;
@@ -291,21 +341,14 @@ const main = async () => {
     } else {
       pnid = lib.net[document.getElementById('pnet').value];
       const pnetborder = document.getElementById("pnet-border");
-      if (webRTC.get_pnid() != pnid) {
-        pnetborder.classList.remove("is-primary");
-        pnetborder.classList.add("is-danger");
-      } else {
-        pnetborder.classList.remove("is-danger");
-        pnetborder.classList.add("is-primary");
-      }
-
+      lib.matchselect(pnid, webRTC.get_pnid(), pnetborder);
     }
   }
 
   const pnet = document.getElementById("pnet");
-  pnet.onchange=getOption.bind(null, pnet, 'pimg');
+  pnet.onchange=netOpt.bind(null, pnet, 'pimg');
   const mnet = document.getElementById('mnet');
-  mnet.onchange=getOption.bind(null, mnet, 'mimg');
+  mnet.onchange=netOpt.bind(null, mnet, 'mimg');
 
   const roles = document.getElementsByName('r');
   for (const role of roles) {
@@ -332,19 +375,12 @@ const main = async () => {
       }
       tktype = tk.value;
       tx.set_tkty(tktype);
-      webRTC.set_tktype(tktype);
       webRTC.send({
         type: "tktype",
         data: tktype
       })
       const tktypeborder = document.getElementById("tktype-border");
-      if (tktype != webRTC.get_tktype()) {
-        tktypeborder.classList.remove("has-background-primary-light");
-        tktypeborder.classList.add("has-background-danger-light");
-      } else {
-        tktypeborder.classList.remove("has-background-danger-light");
-        tktypeborder.classList.add("has-background-primary-light");
-      }
+      lib.match(tktype, webRTC.get_tktype(), tktypeborder);
     }
   }
 
@@ -355,39 +391,47 @@ const main = async () => {
       return;
     }
 
-    if (pnid != webRTC.get_pnid() || tktype != webRTC.get_tktype()) {
-      console.log(pnid, webRTC.get_pnid(), tktype, webRTC.get_tktype());
-      alert("Please match with your partner");
-      return;
-    }
-
     const mchain = document.getElementById('mnet').value;
     mnid = lib.net[mchain];
     pnid = lib.net[document.getElementById('pnet').value];
     baseNid = user == "A"? mnid : pnid;
+
+    if (pnid != webRTC.get_pnid() || tktype != webRTC.get_tktype()) {
+      alert("Please match with your partner");
+      return;
+    }
 
     if (mnid == null || pnid == null || user == null || tktype == null) {
       alert("Please select all options");
       return;
     }
 
-    try {
-      [web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y] = await tx.setup(mnid, pnid, baseNid);
-    } catch (err) {
+    const currentChainId = await window.ethereum.request({
+      method: 'eth_chainId',
+    });
+  
+    if (currentChainId != lib.chain[mchain]) {
+      alert("Please change to correct network");
       return;
     }
+
+    [mixerX, mixerY, x, y] = await tx.setup(mnid, pnid, baseNid);
 
     tknames = {
       "A" : await x.methods.name().call(),
       "B" : await y.methods.name().call()
     };
-
-    lib.username[user] = username == null ? lib.username[user] : username;
-
+    
     await init(mchain);
     next.onclick = null;
+    lib.username[user] = username == null ? lib.username[user] : username;
   }
 }
 
+main();
 
-export default main();
+module.exports = {
+  get_tktype,
+  get_mci,
+  set_up
+}

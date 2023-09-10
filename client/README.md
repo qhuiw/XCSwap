@@ -1,14 +1,10 @@
 ### Dependencies
 
 ```
-npm install parcel web3
+npm install parcel web3@1.10.0
 ```
 
 ### Command
-<!-- Go to the image folder and start http-server by 
-```
-http-server ./
-``` -->
 ```
 npm run start
 ```

@@ -20,6 +20,18 @@ const net = {
   "klaytn" : 1001
 }
 
+const chain = {
+  "ganache" :1337,
+  "ropsten" : 3,
+  "rinkeby" : 4,
+  "goerli" : 5,
+  "kovan" : 42,
+  "mainnet" : 1,
+  "matic" : 137,
+  "mumbai" : 80001,
+  "klaytn" : 1001
+}
+
 const img = {
   "ganache": "https://seeklogo.com/images/G/ganache-logo-1EB72084A8-seeklogo.com.png",
   "klaytn": "https://cdn-images-1.medium.com/max/1200/1*3tSS6q_D-lyttNdlRwqoQw.png",
@@ -93,9 +105,29 @@ const createMixerfield = (isX, user) => {
   return mixerfield;
 }
 
+const match = (a, b, el) => {
+  if (a != b) {
+    el.classList.remove("has-background-primary-light");
+    el.classList.add("has-background-danger-light");
+  } else {
+    el.classList.remove("has-background-danger-light");
+    el.classList.add("has-background-primary-light");
+  }
+}
+
+const matchselect = (a, b, el) => {
+  if (a != b) {
+    el.classList.remove("is-primary");
+    el.classList.add("is-danger");
+  } else {
+    el.classList.remove("is-danger");
+    el.classList.add("is-primary");
+  }
+}
+
 const inputpars = {
-  "ERC20" : 5, //T1, T2, T3, Tmax, s
-  "ERC721" : 7 //valx, valy, T1, T2, T3, Tmax, s
+  "ERC20" : ["T1", "T2", "T3", "Tmax"],
+  "ERC721" : ["valx", "valy", "T1", "T2", "T3", "Tmax"]
 }
 
 const createTitle = (id, text) => {
@@ -114,7 +146,8 @@ const username = {
 module.exports = { 
   createElementFromString, 
   createField, createMixerfield,
-  insertAfter, createTitle,
+  insertAfter, createTitle, 
+  match, matchselect, chain,
   net, img, inputpars, username,
   rand, datetime, actlog, translog
 };
