@@ -308,7 +308,6 @@ const deposit = async () => {
 
   const onetP = await pp.methods.onetAcc(attrP).call();
   const tx_dp = [onetP, attrP.slice(0,4)];
-  console.log(tx_dp, attrP.slice(4));
   const sig = await mixer.methods.deposit(tx_dp, attrP.slice(4)).call({
     from:account
   });
