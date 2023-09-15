@@ -174,7 +174,6 @@ const mint = async () => {
 
   const valtk = user == 'A'? valx : valy;
   const tk = user == 'A'? x : y;
-  const name = await tk.methods.name().call();
 
   const val = document.getElementById('mtinput').value;
   if (BigInt(val) != valtk && tktype == "ERC721") { 
@@ -195,7 +194,7 @@ const mint = async () => {
   lib.actlog(`User ${lib.username[user]} initiated Mint action: <br> minted value ${valtk} of token ${tknames[user]}`);
 
   if (tktype == "ERC20") {
-    displaytk(tk, name, valtk);
+    displaytk(tk, tknames[user], valtk);
   }
 }
 
@@ -397,7 +396,7 @@ const withdraw = async (isX) => {
   pacc.lastChild.remove();
 
   if (tktype == "ERC20") {
-    displaytk(tk, name, valtk);
+    displaytk(tk, tknames[name], valtk);
   }
 }
 
