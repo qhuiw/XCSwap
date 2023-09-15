@@ -18,15 +18,3 @@ mkcert localhost 127.0.0.1
 ```
 
 ### Instructions
-
-
-
-<!-- 1) Open your terminal and type
-
-npm install -g 
-
-2)  root folder that you want to serve you files and type:
-
-
-
-3) Read the output of the terminal, something kinda http://localhost:8080 will appear. -->

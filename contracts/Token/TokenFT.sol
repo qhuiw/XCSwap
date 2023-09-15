@@ -26,7 +26,7 @@ contract TokenFT is Token, ERC20 {
   }
 
   function isApproved(address spender, uint256 value) public view override returns (bool){
-    address owner = msg.sender;
+    address owner = _msgSender();
     if (balanceOf(owner) < value) revert ("Insufficient Allowance");
     return ERC20.allowance(owner, spender) >= value;
   }
@@ -36,7 +36,9 @@ contract TokenFT is Token, ERC20 {
   /// @param to destination address
   /// @param value transfer value
   function transfer(address from, address to, uint256 value) public override returns (bool) {
-    return ERC20.transferFrom(from, to, value);
+    // return ERC20.transferFrom(from, to, value);
+    ERC20._transfer(from, to, value);
+    return true;
   }
 
   function mint(address account, uint256 value) public override {

@@ -308,7 +308,10 @@ const deposit = async () => {
 
   const onetP = await pp.methods.onetAcc(attrP).call();
   const tx_dp = [onetP, attrP.slice(0,4)];
-  const sig = await mixer.methods.deposit(tx_dp, attrP.slice(4)).call();
+  console.log(tx_dp, attrP.slice(4));
+  const sig = await mixer.methods.deposit(tx_dp, attrP.slice(4)).call({
+    from:account
+  });
 
   try {
     const tx = await mixer.methods.process_dp(tx_dp, sig).send({
@@ -433,7 +436,6 @@ const setupB = async () => {
   setupbutton.onclick = null;
   setupBsucc = true;
   
-  /// change here
   webRTC.send({
     type : "setup",
     data : encode
@@ -481,7 +483,6 @@ const setupA = async () => {
   setupbutton.onclick = null;
   setupAsucc = true;
 
-  /// change here
   webRTC.send({
     type : "setup",
     data : encode
@@ -633,7 +634,11 @@ const exchange = async () => {
   const sk = user == 'A' ? beta : alpha;
 
   if (sk == null) {
-    alert("Please submit your partner's private key");
+    if (user == 'A'){
+      alert("Please submit your partner's private key");
+    } else {
+      alert("Please submit your partner's transaction hash to obtain his/her private key");
+    }
     return;
   }
 
@@ -884,7 +889,7 @@ const checkBetaA = async () => {
     return;
   }
   beta = b;
-  alert ("Successful");
+  alert ("Transaction validated, you may proceed to exchange");
 
   lib.actlog(`User ${lib.username[user]} checked that partner's private key is ${b}`);
 }

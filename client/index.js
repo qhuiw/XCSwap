@@ -23,17 +23,6 @@ const get_mci = (id) => {
   return mci[id];
 }
 
-const set_up = async (mx, my, xx, yy) => {
-  mixerX = mx;
-  mixerY = my;
-  x = xx;
-  y = yy;
-  tknames = {
-    "A" : await x.methods.name().call(),
-    "B" : await y.methods.name().call()
-  };
-}
-
 /* new page */
 const init = async (platform) =>{
   const page = document.getElementById('page');
@@ -428,10 +417,9 @@ const main = async () => {
   }
 }
 
-main();
-
 module.exports = {
   get_tktype,
-  get_mci,
-  set_up
+  get_mci
 }
+
+main();
