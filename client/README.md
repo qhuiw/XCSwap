@@ -1,20 +1,22 @@
-### Dependencies
+# Dependencies
 
 ```
 npm install parcel web3@1.10.0
 ```
 
-### Command
+# Instructions
 ```
 npm run start
 ```
-The script will ask [`parceljs.org`](https://parceljs.org/) generate a SSL certificate for HTTPS connection to localhost. For mac user, you might need to [add the certificate file](https://support.apple.com/en-au/guide/keychain-access/kyca2431/mac) `xx.crt` to `Keychain Access` under `System Keychains` and change under the `Trust` section the permissions to `always trust`.
+The script will start a web server running the client on `http://localhost:1234`.
 
-Or download a local CA (e.g. [`mkcert`](https://github.com/FiloSottile/mkcert)) to certify domain names. On mac, open terminal, and 
-```
-brew install mkcert
-brew install nss # if you use Firefox
-mkcert localhost 127.0.0.1
-```
+## Two-Party Single-Token Swap
 
-### Instructions
+To simulate two-party swap on a single machine, execute the above command in two terminals. The second instance will run on a different port `http://localhost:xxxxx`.
+
+To simulate cross-browser communication, open the two servers from separate browsers, e.g. [Chrome](https://www.google.com/intl/en_au/chrome/) and [Edge](https://www.microsoft.com/en-us/edge?form=MA13IT).
+
+You should see a welcome page look like below.
+![Welcome](./images/welcome.png)
+
+Follow our video walkthough or screenshots for a complete simulation of a two-party single-token swap.
