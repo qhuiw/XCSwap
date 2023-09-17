@@ -1,7 +1,9 @@
 # XCSwap: A Confidential Cross-Chain Atomic Swap Protocol
 
 ## Dependencies
-- npm install @truffle/hdwallet-provider
+```
+npm install @truffle/hdwallet-provider
+```
 
 ## Network Configuration
 Currently, the truffle project supports the following testnets:
@@ -73,7 +75,9 @@ and follow the instructions on the interface to complete transactions
 3. Use the default accounts in wallet
 ![Local Accounts](https://trufflesuite.com/img/docs/ganache/ganache-accounts.png)
 
-4. [Metamask Import Account](https://support.metamask.io/hc/en-us/articles/360015489331-How-to-import-an-account)
+
+
+1. [Metamask Import Account](https://support.metamask.io/hc/en-us/articles/360015489331-How-to-import-an-account)
 ![Import Account](https://support.metamask.io/hc/article_attachments/17096511483163)
 
 ### Public Testnets
