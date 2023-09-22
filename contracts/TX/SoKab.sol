@@ -12,13 +12,12 @@ contract SoKab {
   using alt_bn128 for uint256;
   using alt_bn128 for alt_bn128.G1Point;
 
-  PubParam pp;
+  // PubParam pp;
   PE pe;
   DG dg;
   SG sg;
 
-  constructor (address _pp, address _pe, address _dg, address _sg) {
-    pp = PubParam(_pp);
+  constructor (address _pe, address _dg, address _sg) {
     pe = PE(_pe);
     dg = DG(_dg);
     sg = SG(_sg);
@@ -48,7 +47,7 @@ contract SoKab {
   /// @dev sok L_{ab} sign by user A
   /// @param stm public statement of L_{ab}
   /// @param wit (a1^, a2, a3, a4, a5)
-  function sign(Stm memory stm, uint256[5] memory wit) public view returns (Sig memory sig) {
+  function sign(PubParam pp, Stm memory stm, uint256[5] memory wit) public view returns (Sig memory sig) {
     alt_bn128.G1Point[] memory Gs = pp.gs();
     uint n = pp.n();
 
@@ -115,15 +114,15 @@ contract SoKab {
   }
 
   /// @dev sok L_{ba} verify by user A
-  function verify(Stm memory stm, Sig memory sig) public view returns (bool) {
-    RTN memory rtn = verify_(stm, sig);
+  function verify(PubParam pp, Stm memory stm, Sig memory sig) public view returns (bool) {
+    RTN memory rtn = verify_(pp, stm, sig);
     return rtn.b_pe_tcom && rtn.b_dg && rtn.b_sg && rtn.b_pe_R && rtn.b_dg_R;
   }
 
   /// @dev sok L_{ab} verify by user A
   /// @param stm public statement of L_{ab}
   /// @param sig L_{ab} signature
-  function verify_(Stm memory stm, Sig memory sig) private view returns (RTN memory rtn) {
+  function verify_(PubParam pp, Stm memory stm, Sig memory sig) private view returns (RTN memory rtn) {
     alt_bn128.G1Point[] memory Gs = pp.gs();
     uint n = pp.n();
     uint sk_pos = pp.sk_pos();

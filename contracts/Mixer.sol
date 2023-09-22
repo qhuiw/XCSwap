@@ -208,7 +208,8 @@ contract MixerFactory {
   address[] _pps;
   address[] _mixers;
 
-  function addMixer(address _mixer) public {
+  function addMixer(address _pp, address _mixer) public {
+    _pps.push(_pp);
     _mixers.push(_mixer);
   }
 
