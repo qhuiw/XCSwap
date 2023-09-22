@@ -1,4 +1,5 @@
 const alt_bn128 = artifacts.require("alt_bn128");
+const PubParam = artifacts.require("PubParam");
 const Mixer = artifacts.require("Mixer");
 const TokenRegistrar = artifacts.require("TokenRegistrar");
 const TokenNFT = artifacts.require("TokenNFT");
@@ -20,7 +21,7 @@ module.exports = async function(deployer, _, accounts){
     return;
   }
 
-  var baseNid;
+  var baseNid = 5777;
 
   for (i = 0; i < argv.length; i++) {
     if (argv[i] == "--nid" && i+1 < argv.length) {
@@ -30,6 +31,7 @@ module.exports = async function(deployer, _, accounts){
   }
 
   const reg_addr = TokenRegistrar.networks[baseNid].address;
+  const pp_addr = PubParam.networks[baseNid].address;
   
   /* Create Mixer */
   await deployer.deploy(Mixer, reg_addr, pp_addr, SoKdp.address, SoKwd.address, SoKsp.address);
