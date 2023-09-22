@@ -173,6 +173,10 @@ contract Mixer {
     return _accs;
   }
 
+  function get_pp() public view returns (PubParam){
+    return pp;
+  }
+
   function isValid(alt_bn128.G1Point[] memory R) public view returns (bool) {
     for (uint i = 0; i < R.length; i++) {
       if (!_in(_accs, R[i])) return false;
@@ -201,6 +205,7 @@ contract Mixer {
 }
 
 contract MixerFactory {
+  address[] _pps;
   address[] _mixers;
 
   function addMixer(address _mixer) public {
@@ -209,6 +214,10 @@ contract MixerFactory {
 
   function getMixers() public view returns (address[] memory) {
     return _mixers;
+  }
+
+  function getPPs() public view returns (address[] memory) {
+    return _pps;
   }
   
 }
