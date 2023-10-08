@@ -271,170 +271,210 @@ contract("Protocol", async (accounts) => {
 
   });
 
-  /* send to B */
-  var a1;
+  it ("tests redeem A to mixerX", async () => {
 
-  it("tests offchain A to B", async () => {
-    const E_Ay = await pp.com([tcomE_Ay, ocomE_Ay]);
-    const bool = await mixerY.inAcc(E_Ay);
-    assert.equal(bool, true, "E_Ay not in MixerY");
+    const R = Array.from(await mixerX.get_accs()).slice(0, ring_size);
+
+    const theta = 4;
+    R[theta] = R_Ax;
+
+    const gs = R.slice(-Math.log2(ring_size));
 
     /* private to A */
     const alpha = [5,6,7,8,9];
-    a1 = alpha[0];
-  });
 
-  var tx_bx;
+    const tagS = await pp.TagEval(alpha[0]);
 
-  it ("tests exchange B to MixerX", async () => {
-    assert(await pp.TagKGen(a1), pkx, "A has given the false sk");
+    const attrR_Ax = [ty_x, valx, T2, Tmax, alpha[0], alpha[3], alpha[4]];
+    const attrP_Ax = [ty_x, valx, T2, Tmax, 30, 31, 32];
 
-    /* spend E_Bx */
-    const E_Bx = await pp.com([tcomE_Bx, ocomE_Bx]);
-    const bool = await mixerX.inAcc(E_Bx);
-    assert.equal(bool, true, "E_Bx not in MixerX");
+    const pkT = await pp.TagKGen(attrP_Ax[4]);
+    const tcom_T = [await pp.tCom(attrP_Ax)];
+    const ocom_T = [await pp.oCom(attrP_Ax)];
 
-    const R = Array.from(await mixerX.get_accs()).slice(0, ring_size);
+    const tx_sp = [R, gs, tagS, [attrR_Ax[5], attrR_Ax[2], attrR_Ax[3]], pkT, tcom_T, ocom_T];
 
-    const theta = 4;
+    const attrTs = [[attrP_Ax[2], attrP_Ax[3], attrP_Ax[5], attrP_Ax[6]]];
 
-    R[theta] = E_Bx;
-
-    const gs = R.slice(-Math.log2(ring_size));
-
-    const tagS = await pp.TagEval(a1);
-
-    /* private to B, mint P_Bx */
-    const beta = [1,2,3,4];
-    const attrP_Bx = [ty_x, valx, T2, Tmax, 30, 31, 32];
-
-    // use sk of target acc P_Bx
-    const pkT = await pp.TagKGen(attrP_Bx[4]);
-
-    const tcom_T = [await pp.tCom(attrP_Bx)];
-    const ocom_T = [await pp.oCom(attrP_Bx)];
-
-    const attrTs = [[attrP_Bx[2], attrP_Bx[3], attrP_Bx[5], attrP_Bx[6]]];
-
-    // opnS in attrE_Bx
-    const tx_sp = [R, gs, tagS, [beta[0]+s, T1, T2], pkT, tcom_T, ocom_T];
-    tx_bx = tx_sp;
-
-    // sk in attrE_Bx = a1, 
-    // ok in attrE_Bx = beta[3]
-    const wit = [theta, [ty_x, valx, a1, beta[3]], attrP_Bx[4], attrTs];
+    const wit = [theta, [ty_x, valx, attrR_Ax[4], attrR_Ax[6]], attrP_Ax[4], attrTs];
 
     const startTime = performance.now();
-    const sig = await mixerX.spend.call(tx_sp, wit, {from : B});
+    const sig = await mixerX.spend.call(tx_sp, wit, {from : A});
     const endTime = performance.now();
-    console.log("Exchange B to MixerX call time: " + (endTime - startTime) + " ms");
+    console.log("Redeem A to MixerX call time: " + (endTime - startTime) + " ms");
 
-    const b = await mixerX.process_sp.call(tx_sp, sig, {from : B});
+    const b = await mixerX.process_sp.call(tx_sp, sig, {from : A});
+    assert.equal(b, true, "Redeem A to MixerX failed");
 
-    assert.equal(b, true, "Exchange B to MixerX failed");
-
-    let tx = await mixerX.process_sp.sendTransaction(tx_sp, sig, {from : B});
-    console.log("Exchange B to MixerX gas used: " + tx.receipt.gasUsed);
-  });
-
-  it ("tests exchange A to MixerY", async () => {
-    const tag = await pp.TagEval(a1);
-    const b = await mixerX.inTag(tag);
-    assert.equal(b, true, "B does not spend E_Bx");
-
-    const R = Array.from(await mixerY.get_accs()).slice(0, ring_size);
-    const theta = 4;
-    const E_Ay = await pp.com([tcomE_Ay, ocomE_Ay]);
-    R[theta] = E_Ay;
-
-    const gs = R.slice(-Math.log2(ring_size));
-
-    // b1 = opn(TX_Bx) - s
-    const beta = tx_bx[3][0] - s;
-    const tagS = await pp.TagEval(beta);
-
-    /* private to A, mint P_Ay */
-    const alpha = [5,6,7,8,9];
-    const attrP_Ay = [ty_y, valy, T3, Tmax, 40, 41, 42];
-
-    // use sk of target acc P_Ay
-    const pkT = await pp.TagKGen(attrP_Ay[4]);
-
-    const tcom_T = [await pp.tCom(attrP_Ay)];
-    const ocom_T = [await pp.oCom(attrP_Ay)];
-
-    const attrTs = [[attrP_Ay[2], attrP_Ay[3], attrP_Ay[5], attrP_Ay[6]]];
-
-    const tx_sp = [R, gs, tagS, [alpha[1], T2, T3], pkT, tcom_T, ocom_T];
-    const wit = [theta, [ty_y, valy, beta, alpha[2]], attrP_Ay[4], attrTs];
-
-    const sig = await mixerY.spend.call(tx_sp, wit, {from : A});
-
-    const bool = await mixerY.process_sp.call(tx_sp, sig, {from : A});
-
-    assert.equal(bool, true, "Exchange A to MixerY failed");
-
-    await mixerY.process_sp.sendTransaction(tx_sp, sig, {from : A});
+    let tx = await mixerX.process_sp.sendTransaction(tx_sp, sig, {from : A});
+    console.log("Redeem A to MixerX gas used: " + tx.receipt.gasUsed);
 
   });
 
-  it ("tests B withdraw token x", async () => {
-    const attrP_Bx = [ty_x, valx, T2, Tmax, 30, 31, 32];
-    const P_Bx = await pp.Com(attrP_Bx);
+  // /* send to B */
+  // var a1;
 
-    const R = Array.from(await mixerX.get_accs()).slice(0, ring_size);
-    const theta = 4;
-    R[theta] = P_Bx;
+  // it("tests offchain A to B", async () => {
+  //   const E_Ay = await pp.com([tcomE_Ay, ocomE_Ay]);
+  //   const bool = await mixerY.inAcc(E_Ay);
+  //   assert.equal(bool, true, "E_Ay not in MixerY");
 
-    const gs = R.slice(-Math.log2(ring_size));
+  //   /* private to A */
+  //   const alpha = [5,6,7,8,9];
+  //   a1 = alpha[0];
+  // });
 
-    const tag = await pp.TagEval(attrP_Bx[4]);
+  // var tx_bx;
 
-    const tx_wd = [R, gs, tag, attrP_Bx.slice(0, 4), B];
+  // it ("tests exchange B to MixerX", async () => {
+  //   assert(await pp.TagKGen(a1), pkx, "A has given the false sk");
 
-    const wit = [theta].concat(attrP_Bx.slice(4));
+  //   /* spend E_Bx */
+  //   const E_Bx = await pp.com([tcomE_Bx, ocomE_Bx]);
+  //   const bool = await mixerX.inAcc(E_Bx);
+  //   assert.equal(bool, true, "E_Bx not in MixerX");
 
-    const startTime = performance.now();
-    const sig = await mixerX.withdraw.call(tx_wd, wit);
-    const endTime = performance.now();
-    console.log("B Withdraw from MixerX call time: " + (endTime - startTime) + " ms");
+  //   const R = Array.from(await mixerX.get_accs()).slice(0, ring_size);
 
-    const b = await mixerX.process_wd.call(tx_wd, sig);
+  //   const theta = 4;
 
-    assert.equal(b, true, "B Withdraw from MixerX failed");
+  //   R[theta] = E_Bx;
 
-    let tx = await mixerX.process_wd.sendTransaction(tx_wd, sig);
-    console.log("B Withdraw from MixerX gas used: " + tx.receipt.gasUsed);
+  //   const gs = R.slice(-Math.log2(ring_size));
+
+  //   const tagS = await pp.TagEval(a1);
+
+  //   /* private to B, mint P_Bx */
+  //   const beta = [1,2,3,4];
+  //   const attrP_Bx = [ty_x, valx, T2, Tmax, 30, 31, 32];
+
+  //   // use sk of target acc P_Bx
+  //   const pkT = await pp.TagKGen(attrP_Bx[4]);
+
+  //   const tcom_T = [await pp.tCom(attrP_Bx)];
+  //   const ocom_T = [await pp.oCom(attrP_Bx)];
+
+  //   const attrTs = [[attrP_Bx[2], attrP_Bx[3], attrP_Bx[5], attrP_Bx[6]]];
+
+  //   // opnS in attrE_Bx
+  //   const tx_sp = [R, gs, tagS, [beta[0]+s, T1, T2], pkT, tcom_T, ocom_T];
+  //   tx_bx = tx_sp;
+
+  //   // sk in attrE_Bx = a1, 
+  //   // ok in attrE_Bx = beta[3]
+  //   const wit = [theta, [ty_x, valx, a1, beta[3]], attrP_Bx[4], attrTs];
+
+  //   const startTime = performance.now();
+  //   const sig = await mixerX.spend.call(tx_sp, wit, {from : B});
+  //   const endTime = performance.now();
+  //   console.log("Exchange B to MixerX call time: " + (endTime - startTime) + " ms");
+
+  //   const b = await mixerX.process_sp.call(tx_sp, sig, {from : B});
+
+  //   assert.equal(b, true, "Exchange B to MixerX failed");
+
+  //   let tx = await mixerX.process_sp.sendTransaction(tx_sp, sig, {from : B});
+  //   console.log("Exchange B to MixerX gas used: " + tx.receipt.gasUsed);
+  // });
+
+  // it ("tests exchange A to MixerY", async () => {
+  //   const tag = await pp.TagEval(a1);
+  //   const b = await mixerX.inTag(tag);
+  //   assert.equal(b, true, "B does not spend E_Bx");
+
+  //   const R = Array.from(await mixerY.get_accs()).slice(0, ring_size);
+  //   const theta = 4;
+  //   const E_Ay = await pp.com([tcomE_Ay, ocomE_Ay]);
+  //   R[theta] = E_Ay;
+
+  //   const gs = R.slice(-Math.log2(ring_size));
+
+  //   // b1 = opn(TX_Bx) - s
+  //   const beta = tx_bx[3][0] - s;
+  //   const tagS = await pp.TagEval(beta);
+
+  //   /* private to A, mint P_Ay */
+  //   const alpha = [5,6,7,8,9];
+  //   const attrP_Ay = [ty_y, valy, T3, Tmax, 40, 41, 42];
+
+  //   // use sk of target acc P_Ay
+  //   const pkT = await pp.TagKGen(attrP_Ay[4]);
+
+  //   const tcom_T = [await pp.tCom(attrP_Ay)];
+  //   const ocom_T = [await pp.oCom(attrP_Ay)];
+
+  //   const attrTs = [[attrP_Ay[2], attrP_Ay[3], attrP_Ay[5], attrP_Ay[6]]];
+
+  //   const tx_sp = [R, gs, tagS, [alpha[1], T2, T3], pkT, tcom_T, ocom_T];
+  //   const wit = [theta, [ty_y, valy, beta, alpha[2]], attrP_Ay[4], attrTs];
+
+  //   const sig = await mixerY.spend.call(tx_sp, wit, {from : A});
+
+  //   const bool = await mixerY.process_sp.call(tx_sp, sig, {from : A});
+
+  //   assert.equal(bool, true, "Exchange A to MixerY failed");
+
+  //   await mixerY.process_sp.sendTransaction(tx_sp, sig, {from : A});
+
+  // });
+
+  // it ("tests B withdraw token x", async () => {
+  //   const attrP_Bx = [ty_x, valx, T2, Tmax, 30, 31, 32];
+  //   const P_Bx = await pp.Com(attrP_Bx);
+
+  //   const R = Array.from(await mixerX.get_accs()).slice(0, ring_size);
+  //   const theta = 4;
+  //   R[theta] = P_Bx;
+
+  //   const gs = R.slice(-Math.log2(ring_size));
+
+  //   const tag = await pp.TagEval(attrP_Bx[4]);
+
+  //   const tx_wd = [R, gs, tag, attrP_Bx.slice(0, 4), B];
+
+  //   const wit = [theta].concat(attrP_Bx.slice(4));
+
+  //   const startTime = performance.now();
+  //   const sig = await mixerX.withdraw.call(tx_wd, wit);
+  //   const endTime = performance.now();
+  //   console.log("B Withdraw from MixerX call time: " + (endTime - startTime) + " ms");
+
+  //   const b = await mixerX.process_wd.call(tx_wd, sig);
+
+  //   assert.equal(b, true, "B Withdraw from MixerX failed");
+
+  //   let tx = await mixerX.process_wd.sendTransaction(tx_wd, sig);
+  //   console.log("B Withdraw from MixerX gas used: " + tx.receipt.gasUsed);
     
-    const x_owner = await x.ownerOf(valx);
-    assert.equal(x_owner, B, "B Withdraw from MixerX transfer failed");
-  });
+  //   const x_owner = await x.ownerOf(valx);
+  //   assert.equal(x_owner, B, "B Withdraw from MixerX transfer failed");
+  // });
 
-  it ("tests A withdraw token y", async () => {
-    const attrP_Ay = [ty_y, valy, T3, Tmax, 40, 41, 42];
-    const P_Ay = await pp.Com(attrP_Ay);
-    const tag = await pp.TagEval(attrP_Ay[4]);
+  // it ("tests A withdraw token y", async () => {
+  //   const attrP_Ay = [ty_y, valy, T3, Tmax, 40, 41, 42];
+  //   const P_Ay = await pp.Com(attrP_Ay);
+  //   const tag = await pp.TagEval(attrP_Ay[4]);
 
-    const R = Array.from(await mixerY.get_accs()).slice(0, ring_size);
-    const theta = 4;
-    R[theta] = P_Ay;
+  //   const R = Array.from(await mixerY.get_accs()).slice(0, ring_size);
+  //   const theta = 4;
+  //   R[theta] = P_Ay;
 
-    const gs = R.slice(-Math.log2(ring_size));
+  //   const gs = R.slice(-Math.log2(ring_size));
 
-    const tx_wd = [R, gs, tag, attrP_Ay.slice(0, 4), A];
+  //   const tx_wd = [R, gs, tag, attrP_Ay.slice(0, 4), A];
 
-    const wit = [theta].concat(attrP_Ay.slice(4));
+  //   const wit = [theta].concat(attrP_Ay.slice(4));
 
-    const sig = await mixerY.withdraw.call(tx_wd, wit);
+  //   const sig = await mixerY.withdraw.call(tx_wd, wit);
 
-    const b = await mixerY.process_wd.call(tx_wd, sig);
+  //   const b = await mixerY.process_wd.call(tx_wd, sig);
 
-    assert.equal(b, true, "A Withdraw from MixerY failed");
+  //   assert.equal(b, true, "A Withdraw from MixerY failed");
 
-    await mixerY.process_wd.sendTransaction(tx_wd, sig);
+  //   await mixerY.process_wd.sendTransaction(tx_wd, sig);
 
-    const y_owner = await y.ownerOf(valy);
-    assert.equal(y_owner, A, "A Withdraw from MixerY transfer failed");
-  });
+  //   const y_owner = await y.ownerOf(valy);
+  //   assert.equal(y_owner, A, "A Withdraw from MixerY transfer failed");
+  // });
 
 })

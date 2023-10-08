@@ -28,6 +28,9 @@ contract("DiffGenEqual", async () => {
     const Cy = await pp.Com(y);
     const b = await dg.verify(gx, gys, 4, Cx, Cy, sig);
     assert (b == true, "DG failed");
+    
+    const gas = await dg.verify.estimateGas(gx, gys, 4, Cx, Cy, sig);
+    console.log ("DG gas: ", gas);
   })
 
 

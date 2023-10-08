@@ -22,6 +22,9 @@ contract("OneofMany", async () => {
       const bool = await oom.verify.call(pp, sig);
 
       assert.equal(bool, true, "OneofMany failed");
+
+      const gas = await oom.verify.estimateGas(pp, sig);
+      console.log ("OneofMany gas: ", gas);
     });
   }
 });

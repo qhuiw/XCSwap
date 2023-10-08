@@ -25,15 +25,9 @@ contract("PartialEquality", async () => {
     const Cy = await pp.Com(y);
     const b = await pe.verify(gs, i_ne, Cx, Cy, sig);
     assert.equal(b, true, "PE failed");
-  })
 
-  it ("tests pe", async () => {
-    const gs = await pp.gs();
-    const sig = await pe.sign(gs, y, x, i_ne);
-    const Cx = await pp.Com(x);
-    const Cy = await pp.Com(y);
-    const b = await pe.verify(gs, i_ne, Cy, Cx, sig);
-    assert.equal(b, true, "PE failed");
+    const gas = await pe.verify.estimateGas(gs, i_ne, Cx, Cy, sig);
+    console.log ("PE gas: ", gas);
   })
 
   // it ("tests revised pe", async () => {

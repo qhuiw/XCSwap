@@ -16,6 +16,12 @@ contract Mixer {
   using alt_bn128 for uint256;
   using alt_bn128 for alt_bn128.G1Point;
 
+  mapping(bytes32 => bool) _isValidAccs;
+  // mapping(uint256 => mapping(uint256 => bool)) _isValidAccs;
+  // mapping(uint256 => mapping(uint256 => bool)) _isValidpks;
+  // mapping(uint256 => mapping(uint256 => bool)) _isValidTags;
+  // mapping(bytes32 => bool) _isValidpks;
+  // mapping(bytes32 => bool) _isValidTags;
   alt_bn128.G1Point[] _accs;
   alt_bn128.G1Point[] _pks;
   alt_bn128.G1Point[] _tags;
@@ -43,8 +49,12 @@ contract Mixer {
   }
 
   function init() public {
+    alt_bn128.G1Point memory g;
     for (uint i = 0; i < R_size; i++){
-      _accs.push(alt_bn128.random(i).uintToCurvePoint());
+      g = alt_bn128.random(i).uintToCurvePoint();
+      _accs.push(g);
+      // _isValidAccs[g.X][g.Y] = true; 
+      // _isValidAccs[_hash(g)] = true;
     }
   }
 
@@ -76,6 +86,7 @@ contract Mixer {
 
     /// @dev b1 ≜ pk ∉ Σpk
     bool b1 = !_in(_pks, tx_dp.s.pk);
+    // bool b1 = !_isValidpks[_hash(tx_dp.s.pk)];
     require(b1, "Deposit: pk already used");
 
     /// @dev b2 ≜ SoKverify(L_dp)
@@ -85,7 +96,9 @@ contract Mixer {
     if (b0 && b1 && b2){
       alt_bn128.G1Point memory Cx = tx_dp.s.tcom.add(tx_dp.s.ocom);
       _accs.push(Cx);
+      // _isValidAccs[_hash(Cx)] = true;
       _pks.push(tx_dp.s.pk);
+      // _isValidpks[_hash(tx_dp.s.pk)] = true;
       Token t = Token(r.getToken(tx_dp.attrS[0]));
 
       /// @dev ty.transfer[owner, mixer]
@@ -118,10 +131,12 @@ contract Mixer {
 
     /// @dev b2 ≜ tagS ∉ Σtag
     bool b2 = !_in(_tags, tx_wd.tag);
+    // bool b2 = !_isValidTags[_hash(tx_wd.tag)];
     require(b2, "Withdraw: tag already used");
 
     if (b0 && b1 && b2) {
       _tags.push(tx_wd.tag);
+      // _isValidTags[_hash(tx_wd.tag)] = true;
 
       Token t = Token(r.getToken(tx_wd.attrS[0]));
       /// @dev ty.transfer[mixer, rcpt]
@@ -146,10 +161,12 @@ contract Mixer {
 
     // b1 ≜ pkT ∉ Σpk
     bool b1 = !_in(_pks, tx_sp.pk_T);
+    // bool b1 = !_isValidpks[_hash(tx_sp.pk_T)];
     require(b1, "Spend: pkT already used");
 
     // b2 ≜ tagS ∉ Σtag
     bool b2 = !_in(_tags, tx_sp.tagS);
+    // bool b2 = !_isValidTags[_hash(tx_sp.tagS)];
     require(b2, "Spend: tagS already used");
 
     bool b3 = sp.verify(tx_sp, sig);
@@ -159,10 +176,14 @@ contract Mixer {
       _tags.push(tx_sp.tagS);
       _pks.push(tx_sp.pk_T);
 
+      // _isValidTags[_hash(tx_sp.tagS)] = true;
+      // _isValidpks[_hash(tx_sp.pk_T)] = true;
+
       alt_bn128.G1Point memory acc;
       for (uint i = 0; i < tx_sp.ocom_T.length; i++) {
         acc = tx_sp.tcom_T[i].add(tx_sp.ocom_T[i]);
         _accs.push(acc);
+        // _isValidAccs[_hash(acc)] = true;
       }
       return true;
     }
@@ -176,16 +197,23 @@ contract Mixer {
   function isValid(alt_bn128.G1Point[] memory R) public view returns (bool) {
     for (uint i = 0; i < R.length; i++) {
       if (!_in(_accs, R[i])) return false;
+      // if (!_isValidAccs[_hash(R[i])]) return false;
     }
     return true;
   }
 
   function inAcc(alt_bn128.G1Point memory g) public view returns (bool) {
     return _in(_accs, g);
+    // return _isValidAccs[_hash(g)];
   }
 
   function inTag(alt_bn128.G1Point memory g) public view returns (bool) {
     return _in(_tags, g);
+    // return _isValidTags[_hash(g)];
+  }
+
+  function _hash(alt_bn128.G1Point memory g) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(g.X, g.Y));
   }
 
   function _in(
