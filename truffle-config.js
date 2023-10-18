@@ -56,9 +56,7 @@ module.exports = {
       skipDryRun: true
     },
     baobab: {
-      provider: () => {
-        return new HDWalletProvider(mnemonic, "https://api.baobab.klaytn.net:8651");
-      },
+      provider: () =>  new HDWalletProvider(mnemonic, "https://api.baobab.klaytn.net:8651"),
       network_id: "1001",
       skipDryRun: true
     }

@@ -4,7 +4,7 @@ const webRTC = require("./utils/webRTC.js");
 
 /* state */
 var user, username, tktype, tknames;
-var mnid, pnid, baseNid;
+var mnid, pnid;
 var mixerX, mixerY, x, y;
 var mci = {
   "valx": null,
@@ -383,7 +383,7 @@ const main = async () => {
     const mchain = document.getElementById('mnet').value;
     mnid = lib.net[mchain];
     pnid = lib.net[document.getElementById('pnet').value];
-    baseNid = user == "A"? mnid : pnid;
+    tx.set_nid(mnid, pnid);
 
     if (pnid != webRTC.get_pnid() || tktype != webRTC.get_tktype()) {
       alert("Please match with your partner");
@@ -400,11 +400,13 @@ const main = async () => {
     });
   
     if (currentChainId != lib.chain[mchain]) {
-      alert("Please change to correct network");
-      return;
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: "0x" + lib.chain[mchain].toString(16) }], // chainId must be in hexadecimal numbers
+      });
     }
 
-    [mixerX, mixerY, x, y] = await tx.setup(mnid, pnid, baseNid);
+    [mixerX, mixerY, x, y] = await tx.setup();
 
     tknames = {
       "A" : await x.methods.name().call(),

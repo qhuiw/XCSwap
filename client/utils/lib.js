@@ -32,6 +32,21 @@ const chain = {
   "klaytn" : 1001
 }
 
+const nettochain = {
+  5777 : 1337,
+  1001 : 1001 
+}
+
+const chaintonet = {
+  1337 : 5777,
+  1001 : 1001 
+}
+
+const provider = {
+  5777 : "http://127.0.0.1:7545",
+  1001 : "https://api.baobab.klaytn.net:8651"
+}
+
 const img = {
   "ganache": "https://seeklogo.com/images/G/ganache-logo-1EB72084A8-seeklogo.com.png",
   "klaytn": "https://cdn-images-1.medium.com/max/1200/1*3tSS6q_D-lyttNdlRwqoQw.png",
@@ -147,7 +162,8 @@ module.exports = {
   createElementFromString, 
   createField, createMixerfield,
   insertAfter, createTitle, 
-  match, matchselect, chain,
+  match, matchselect, chain, provider,
+  nettochain, chaintonet,
   net, img, inputpars, username,
   rand, datetime, actlog, translog
 };

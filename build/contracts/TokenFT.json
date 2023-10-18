@@ -89,7 +89,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -108,7 +109,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -121,7 +123,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -195,7 +198,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -237,7 +241,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -250,7 +255,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -263,7 +269,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -311,7 +318,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -10597,9 +10605,23 @@
     "name": "solc",
     "version": "0.8.19+commit.7dd6d404.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "1001": {
+      "events": {},
+      "links": {},
+      "address": "0xd12c3D35AE6e14458393996e0b9677B4ac4Bf904",
+      "transactionHash": "0x799a03437f34c3f0c74e4c42e0cb5589356025e4675d9bd0e2f80869174d8d6e"
+    },
+    "5777": {
+      "events": {},
+      "links": {},
+      "address": "0x2E1345420DaB054C83dedCCBFF62CD8b0b359bB3",
+      "transactionHash": "0x518e2a7bd48002f8dcf7f0902173344f654118317522fbdf69f451e820d39cb3"
+    }
+  },
   "schemaVersion": "3.4.13",
-  "updatedAt": "2023-09-22T16:20:13.768Z",
+  "updatedAt": "2023-10-15T17:48:15.728Z",
+  "networkType": "ethereum",
   "devdoc": {
     "details": "ERC20",
     "events": {

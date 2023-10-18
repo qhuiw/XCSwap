@@ -23,8 +23,7 @@ contract("Protocol", async (accounts) => {
   var dp, wd, sp, ba, ab;
   var rg, x, y, ty_x, ty_y, mixerX, mixerY;
   
-  const ring_size = 16;
-  // const max = 2**53-1;
+  const ring_size = 64;
   const A = accounts[0], B = accounts[1];
   const valx = 1, valy = 2;
   const T1 = 0, T2 = 10, T3 = 20, Tmax = 30, s = 1;

@@ -1,13 +1,15 @@
 var web3;
 
-const set_web3 = (_web3) => {
-  web3 = _web3;
-}
-
 const state = {
   savedABIs: [],
   methodIDs: {},
 };
+
+const set_web3 = (_web3) => {
+  web3 = _web3;
+  state.savedABIs = [];
+  state.methodIDs = {};
+}
 
 function _typeToString(input) {
   if (input.type === "tuple") {

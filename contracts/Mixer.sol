@@ -9,14 +9,14 @@ import "./TX/SoKdp.sol";
 import "./TX/SoKwd.sol";
 import "./TX/SoKsp.sol";
 
-uint constant R_size = 16;
+uint constant R_size = 64;
 
 contract Mixer {
   
   using alt_bn128 for uint256;
   using alt_bn128 for alt_bn128.G1Point;
 
-  mapping(bytes32 => bool) _isValidAccs;
+  // mapping(bytes32 => bool) _isValidAccs;
   // mapping(uint256 => mapping(uint256 => bool)) _isValidAccs;
   // mapping(uint256 => mapping(uint256 => bool)) _isValidpks;
   // mapping(uint256 => mapping(uint256 => bool)) _isValidTags;

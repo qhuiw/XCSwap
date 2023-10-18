@@ -43,6 +43,25 @@ contract PubParam {
     }
   }
 
+  function set(
+    alt_bn128.G1Point[] memory gs_, 
+    alt_bn128.G1Point memory g_pk_, 
+    alt_bn128.G1Point memory g_tag_,
+    alt_bn128.G1Point memory h_
+    ) public {
+    uint length = gs_.length;
+    for (uint i = 0; i < length; i++) {
+      _gs.pop();
+    }
+
+    for (uint i = 0; i < gs_.length; i++) {
+      _gs.push(gs_[i]);
+    }
+    _g_pk = g_pk_;
+    _g_tag = g_tag_;
+    _h = h_;
+  }
+
   /// @dev pk = g_pk^sk
   function TagKGen(uint256 sk) public view returns (alt_bn128.G1Point memory pk) {
     pk = _g_pk.mul(sk);

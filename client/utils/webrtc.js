@@ -145,6 +145,20 @@ const init = async () => {
         if (el == null) return;
         el.placeholder = pci[data.id].toString();
         lib.matchselect(pci[data.id], get_mci(data.id), el);
+      } else if (data.type == "exchange") {
+        lib.translog("Partner Mixer Process Spend (Exchange):", data.data);
+      } else if (data.type == "preswap") {
+        lib.translog("Partner Mixer Process Spend (PreSwap):", data.data);
+      } else if (data.type == "redeem") {
+        lib.translog("Partner Mixer Process Spend (Redeem):", data.data);
+      } else if (data.type == "withdraw") {
+        lib.translog("Partner Mixer Process Withdraw:", data.data);
+      } else if (data.type == "deposit") {
+        lib.translog("Partner Mixer Process Deposit:", data.data);
+      } else if (data.type == "mint") {
+        lib.translog("Partner Mint:", data.data);
+      } else if (data.type == "approve") {
+        lib.translog("Partner Approve:", data.data);
       }
     }
 

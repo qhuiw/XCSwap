@@ -14,9 +14,9 @@ const NFTFArt = require("../../build/contracts/NFTFactory.json");
 const FTFArt = require("../../build/contracts/FTFactory.json");
 const TokenReg = require("../../build/contracts/TokenRegistrar.json");
 
-var web3, pp, ba, ab, mixerX, mixerY, x, y, reg, ty_x, ty_y;
+var web3, pp, ba, ab, mixerX, mixerY, x, y, reg, regx, regy, ty_x, ty_y;
 var valx, valy, T1, T2, T3, Tmax, s;
-var account, user, tktype, gasPrice;
+var account, user, tktype, gasPrice, pnid, mnid, xnid, ynid;
 var ci = false;
 
 var attrP_By, P_By, attrP_Bx;
@@ -52,9 +52,15 @@ const set_s = (_s) => {
   s = _s;
 }
 
-const setup = async (mnid, pnid, baseNid) => {
+const set_nid = (m, p) => {
+  pnid = p;
+  mnid = m;
+}
+
+const setup = async () => {
   if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
     web3 = new Web3(window.ethereum);
+    gasPrice = await web3.eth.getGasPrice();
   } else {
     alert ("Please install Metamask");
     return;
@@ -63,51 +69,90 @@ const setup = async (mnid, pnid, baseNid) => {
   decoder.set_web3(web3);
   decoder.addABI(Mixer.abi);
 
-  const xnid = (user == 'A')? mnid : pnid;
-  const ynid = (user == 'A')? pnid : mnid;
+  xnid = (user == 'A')? mnid : pnid;
+  ynid = (user == 'A')? pnid : mnid;
 
-  gasPrice = await web3.eth.getGasPrice();
-  // change to base chain 
-  pp = new web3.eth.Contract(PPArt.abi, PPArt.networks[baseNid].address);
+  const webx = new Web3(new Web3.providers.HttpProvider(lib.provider[xnid]));
+  const weby = new Web3(new Web3.providers.HttpProvider(lib.provider[ynid]));
+
+  pp = new web3.eth.Contract(PPArt.abi, PPArt.networks[mnid].address);
   ba = new web3.eth.Contract(SoKba.abi, SoKba.networks[mnid].address);
   ab = new web3.eth.Contract(SoKab.abi, SoKab.networks[mnid].address);
   if (mnid == pnid){
-    const mixerFactory = new web3.eth.Contract(MFArt.abi, MFArt.networks[baseNid].address);
+    const mixerFactory = new web3.eth.Contract(MFArt.abi, MFArt.networks[mnid].address);
     const mixerAddrs = await mixerFactory.methods.getMixers().call();
     mixerX = new web3.eth.Contract(Mixer.abi, mixerAddrs[0]);
     mixerY = new web3.eth.Contract(Mixer.abi, mixerAddrs[1]);
   } else {
-    mixerX = new web3.eth.Contract(Mixer.abi, Mixer.networks[xnid].address);
-    mixerY = new web3.eth.Contract(Mixer.abi, Mixer.networks[ynid].address);
+    mixerX = new webx.eth.Contract(Mixer.abi, Mixer.networks[xnid].address);
+    mixerY = new weby.eth.Contract(Mixer.abi, Mixer.networks[ynid].address);
+    if (user == 'A') {
+      mixerX = new web3.eth.Contract(Mixer.abi, Mixer.networks[xnid].address);
+    } else {
+      mixerY = new web3.eth.Contract(Mixer.abi, Mixer.networks[ynid].address);
+    }
   }
-  var tokenAddrs;
-  const FactArt = tktype == "ERC20" ? FTFArt : NFTFArt;
   const TokenArt = tktype == "ERC20" ? FTArt : NFTArt;
   if (mnid == pnid) {
+    const FactArt = tktype == "ERC20" ? FTFArt : NFTFArt;
     const Fact = new web3.eth.Contract(FactArt.abi, FactArt.networks[xnid].address);
-    tokenAddrs = await Fact.methods.getTokens().call();
+    const tokenAddrs = await Fact.methods.getTokens().call();
     x = new web3.eth.Contract(TokenArt.abi, tokenAddrs[0]);
     y = new web3.eth.Contract(TokenArt.abi, tokenAddrs[1]);
+
+    reg = new web3.eth.Contract(TokenReg.abi, TokenReg.networks[mnid].address);
+
+    ty_x = BigInt(await reg.methods.getTy(tokenAddrs[0]).call());
+    ty_y = BigInt(await reg.methods.getTy(tokenAddrs[1]).call());
+
   } else {
-    x = new web3.eth.Contract(TokenArt.abi, TokenArt.networks[xnid].address);
-    y = new web3.eth.Contract(TokenArt.abi, TokenArt.networks[ynid].address);
-    tokenAddrs = [x.options.address, y.options.address];
+    x = new webx.eth.Contract(TokenArt.abi, TokenArt.networks[xnid].address);
+    y = new weby.eth.Contract(TokenArt.abi, TokenArt.networks[ynid].address);
+    regx = new webx.eth.Contract(TokenReg.abi, TokenReg.networks[xnid].address);
+    regy = new weby.eth.Contract(TokenReg.abi, TokenReg.networks[ynid].address);
+
+    ty_x = BigInt(await regx.methods.getTy(x.options.address).call());
+    ty_y = BigInt(await regy.methods.getTy(y.options.address).call());
+
+    if (user == 'A') {
+      x = new web3.eth.Contract(TokenArt.abi, TokenArt.networks[xnid].address);
+    }else {
+      y = new web3.eth.Contract(TokenArt.abi, TokenArt.networks[ynid].address);
+    }
   }
-
-  reg = new web3.eth.Contract(TokenReg.abi, TokenReg.networks[baseNid].address);
-
-  ty_x = BigInt(await reg.methods.getTy(tokenAddrs[0]).call());
-  ty_y = BigInt(await reg.methods.getTy(tokenAddrs[1]).call());
 
   tknames["A"] = await x.methods.name().call();
   tknames["B"] = await y.methods.name().call();
   tknames["X"] = await x.methods.name().call();
   tknames["Y"] = await y.methods.name().call();
 
-  // const {set_up} = require("../index.js");
-  // await set_up(mixerX, mixerY, x, y);
-
   return [mixerX, mixerY, x, y];
+}
+
+window.ethereum.on('chainChanged', handleChainChanged);
+
+function handleChainChanged(chainId) {
+
+  web3 = new Web3(window.ethereum);
+
+  decoder.set_web3(web3);
+  decoder.addABI(Mixer.abi);
+
+  const TokenArt = tktype == "ERC20" ? FTArt : NFTArt;
+  const nid = lib.chaintonet[parseInt(chainId.slice(2), 16)];
+
+  pp = new web3.eth.Contract(PPArt.abi, PPArt.networks[nid].address);
+
+  if (!ci) return;
+
+  if (user == 'A') {
+    mixerY = new web3.eth.Contract(Mixer.abi, Mixer.networks[nid].address);
+    y = new web3.eth.Contract(TokenArt.abi, TokenArt.networks[nid].address);
+  } else {
+    mixerX = new web3.eth.Contract(Mixer.abi, Mixer.networks[nid].address);
+    x = new web3.eth.Contract(TokenArt.abi, TokenArt.networks[nid].address);
+  }
+
 }
 
 const connectWallet = async () => {
@@ -119,6 +164,7 @@ const connectWallet = async () => {
     alert(err.message);
     return;
   }
+
   const btn = document.getElementById('connect');
 
   const acc = lib.createElementFromString(
@@ -185,6 +231,12 @@ const mint = async () => {
     const tx = await tk.methods.mint(account, valtk).send({
       from: account, gas: 6721975, gasPrice: gasPrice});
     lib.translog(`Mint:`, tx);
+
+    webRTC.send({
+      type : "mint",
+      data : tx
+    });
+    
   } catch(err) {
     alert(err.message);
     return;
@@ -247,6 +299,13 @@ const approve = async () => {
   try {
     const tx = await tk.methods.approve(mixer.options.address, valtk).send({from : account, gas: 6721975, gasPrice: gasPrice});
     lib.translog(`Approve:`, tx);
+
+    webRTC.send({
+      type : "approve",
+      data : tx
+    });
+
+
   } catch(err) {
     alert(err.message);
     return;
@@ -315,6 +374,12 @@ const deposit = async () => {
     const tx = await mixer.methods.process_dp(tx_dp, sig).send({
       from: account, gas: 6721975, gasPrice: gasPrice});
     lib.translog(`Deposit:`, tx);
+
+    webRTC.send({
+      type : "deposit",
+      data : tx
+    });
+
   } catch(err) {
     alert(err.message);
     return;
@@ -377,7 +442,14 @@ const withdraw = async (isX) => {
   try {
     const tx = await mixer.methods.process_wd(tx_wd, sig).send({
       from: account, gas: 6721975, gasPrice: gasPrice});
-    lib.translog(`Mixer Process Deposit:`, tx);
+    lib.translog(`Mixer Process Withdraw:`, tx);
+
+    
+    webRTC.send({
+      type : "withdraw",
+      data : tx
+    });
+
   } catch(err) {
     alert(err.message);
     return;
@@ -600,7 +672,13 @@ const preswap = async () => {
   try {
     const tx = await mixer.methods.process_sp(tx_sp, sig).send({
       from: account, gas: 6721975, gasPrice: gasPrice});
-    lib.translog(`Mixer Process Spend (Preswap):`, tx);
+    lib.translog(`Mixer Process Spend (PreSwap):`, tx);
+
+    webRTC.send({
+      type : "preswap",
+      data : tx
+    });
+
   } catch(err) {
     alert(err.message);
     return;
@@ -612,10 +690,29 @@ const preswap = async () => {
     attrP_By = null;
   }
 
-  lib.actlog(`User ${lib.username[user]} initiated PreSwap action: <br> PreSwap ${P.X}, ${P.Y} to Mixer ${tknames[user].toUpperCase()}}`);
+  lib.actlog(`User ${lib.username[user]} initiated PreSwap action: <br> PreSwap ${P.X}, ${P.Y} to Mixer ${tknames[user].toUpperCase()}`);
   
   const pacc = document.getElementById('pacc');
   pacc.lastChild.remove();
+
+}
+
+const switchchain = async () => {
+  const currentChainId = await window.ethereum.request({
+    method: 'eth_chainId',
+  });
+
+  console.log(pnid, lib.chaintonet[parseInt(currentChainId.slice(2), 16)]);
+
+  if (pnid != lib.chaintonet[parseInt(currentChainId.slice(2), 16)]){
+
+    console.log("switching network");
+
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: "0x" + lib.nettochain[pnid].toString(16) }], // chainId must be in hexadecimal numbers
+    });
+  }
 }
 
 const exchange = async () => {
@@ -629,82 +726,97 @@ const exchange = async () => {
     return;
   }
 
-  const sk = user == 'A' ? beta : alpha;
+  const ex = async () => {
 
-  if (sk == null) {
-    if (user == 'A'){
-      alert("Please submit your partner's private key");
-    } else {
-      alert("Please submit your partner's transaction hash to obtain his/her private key");
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    gasPrice = await web3.eth.getGasPrice();
+  
+    const sk = user == 'A' ? beta : alpha;
+  
+    if (sk == null) {
+      if (user == 'A'){
+        alert("Please submit your partner's private key");
+      } else {
+        alert("Please submit your partner's transaction hash to obtain his/her private key");
+      }
+      return;
     }
-    return;
+  
+    const Eacc = user == 'A'? E_Ay : E_Bx;
+    const name = user == 'A'? "Y" : "X";
+    const inputs = document.getElementById(`ex-input-${name}`).value.split(",").map(elt => elt.trim());
+  
+    if (inputs[0] != Eacc.X || inputs[1] != Eacc.Y) {
+      alert("Please input correct E-account");
+      return;
+    }
+  
+    const mixer = user == 'A'? mixerY : mixerX;
+    const valtk = user == 'A'? valy : valx;
+    const tytk = user == 'A'? ty_y : ty_x;
+    const opn = user == 'A'? alpha[1] : beta[0]+s;
+    const tstart = user == 'A'? T2 : T1;
+    const tend = user == 'A'? T3 : T2;
+    const ok = user == 'A'? alpha[2] : beta[3];
+  
+    const R = Array.from(await mixer.methods.get_accs().call()).slice(0, ring_size);
+    const theta = 4;
+    R[theta] = Eacc;
+    const gs = R.slice(-Math.log2(ring_size));
+    const tag = await pp.methods.TagEval(sk).call();
+  
+    const attrP = [tytk, valtk, tend, Tmax, rand(), rand(), rand()];
+  
+    const pkT = await pp.methods.TagKGen(attrP[4]).call();
+    const tcom_T = [await pp.methods.tCom(attrP).call()];
+    const ocom_T = [await pp.methods.oCom(attrP).call()];
+    const attrTs = [[attrP[2], attrP[3], attrP[5], attrP[6]]];
+    const tx_sp = [R, gs, tag, [opn, tstart, tend], pkT, tcom_T, ocom_T];
+  
+    const wit = [theta, [tytk, valtk, sk, ok], attrP[4], attrTs];
+  
+    const sig = await mixer.methods.spend(tx_sp, wit).call();
+  
+    try {
+      const tx = await mixer.methods.process_sp(tx_sp, sig).send({
+        from: account, gas: 6721975, gasPrice: gasPrice});
+      lib.translog(`Mixer Process Spend (Exchange):`, tx);
+
+      webRTC.send({
+        type : "exchange",
+        data : tx
+      });
+
+    } catch(err) {
+      alert(err.message);
+      return;
+    }
+    alert("Exchange successful");
+  
+    const P = await pp.methods.Com(attrP).call();
+    if (user == 'A') {
+      E_Ay = null;
+      P_Ay = P;
+      attrP_Ay = attrP;
+    } else {
+      E_Bx = null;
+      P_Bx = P;
+      attrP_Bx = attrP;
+    }
+  
+    lib.actlog(`User ${lib.username[user]} initiated Exchange action: <br> exchanged ${Eacc.X}, ${Eacc.Y} to ${P.X}, ${P.Y}`);
+  
+    const eacc = document.getElementById('eacc');
+    eacc.lastChild.remove();
+    const racc = document.getElementById('racc');
+    racc.lastChild.remove();
+  
+    const pacc = document.getElementById('pacc');
+    pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Mixer ${tknames[name].toUpperCase()}</b></p>`));
   }
-
-  const Eacc = user == 'A'? E_Ay : E_Bx;
-  const name = user == 'A'? "Y" : "X";
-  const inputs = document.getElementById(`ex-input-${name}`).value.split(",").map(elt => elt.trim());
-
-  if (inputs[0] != Eacc.X || inputs[1] != Eacc.Y) {
-    alert("Please input correct E-account");
-    return;
-  }
-
-  const mixer = user == 'A'? mixerY : mixerX;
-  const valtk = user == 'A'? valy : valx;
-  const tytk = user == 'A'? ty_y : ty_x;
-  const opn = user == 'A'? alpha[1] : beta[0]+s;
-  const tstart = user == 'A'? T2 : T1;
-  const tend = user == 'A'? T3 : T2;
-  const ok = user == 'A'? alpha[2] : beta[3];
-
-  const R = Array.from(await mixer.methods.get_accs().call()).slice(0, ring_size);
-  const theta = 4;
-  R[theta] = Eacc;
-  const gs = R.slice(-Math.log2(ring_size));
-  const tag = await pp.methods.TagEval(sk).call();
-
-  const attrP = [tytk, valtk, tend, Tmax, rand(), rand(), rand()];
-
-  const pkT = await pp.methods.TagKGen(attrP[4]).call();
-  const tcom_T = [await pp.methods.tCom(attrP).call()];
-  const ocom_T = [await pp.methods.oCom(attrP).call()];
-  const attrTs = [[attrP[2], attrP[3], attrP[5], attrP[6]]];
-  const tx_sp = [R, gs, tag, [opn, tstart, tend], pkT, tcom_T, ocom_T];
-
-  const wit = [theta, [tytk, valtk, sk, ok], attrP[4], attrTs];
-
-  const sig = await mixer.methods.spend(tx_sp, wit).call();
-
-  try {
-    const tx = await mixer.methods.process_sp(tx_sp, sig).send({
-      from: account, gas: 6721975, gasPrice: gasPrice});
-    lib.translog(`Mixer Process Spend (Exchange):`, tx);
-  } catch(err) {
-    alert(err.message);
-    return;
-  }
-  alert("Exchange successful");
-
-  const P = await pp.methods.Com(attrP).call();
-  if (user == 'A') {
-    E_Ay = null;
-    P_Ay = P;
-    attrP_Ay = attrP;
-  } else {
-    E_Bx = null;
-    P_Bx = P;
-    attrP_Bx = attrP;
-  }
-
-  lib.actlog(`User ${lib.username[user]} initiated Exchange action: <br> exchanged ${Eacc.X}, ${Eacc.Y} to ${P.X}, ${P.Y}`);
-
-  const eacc = document.getElementById('eacc');
-  eacc.lastChild.remove();
-  const racc = document.getElementById('racc');
-  racc.lastChild.remove();
-
-  const pacc = document.getElementById('pacc');
-  pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Mixer ${tknames[name].toUpperCase()}</b></p>`));
+  
+  switchchain().then(() => ex());
 }
 
 const redeem = async (isX) => {
@@ -754,6 +866,11 @@ const redeem = async (isX) => {
     const tx = await mixer.methods.process_sp(tx_sp, sig).send({
       from: account, gas: 6721975, gasPrice: gasPrice});
     lib.translog(`Mixer Process Spend (Redeem):`, tx);
+
+    webRTC.send({
+      type : "redeem",
+      data : tx
+    });
   }
   catch(err) {
     alert(err.message);
@@ -761,6 +878,7 @@ const redeem = async (isX) => {
   }
   alert("Redeem successful");
 
+  const P = await pp.methods.Com(attrP).call();
   if (isX) {
     R_Ax = null;
     attrP_Ax = attrP;
@@ -779,7 +897,7 @@ const redeem = async (isX) => {
   eacc.lastChild.remove();
 
   const pacc = document.getElementById('pacc');
-  const P = await pp.methods.Com(attrP).call();
+  
   pacc.appendChild(lib.createElementFromString(`<p>${P.X},<br>${P.Y} <b>Mixer ${tknames[name].toUpperCase()}</b></p>`));
 }
 
@@ -894,10 +1012,8 @@ const checkBetaA = async () => {
 
 
 module.exports = { 
-  set_user, set_tkty, set_s,
-  setup,
-  connectWallet,
-  inputHandler,
+  set_user, set_tkty, set_s, set_nid,
+  setup, connectWallet, inputHandler,
   mint, approve, checkBal,
   deposit, withdraw,
   setupB, setupA, verify,
