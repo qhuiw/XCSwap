@@ -334,8 +334,8 @@ const checkBal = async (isX) => {
       output = await tk.methods.balanceOf(input).call();
     }
   } catch(err) {
-    baltag.innerHTML = `<b>${str}: </b>`;
-    alert(err.message);
+    baltag.innerHTML = `<b>${str}: Token Invalid </b>`;
+    // alert(err.message);
     return;
   }
 
