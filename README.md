@@ -1,4 +1,4 @@
-# XCSwap: Cross-Chain Confidential Atomic Swap Transactions with Transparent Setup
+# XCSwap: Extensible Cross-Chain Confidential Atomic Swap Transactions with Transparent Setup
 
 ## Dependencies
 ```
