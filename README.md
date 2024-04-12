@@ -4,6 +4,15 @@
 ```
 npm install @truffle/hdwallet-provider
 ```
+## Testing
+All test cases on smart contracts are under `/test` directory. To test all, run
+```
+truffle test
+```
+Alternatively, specify the path to run a specific file, e.g.,
+```
+truffle test ./test/1_nisa_test.js
+```
 
 ## Network Configuration
 Currently, the truffle project supports the following testnets:
