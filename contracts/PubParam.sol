@@ -10,10 +10,16 @@ contract PubParam {
   /// @dev [g_ty, g_val, ... , g_tbeg, g_tend, g_sk, g_opn, g_ok]
   alt_bn128.G1Point[] _gs;
 
+  alt_bn128.G1Point[] _Gs; /// @dev RangePf
+  alt_bn128.G1Point[] _Hs;
+
   alt_bn128.G1Point _g_pk; /// @dev TagKGen
   alt_bn128.G1Point _g_tag; /// @dev TagEval
 
   alt_bn128.G1Point _h;
+  alt_bn128.G1Point _F;
+  alt_bn128.G1Point _K;
+  alt_bn128.G1Point _Q;
 
   uint _n_attr;
   uint _sk_pos;
@@ -35,11 +41,19 @@ contract PubParam {
 
   function init(uint _n) private {
     _h = alt_bn128.random(_n).uintToCurvePoint();
+    _F = alt_bn128.random(_n+11).uintToCurvePoint();
+    _K = alt_bn128.random(_n+12).uintToCurvePoint();
+    _Q = alt_bn128.random(_n+13).uintToCurvePoint();
     _g_pk = alt_bn128.random(_n+1).uintToCurvePoint();
     _g_tag = alt_bn128.random(_n+2).uintToCurvePoint();
 
     for (uint i = 0; i < _n; i++) {
       _gs.push(alt_bn128.random(_n+3+i).uintToCurvePoint());
+    }
+
+    for (uint i = 0; i < 8; i++) {
+      _Gs.push(alt_bn128.random(_n+4+i).uintToCurvePoint());
+      _Hs.push(alt_bn128.random(_n+5+i).uintToCurvePoint());
     }
   }
 
@@ -110,6 +124,14 @@ contract PubParam {
   function gs() public view returns (alt_bn128.G1Point[] memory) {
     return _gs;
   }
+
+  function Gs() public view returns (alt_bn128.G1Point[] memory) {
+    return _Gs;
+  }
+
+  function Hs() public view returns (alt_bn128.G1Point[] memory) {
+    return _Hs;
+  }
   
   function g_tag() public view returns (alt_bn128.G1Point memory) {
     return _g_tag;
@@ -125,6 +147,18 @@ contract PubParam {
 
   function h() public view returns (alt_bn128.G1Point memory) {
     return _h;
+  }
+
+  function F() public view returns (alt_bn128.G1Point memory) {
+    return _F;
+  }
+
+  function Q() public view returns (alt_bn128.G1Point memory) {
+    return _Q;
+  }
+
+  function K() public view returns (alt_bn128.G1Point memory) {
+    return _K;
   }
 
   function n() public view returns (uint) {

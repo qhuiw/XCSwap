@@ -66,7 +66,7 @@ contract SoKba {
     }
     com_attr[4] = wit[1]; // b1^
     /// @dev 2. Diff Gen Equal (pky vs tcomy)
-    sig.dg_sig = dg.sign(pp.g_pk(), Gs, sk_pos, com_attr);
+    sig.dg_sig = dg.sign(pp.g_pk(), Gs, sk_pos, 0, com_attr);
 
     com_attr = new uint256[](2);
     com_attr[0] = wit[1] + wit[0]; // b1^ + s
@@ -101,7 +101,7 @@ contract SoKba {
       com_attr[4+i] = wit[1+i];
     }
     /// @dev 5. Diff Gen Equal (pky vs R)
-    sig.dg_R_sig = dg.sign(pp.g_pk(), Gs, sk_pos, com_attr);
+    sig.dg_R_sig = dg.sign(pp.g_pk(), Gs, sk_pos, 0, com_attr);
   }
 
   struct RTN {

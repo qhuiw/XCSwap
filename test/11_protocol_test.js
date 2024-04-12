@@ -18,6 +18,7 @@ const SoKab = artifacts.require("SoKab");
 const PubParam = artifacts.require("PubParam");
 const BN = require("bn.js")
 
+// success exchange test
 contract("Protocol", async (accounts) => {
   var lib, pp, dr, pe, sg, om;
   var dp, wd, sp, ba, ab;

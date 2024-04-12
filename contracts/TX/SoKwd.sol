@@ -90,7 +90,7 @@ contract SoKwd {
     sig.om_sig = om.sign(om_pp, skj);
 
     /// @dev Diff Gen Equal signature (tag vs acc_d)
-    sig.dg_sig = dg.sign(pp.g_tag(), pp.gs(), pp.sk_pos(), acc_d_attr);
+    sig.dg_sig = dg.sign(pp.g_tag(), pp.gs(), pp.sk_pos(), 0, acc_d_attr);
 
     /// @dev Partial Equality signature (acc_d vs pub)
     sig.pe_sig = pe.sign(pp.gs(), acc_d_attr, y, i_ne);

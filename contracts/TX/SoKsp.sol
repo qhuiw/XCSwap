@@ -97,7 +97,7 @@ contract SoKsp {
     sig.om_sig = om.sign(om_pp, skj);
 
     /// @dev 2. Diff Gen Equal signature (tag vs acc_d)
-    sig.dg_tag_sig = dg.sign(pp.g_tag(), Gs, pp.sk_pos(), acc_d_attr);
+    sig.dg_tag_sig = dg.sign(pp.g_tag(), Gs, pp.sk_pos(), 0, acc_d_attr);
 
     /// @dev 3. Part Equal signature (same T_beg, T_end, opn)
     uint256[] memory pe_y = new uint256[](n);
@@ -141,7 +141,7 @@ contract SoKsp {
       // pe_y[n-1] = wit.attrTs[i][3]; // ok
 
       sig.pe_ty_sig[i] = pe.sign(Gs, acc_d_attr, pe_y, idx_ne);
-      sig.dg_sk_sig[i] = dg.sign(pp.g_pk(), Gs, pp.sk_pos(), pe_y);
+      sig.dg_sk_sig[i] = dg.sign(pp.g_pk(), Gs, pp.sk_pos(), 0, pe_y);
     }
   }
 
