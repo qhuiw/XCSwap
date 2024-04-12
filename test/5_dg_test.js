@@ -23,7 +23,7 @@ contract("DiffGenEqual", async () => {
     const gys = await pp.gs();
     const y = [1,2,3,4,5,6,7];
 
-    const sig = await dg.sign(gx, gys, 4, y);
+    const sig = await dg.sign(gx, gys, 4, 0, y);
     const Cx = await pp.TagEval(y[4]);
     const Cy = await pp.Com(y);
     const b = await dg.verify(gx, gys, 4, Cx, Cy, sig);
