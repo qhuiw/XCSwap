@@ -6,3 +6,4 @@ client/.parcel-cache/
 client/.cert/
 client/node_modules1/
 .env
+.DS_Store
