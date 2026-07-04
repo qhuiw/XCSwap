@@ -39,7 +39,7 @@ module.exports = async function(deployer, _, accounts){
   
   /* Set Public Parameter to match your partner's */
 
-  // const web3 = new Web3(new Web3.providers.HttpProvider("https://api.baobab.klaytn.net:8651"));
+  // const web3 = new Web3(new Web3.providers.HttpProvider("https://public-en-kairos.node.kaia.io"));
   // const pp = new web3.eth.Contract(PubParam.abi, PubParam.networks[1001].address);
   // const gs = await pp.methods.gs().call();
   // const g_pk = await pp.methods.g_pk().call();

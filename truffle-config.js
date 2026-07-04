@@ -49,14 +49,10 @@ module.exports = {
       gas: 4465030,
       skipDryRun: true
     },
-    goerli: {
-      provider: () => new HDWalletProvider(mnemonic, "https://goerli.infura.io/v3/"+infuraAPIKey),
-      network_id: "5",
-      gas: 4465030,
-      skipDryRun: true
-    },
-    baobab: {
-      provider: () =>  new HDWalletProvider(mnemonic, "https://api.baobab.klaytn.net:8651"),
+    // Kaia Kairos — formerly Klaytn Baobab, renamed in the 2024 Kaia rebrand.
+    // Same chain and network_id (1001): contracts deployed to Baobab remain live here.
+    kairos: {
+      provider: () =>  new HDWalletProvider(mnemonic, "https://public-en-kairos.node.kaia.io"),
       network_id: "1001",
       skipDryRun: true
     }

@@ -44,7 +44,7 @@ const chaintonet = {
 
 const provider = {
   5777 : "http://127.0.0.1:7545",
-  1001 : "https://api.baobab.klaytn.net:8651"
+  1001 : "https://public-en-kairos.node.kaia.io"
 }
 
 const img = {

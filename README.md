@@ -17,9 +17,9 @@ truffle test ./test/1_nisa_test.js
 ## Network Configuration
 Currently, the truffle project supports the following testnets:
 - [Ganache](https://trufflesuite.com/ganache/) [127.0.0.1:7545]
-- [Klaytn's Baobab](https://chainlist.org/chain/1001)
+- [Kaia's Kairos, formerly Klaytn's Baobab](https://chainlist.org/chain/1001)
 - [Infura's Sepolia](https://docs.infura.io/networks/ethereum/how-to/choose-a-network)
-- [Infura's Goerli](https://docs.infura.io/networks/ethereum/how-to/choose-a-network)
+- ~~Infura's Goerli~~ (Goerli was retired in 2024 and has been removed from this config)
 
 You could add other network option under `networks` in `truffle-config.js`.
 E.g.
@@ -89,7 +89,7 @@ You can obtain and configure it in the `networks` object of the contract artifac
 
 
 #### IMPORTANT !
-One, and *Only One*, of the users should uncomment the below script in `1_lib_deploy.js` under the `migrations` directory, and configure the `<partner's node HTTP URL>` and its corresponding `<Partner's ChainID>`. For example, use Klaytn's Baobab network `"https://api.baobab.klaytn.net:8651"`, and its ChainID `1001`. 
+One, and *Only One*, of the users should uncomment the below script in `1_lib_deploy.js` under the `migrations` directory, and configure the `<partner's node HTTP URL>` and its corresponding `<Partner's ChainID>`. For example, use Kaia's Kairos network (formerly Klaytn's Baobab) `"https://public-en-kairos.node.kaia.io"`, and its ChainID `1001`. 
 
 This is to ensure both users use the same set of public parameters on their networks. If this is broken, the swap protocol will not work.
 
@@ -146,8 +146,7 @@ To use the DApp, one should use an account that has sufficient cryptocurrency in
 ### Public Testnets <a id="testnets"></a>
 1. Use default Metamask account
 ![Account](https://support.metamask.io/hc/article_attachments/16915535683355)
-2. Obtain Free Klays(KLAY)/Ethers(ETH) on Testnets
-- [Klaytn Faucet](https://baobab.wallet.klaytn.foundation/faucet)
+2. Obtain Free KAIA (formerly KLAY)/Ethers(ETH) on Testnets
+- [Kaia Kairos Faucet](https://www.kaia.io/faucet)
 - [Sepolia Faucet](https://sepoliafaucet.com/)
-- [Goerli Faucet](https://goerlifaucet.com/)
 
